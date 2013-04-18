@@ -7,6 +7,11 @@ PACKAGES = %w(
   slartibartfast
 )
 
+LIBRARIES = %w(
+  github.com/go-gl/gl
+  github.com/go-gl/glfw
+)
+
 task :default => "run"
 
 desc "Run the application itself"
@@ -25,6 +30,18 @@ namespace :build do
     desc "Build and install package [#{package}]"
     task package do
       sh "go install -v #{package}"
+    end
+  end
+end
+
+namespace :update do
+  desc "Update all installed libraries"
+  task :all => LIBRARIES.map {|l| l.split("\/").last }
+
+  LIBRARIES.each do |library|
+    desc "Update the library [#{library}]"
+    task library.split("\/").last do
+      sh "go get #{library}"
     end
   end
 end
