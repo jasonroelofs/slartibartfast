@@ -1,0 +1,9 @@
+{
+	"section1": {
+		"key1" : "value1"
+	},
+	"section2": {
+		"key2" : "value2",
+		"bool1" : true
+	}
+}

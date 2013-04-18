@@ -3,6 +3,7 @@
 #
 
 PACKAGES = %w(
+  configs
   window
   slartibartfast
 )
@@ -12,24 +13,39 @@ LIBRARIES = %w(
   github.com/go-gl/glfw
 )
 
+def shell(command)
+  begin
+    sh command
+  rescue RuntimeError
+  end
+end
+
 task :default => "run"
 
 desc "Run the application itself"
-task :run => "build:all" do
+task :run => ["clean:bin", "build:all"] do
   full_dir = File.expand_path("../", __FILE__)
-  sh "#{full_dir}/bin/slartibartfast"
+  shell "#{full_dir}/bin/slartibartfast"
+end
+
+namespace :clean do
+  desc "Clean up the bin directory"
+  task :bin do
+    full_dir = File.expand_path("../", __FILE__)
+    rm_f "#{full_dir}/bin/slartibartfast"
+  end
 end
 
 namespace :build do
   desc "Build and install all packages"
   task :all do
-    sh "go install -v #{PACKAGES.join(" ")}"
+    shell "go install -v #{PACKAGES.join(" ")}"
   end
 
   PACKAGES.each do |package|
     desc "Build and install package [#{package}]"
     task package do
-      sh "go install -v #{package}"
+      shell "go install -v #{package}"
     end
   end
 end
@@ -41,7 +57,19 @@ namespace :update do
   LIBRARIES.each do |library|
     desc "Update the library [#{library}]"
     task library.split("\/").last do
-      sh "go get #{library}"
+      shell "go get -u #{library}"
     end
   end
+end
+
+namespace :test do
+	desc "Run all the tests"
+	task :all => PACKAGES
+
+	PACKAGES.each do |package|
+		desc "Run tests for [#{package}]"
+		task package do
+			shell "go test #{package}"
+		end
+	end
 end
