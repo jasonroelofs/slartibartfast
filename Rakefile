@@ -62,8 +62,10 @@ namespace :update do
   end
 end
 
+task :test => "test:all"
+
 namespace :test do
-	desc "Run all the tests"
+	desc "Run all the tests. Also runnable as just 'test'"
 	task :all => PACKAGES
 
 	PACKAGES.each do |package|
