@@ -2,7 +2,6 @@ package input
 
 import (
 	"events"
-	"github.com/go-gl/glfw"
 	"github.com/stretchrcom/testify/assert"
 	"testing"
 )
@@ -20,7 +19,7 @@ func Test_RegistersACallbackForAnEvent(t *testing.T) {
 		quitCalled = true
 	})
 
-	mapper.keyCallback('Q', 1)
+	mapper.keyCallback(KeyQ, 1)
 
 	assert.True(t, quitCalled, "Quit callback was not called")
 }
@@ -29,7 +28,7 @@ func Test_DoesNothingIfNoEventForKey(t *testing.T) {
 	mapper := NewInput()
 
 	assert.NotPanics(t, func() {
-		mapper.keyCallback('Q', 1)
+		mapper.keyCallback(KeyQ, 1)
 	}, "Mapper panic'd on unmapped key")
 }
 
@@ -42,15 +41,15 @@ func Test_DoesNothingIfNoKeyMappedToEvent(t *testing.T) {
 		jumpCalled = true
 	})
 
-	mapper.keyCallback('N', 1)
+	mapper.keyCallback(KeyN, 1)
 
 	assert.False(t, jumpCalled, "Jump event called when it should not have")
 }
 
 func Test_CanMapMultipleKeysToOneEvent(t *testing.T) {
 	mapper := NewInput()
-	mapper.mapKeyToEvent('Q', events.QUIT)
-	mapper.mapKeyToEvent(glfw.KeyEsc, events.QUIT)
+	mapper.mapKeyToEvent(KeyQ, events.QUIT)
+	mapper.mapKeyToEvent(KeyEsc, events.QUIT)
 
 	quitCallCount := 0
 
@@ -58,8 +57,8 @@ func Test_CanMapMultipleKeysToOneEvent(t *testing.T) {
 		quitCallCount += 1
 	})
 
-	mapper.keyCallback('Q', 1)
-	mapper.keyCallback(glfw.KeyEsc, 1)
+	mapper.keyCallback(KeyQ, 1)
+	mapper.keyCallback(KeyEsc, 1)
 
 	assert.Equal(t, 2, quitCallCount)
 }

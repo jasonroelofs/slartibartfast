@@ -21,8 +21,8 @@ func NewInput() *InputMapping {
 	}
 
 	// Set up testing key mappings
-	mapper.mapKeyToEvent('Q', events.QUIT)
-	mapper.mapKeyToEvent(glfw.KeyEsc, events.QUIT)
+	mapper.mapKeyToEvent(KeyQ, events.QUIT)
+	mapper.mapKeyToEvent(KeyEsc, events.QUIT)
 
 	glfw.SetKeyCallback(mapper.keyCallback)
 
@@ -41,7 +41,7 @@ func (mapper *InputMapping) mapKeyToEvent(key int, eventType events.EventType) {
 }
 
 func (mapper *InputMapping) keyCallback(key, state int) {
-	fmt.Println("Key pressed! ", key, state)
+	fmt.Println("Key pressed! ", key, state, string(key))
 	keyToEvent := mapper.keyMappings[key]
 	if keyToEvent != events.NULL {
 		eventToCallback := mapper.callbacks[keyToEvent]
