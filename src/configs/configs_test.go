@@ -10,15 +10,15 @@ func Test_LoadsRequestedJSONFile(t *testing.T) {
 		t.Errorf("Error opening the file %v", err)
 	}
 
-	if config.JsonContents != "{\n\t\"key\": \"value\"\n}\n" {
-		t.Errorf("Wrong JSON returned, got %#v", config.JsonContents)
+	if config.jsonContents != "{\n\t\"key\": \"value\"\n}\n" {
+		t.Errorf("Wrong JSON returned, got %#v", config.jsonContents)
 	}
 }
 
 func Test_UnmarshalsJSONIntoObject(t *testing.T) {
 	config, _ := NewConfig("testdata/basic.json")
-	if config.JsonData["key"] != "value" {
-		t.Errorf("Expected umarshaled hash, but got %#v", config.JsonData)
+	if config.jsonData["key"] != "value" {
+		t.Errorf("Expected umarshaled hash, but got %#v", config.jsonData)
 	}
 }
 

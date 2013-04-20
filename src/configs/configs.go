@@ -14,8 +14,8 @@ import (
 */
 
 type Config struct {
-	JsonContents   string
-	JsonData       map[string]interface{}
+	jsonContents   string
+	jsonData       map[string]interface{}
 	configFileName string
 }
 
@@ -24,8 +24,8 @@ type Config struct {
 func NewConfig(filename string) (newConfig Config, err error) {
 	fileContents, err := ioutil.ReadFile(filename)
 	if err == nil {
-		newConfig.JsonContents = string(fileContents)
-		err = json.Unmarshal(fileContents, &newConfig.JsonData)
+		newConfig.jsonContents = string(fileContents)
+		err = json.Unmarshal(fileContents, &newConfig.jsonData)
 	}
 
 	return
@@ -37,7 +37,7 @@ func NewConfig(filename string) (newConfig Config, err error) {
 // the given struct, so this may be on the slow side and should not be
 // done repeatedly.
 func (c Config) Get(section string, out interface{}) (err error) {
-	sectionJson := c.JsonData[section]
+	sectionJson := c.jsonData[section]
 	if sectionJson == nil {
 		return fmt.Errorf("Could not find config section %s in config file %s", section, c.configFileName)
 	}
