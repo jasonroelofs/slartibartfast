@@ -1,39 +1,29 @@
 package configs
 
 import (
+	"github.com/stretchrcom/testify/assert"
 	"testing"
 )
 
 func Test_LoadsRequestedJSONFile(t *testing.T) {
 	config, err := NewConfig("testdata/basic.json")
-	if err != nil {
-		t.Errorf("Error opening the file %v", err)
-	}
-
-	if config.jsonContents != "{\n\t\"key\": \"value\"\n}\n" {
-		t.Errorf("Wrong JSON returned, got %#v", config.jsonContents)
-	}
+	assert.Nil(t, err, "Error opening the file")
+	assert.Equal(t, "{\n\t\"key\": \"value\"\n}\n", config.jsonContents)
 }
 
 func Test_UnmarshalsJSONIntoObject(t *testing.T) {
 	config, _ := NewConfig("testdata/basic.json")
-	if config.jsonData["key"] != "value" {
-		t.Errorf("Expected umarshaled hash, but got %#v", config.jsonData)
-	}
+	assert.Equal(t, "value", config.jsonData["key"])
 }
 
 func Test_ErrorsIfFileDoesntExist(t *testing.T) {
 	_, err := NewConfig("testdata/not_there.json")
-	if err == nil {
-		t.Errorf("Expected file to not exist")
-	}
+	assert.NotNil(t, err)
 }
 
 func Test_ErrorsIfFileIsNotJSON(t *testing.T) {
 	_, err := NewConfig("testdata/plain.txt")
-	if err == nil {
-		t.Errorf("Expected error on plain text file")
-	}
+	assert.NotNil(t, err)
 }
 
 type Section1 struct {
@@ -54,17 +44,9 @@ func Test_AllowsRetrievalOfSectionAsStruct(t *testing.T) {
 	config.Get("section1", &section1)
 	config.Get("section2", &section2)
 
-	if section1.Key1 != "value1" {
-		t.Errorf("section1.Key1 was the wrong value: %#v", section1.Key1)
-	}
-
-	if section2.Key2 != "value2" {
-		t.Errorf("section2.Key2 was the wrong value: %#v", section2.Key2)
-	}
-
-	if section2.Bool1 == false {
-		t.Errorf("section2.Bool1 was false, expected true")
-	}
+	assert.Equal(t, "value1", section1.Key1)
+	assert.Equal(t, "value2", section2.Key2)
+	assert.True(t, section2.Bool1)
 }
 
 func Test_ReturnsErrorIfNoSectionFound(t *testing.T) {
@@ -72,7 +54,5 @@ func Test_ReturnsErrorIfNoSectionFound(t *testing.T) {
 	section1 := Section1{}
 
 	err := config.Get("section3", &section1)
-	if err == nil {
-		t.Errorf("Expected error when requesting section3")
-	}
+	assert.NotNil(t, err)
 }

@@ -13,6 +13,7 @@ PACKAGES = %w(
 LIBRARIES = %w(
   github.com/go-gl/gl
   github.com/go-gl/glfw
+  github.com/stretchrcom/testify
 )
 
 def shell(command)

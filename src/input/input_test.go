@@ -1,15 +1,14 @@
 package input
 
-import(
+import (
 	"events"
+	"github.com/stretchrcom/testify/assert"
 	"testing"
 )
 
 func Test_CanInitalizeAnInput(t *testing.T) {
 	mapper := NewInput()
-	if mapper == nil {
-		t.Errorf("Mapper failed to initialize")
-	}
+	assert.NotNil(t, mapper, "Mapper failed to initialize")
 }
 
 func Test_RegistersACallbackForAnEvent(t *testing.T) {
@@ -22,15 +21,15 @@ func Test_RegistersACallbackForAnEvent(t *testing.T) {
 
 	mapper.keyCallback('Q', 1)
 
-	if quitCalled == false {
-		t.Errorf("Quit callback was not called")
-	}
+	assert.True(t, quitCalled, "Quit callback was not called")
 }
 
 func Test_DoesNothingIfNoEventForKey(t *testing.T) {
 	mapper := NewInput()
-	mapper.keyCallback('Q', 1)
-	// Should not panic
+
+	assert.NotPanics(t, func() {
+		mapper.keyCallback('Q', 1)
+	}, "Mapper panic'd on unmapped key")
 }
 
 func Test_DoesNothingIfNoKeyMappedToEvent(t *testing.T) {
@@ -44,7 +43,5 @@ func Test_DoesNothingIfNoKeyMappedToEvent(t *testing.T) {
 
 	mapper.keyCallback('N', 1)
 
-	if jumpCalled {
-		t.Errorf("Jump event should not have been called")
-	}
+	assert.False(t, jumpCalled, "Jump event called when it should not have")
 }
