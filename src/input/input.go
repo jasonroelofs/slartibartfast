@@ -15,17 +15,18 @@ type InputMapping struct {
 }
 
 func NewInput() *InputMapping {
-	mapping := InputMapping{
+	mapper := InputMapping{
 		callbacks:   make(callbackMap),
 		keyMappings: make(keyMap),
 	}
 
 	// Set up testing key mappings
-	mapping.keyMappings['Q'] = events.QUIT
+	mapper.mapKeyToEvent('Q', events.QUIT)
+	mapper.mapKeyToEvent(glfw.KeyEsc, events.QUIT)
 
-	glfw.SetKeyCallback(mapping.keyCallback)
+	glfw.SetKeyCallback(mapper.keyCallback)
 
-	return &mapping
+	return &mapper
 }
 
 // On registers a callback to be called in the occurance of an event of type EventType.
@@ -33,6 +34,10 @@ func NewInput() *InputMapping {
 // pressed or released
 func (mapper *InputMapping) On(event events.EventType, callback func(events.Event)) {
 	mapper.callbacks[event] = callback
+}
+
+func (mapper *InputMapping) mapKeyToEvent(key int, eventType events.EventType) {
+	mapper.keyMappings[key] = eventType
 }
 
 func (mapper *InputMapping) keyCallback(key, state int) {

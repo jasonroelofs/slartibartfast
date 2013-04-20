@@ -2,6 +2,7 @@ package input
 
 import (
 	"events"
+	"github.com/go-gl/glfw"
 	"github.com/stretchrcom/testify/assert"
 	"testing"
 )
@@ -44,4 +45,21 @@ func Test_DoesNothingIfNoKeyMappedToEvent(t *testing.T) {
 	mapper.keyCallback('N', 1)
 
 	assert.False(t, jumpCalled, "Jump event called when it should not have")
+}
+
+func Test_CanMapMultipleKeysToOneEvent(t *testing.T) {
+	mapper := NewInput()
+	mapper.mapKeyToEvent('Q', events.QUIT)
+	mapper.mapKeyToEvent(glfw.KeyEsc, events.QUIT)
+
+	quitCallCount := 0
+
+	mapper.On(events.QUIT, func(events.Event) {
+		quitCallCount += 1
+	})
+
+	mapper.keyCallback('Q', 1)
+	mapper.keyCallback(glfw.KeyEsc, 1)
+
+	assert.Equal(t, 2, quitCallCount)
 }
