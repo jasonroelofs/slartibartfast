@@ -68,7 +68,7 @@ task :test => "test:all"
 
 namespace :test do
 	desc "Run all the tests. Also runnable as just 'test'"
-	task :all => PACKAGES
+	task :all => ["build:all", PACKAGES].flatten
 
 	PACKAGES.each do |package|
 		desc "Run tests for [#{package}]"
