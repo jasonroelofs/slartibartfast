@@ -23,7 +23,7 @@ def shell(command)
   end
 end
 
-task :default => "run"
+task :default => "test"
 
 desc "Run the application itself"
 task :run => ["clean:bin", "build:all"] do
