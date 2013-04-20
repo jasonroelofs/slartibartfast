@@ -31,6 +31,7 @@ task :run => ["clean:bin", "build:all"] do
   shell "#{full_dir}/bin/slartibartfast"
 end
 
+task :clean => "clean:bin"
 namespace :clean do
   desc "Clean up the bin directory"
   task :bin do
@@ -39,6 +40,7 @@ namespace :clean do
   end
 end
 
+task :build => "build:all"
 namespace :build do
   desc "Build and install all packages"
   task :all do
@@ -53,6 +55,7 @@ namespace :build do
   end
 end
 
+task :update => "update:all"
 namespace :update do
   desc "Update all installed libraries"
   task :all => LIBRARIES.map {|l| l.split("\/").last }
@@ -66,7 +69,6 @@ namespace :update do
 end
 
 task :test => "test:all"
-
 namespace :test do
 	desc "Run all the tests. Also runnable as just 'test'"
 	task :all => ["build:all", PACKAGES].flatten
