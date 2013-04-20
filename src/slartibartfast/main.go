@@ -3,7 +3,6 @@ package main
 import (
 	"configs"
 	"fmt"
-	"time"
 	"window"
 )
 
@@ -18,6 +17,7 @@ func main() {
 	window.Open(&config)
 	defer window.Close()
 
-	// Game runs
-	time.Sleep(5 * time.Second)
+	for window.StillOpen() {
+		window.Present()
+	}
 }

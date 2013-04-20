@@ -3,6 +3,7 @@ package window
 import (
 	"configs"
 	"errors"
+	"github.com/go-gl/gl"
 	"github.com/go-gl/glfw"
 )
 
@@ -37,6 +38,14 @@ func Open(config *configs.Config) {
 	if err != nil {
 		panic(errors.New("Unable to open window!"))
 	}
+}
+
+func StillOpen() bool {
+	return glfw.WindowParam(glfw.Opened) == gl.TRUE
+}
+
+func Present() {
+	glfw.SwapBuffers()
 }
 
 func Close() {
