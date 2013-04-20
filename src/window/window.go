@@ -38,6 +38,8 @@ func Open(config *configs.Config) {
 	if err != nil {
 		panic(errors.New("Unable to open window!"))
 	}
+
+	glfw.SetWindowTitle("Project Slartibartfast")
 }
 
 func StillOpen() bool {
