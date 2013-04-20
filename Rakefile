@@ -3,6 +3,8 @@
 #
 
 PACKAGES = %w(
+  input
+  events
   configs
   window
   slartibartfast
