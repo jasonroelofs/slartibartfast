@@ -1,15 +1,19 @@
 package main
 
 import (
+	"behaviors"
+	"components"
 	"configs"
+	"core"
 	"events"
-	"github.com/go-gl/gl"
 	"input"
 	"window"
 )
 
 type Game struct {
-	config *configs.Config
+	config   *configs.Config
+	entities []*core.Entity
+	renderer behaviors.Graphical
 }
 
 func NewGame(config *configs.Config) *Game {
@@ -26,15 +30,27 @@ func (game *Game) Run() {
 		running = false
 	})
 
+	game.initializeScene()
+
 	for running && window.StillOpen() {
 		game.Tick()
 		window.Present()
 	}
 }
 
-func (g *Game) Tick() {
-	gl.ClearColor(0, 0, 0, 0)
-	gl.Clear(gl.COLOR_BUFFER_BIT)
+func (game *Game) initializeScene() {
+	box := core.NewEntity()
+	box.AddComponent(components.NewVisual())
+
+	game.RegisterEntity(box)
+}
+
+func (game *Game) RegisterEntity(entity *core.Entity) {
+	game.entities = append(game.entities, entity)
+}
+
+func (game *Game) Tick() {
+	game.renderer.Tick(game.entities)
 }
 
 func (g *Game) Shutdown() {

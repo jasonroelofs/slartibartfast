@@ -3,9 +3,11 @@
 #
 
 PACKAGES = %w(
+	core
   input
   events
   configs
+  components
   window
   slartibartfast
 )
