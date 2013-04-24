@@ -27,6 +27,10 @@ func Open(config *configs.Config) {
 		windowFlags = glfw.Fullscreen
 	}
 
+	// Force OpenGL 3.2
+	glfw.OpenWindowHint(glfw.OpenGLVersionMajor, 3)
+	glfw.OpenWindowHint(glfw.OpenGLVersionMinor, 2)
+
 	err = glfw.OpenWindow(
 		int(windowConfig.Width), int(windowConfig.Height),
 		// r, g, b, a

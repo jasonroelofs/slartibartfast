@@ -15,5 +15,5 @@ func main() {
 
 	game := NewGame(&config)
 	game.Run()
-	game.Shutdown()
+	defer game.Shutdown()
 }

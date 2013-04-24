@@ -18,7 +18,6 @@ func NewGame(config *configs.Config) *Game {
 
 func (game *Game) Run() {
 	window.Open(game.config)
-	defer window.Close()
 
 	running := true
 
@@ -39,4 +38,5 @@ func (g *Game) Tick() {
 }
 
 func (g *Game) Shutdown() {
+	window.Close()
 }
