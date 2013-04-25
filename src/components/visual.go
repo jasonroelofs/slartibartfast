@@ -8,6 +8,10 @@ type Visual struct {
 	// _Mesh *core.Mesh // Stored by renderer
 }
 
+func (self Visual) Type() ComponentType {
+	return VISUAL
+}
+
 //	Color    [3]float32
 //	Vertices []float32
 //	Indices  []int

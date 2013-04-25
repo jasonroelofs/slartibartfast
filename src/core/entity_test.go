@@ -20,12 +20,20 @@ func Test_InitializesEntityWithTransformComponent(t *testing.T) {
 }
 
 // AddComponent
-type TestComponent struct {
-}
-
 func Test_CanAddAComponentToEntity(t *testing.T) {
 	entity := NewEntity()
-	entity.AddComponent(TestComponent{})
+	entity.AddComponent(components.Visual{})
 
 	assert.Equal(t, 2, len(entity.components))
+}
+
+// ComponentMap()
+func Test_CanReturnBitwiseMapOfComponents(t *testing.T) {
+	entity := NewEntity()
+	assert.Equal(t, 1, entity.ComponentMap())
+
+	entity.AddComponent(components.Visual{})
+
+	// 01(transform) + 10(visual) == 11
+	assert.Equal(t, 3, entity.ComponentMap())
 }

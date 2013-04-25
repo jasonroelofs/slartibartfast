@@ -15,6 +15,14 @@ func NewEntity() (entity *Entity) {
 	return
 }
 
-func (e *Entity) AddComponent(component components.Component) {
-	e.components = append(e.components, component)
+func (self *Entity) AddComponent(component components.Component) {
+	self.components = append(self.components, component)
+}
+
+func (self *Entity) ComponentMap() (typeMap components.ComponentType) {
+	typeMap = 0
+	for _, component := range self.components {
+		typeMap |= component.Type()
+	}
+	return
 }
