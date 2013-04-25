@@ -6,9 +6,17 @@ import (
 )
 
 type Graphical struct {
+	entitySet *core.EntitySet
 }
 
-func (self *Graphical) Initialize(entityDB *core.EntityDB) {
+func NewGraphical(entityDB *core.EntityDB) *Graphical {
+	obj := Graphical{}
+	obj.entitySet = entityDB.RegisterListener(&obj)
+	return &obj
+}
+
+func (self *Graphical) SetUpEntity(entity *core.Entity) {
+	// Setup!
 }
 
 func (self *Graphical) Update(deltaT float64) {

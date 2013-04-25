@@ -20,10 +20,10 @@ func NewGame(config *configs.Config) *Game {
 	return &Game{config: config}
 }
 
-func (game *Game) Run() {
-	window.Open(game.config)
+func (self *Game) Run() {
+	window.Open(self.config)
 
-	game.initializeBehaviors()
+	self.initializeBehaviors()
 
 	running := true
 
@@ -32,38 +32,35 @@ func (game *Game) Run() {
 		running = false
 	})
 
-	game.initializeScene()
+	self.initializeScene()
 
 	for running && window.StillOpen() {
-		game.Tick()
+		self.Tick()
 		window.Present()
 	}
 }
 
-func (game *Game) initializeBehaviors() {
-	// behaviors.NewGraphical(&game.entityDB) ?
-	graphical := new(behaviors.Graphical)
-	graphical.Initialize(&game.entityDB)
-
-	game.behaviors = append(game.behaviors, graphical)
+func (self *Game) initializeBehaviors() {
+	self.behaviors = append(self.behaviors, behaviors.NewGraphical(&self.entityDB))
 }
 
-func (game *Game) initializeScene() {
+func (self *Game) initializeScene() {
 	box := core.NewEntity()
 	box.AddComponent(components.Visual{})
 
-	game.RegisterEntity(box)
+	self.RegisterEntity(box)
 }
 
-func (game *Game) RegisterEntity(entity *core.Entity) {
-	//	game.entityDB.Register(entity)
-	//game.entities = append(game.entities, entity)
+func (self *Game) RegisterEntity(entity *core.Entity) {
+	self.entityDB.RegisterEntity(entity)
 }
 
-func (game *Game) Tick() {
-	//game.renderer.Tick(game.entities)
+func (self *Game) Tick() {
+	for _, behavior := range self.behaviors {
+		behavior.Update(0)
+	}
 }
 
-func (g *Game) Shutdown() {
+func (self *Game) Shutdown() {
 	window.Close()
 }
