@@ -8,7 +8,10 @@ import (
 type Graphical struct {
 }
 
-func (self *Graphical) Tick(entities []*core.Entity) {
+func (self *Graphical) Initialize(entityDB *core.EntityDB) {
+}
+
+func (self *Graphical) Update(deltaT float64) {
 	gl.ClearColor(0, 0, 0, 0)
 	gl.Clear(gl.COLOR_BUFFER_BIT)
 
