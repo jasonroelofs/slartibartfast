@@ -2,6 +2,7 @@ package behaviors
 
 import (
 	"core"
+	"components"
 	"github.com/go-gl/gl"
 )
 
@@ -11,7 +12,7 @@ type Graphical struct {
 
 func NewGraphical(entityDB *core.EntityDB) *Graphical {
 	obj := Graphical{}
-	obj.entitySet = entityDB.RegisterListener(&obj)
+	obj.entitySet = entityDB.RegisterListener(&obj, components.TRANSFORM, components.VISUAL)
 	return &obj
 }
 
