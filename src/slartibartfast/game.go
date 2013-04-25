@@ -11,9 +11,9 @@ import (
 )
 
 type Game struct {
-	config   *configs.Config
-	entities []*core.Entity
-	renderer behaviors.Graphical
+	config    *configs.Config
+	entityDB  core.EntityDB
+	behaviors []behaviors.Behavior
 }
 
 func NewGame(config *configs.Config) *Game {
@@ -22,6 +22,8 @@ func NewGame(config *configs.Config) *Game {
 
 func (game *Game) Run() {
 	window.Open(game.config)
+
+	game.initializeBehaviors()
 
 	running := true
 
@@ -38,6 +40,14 @@ func (game *Game) Run() {
 	}
 }
 
+func (game *Game) initializeBehaviors() {
+	// behaviors.NewGraphical(&game.entityDB) ?
+	graphical := new(behaviors.Graphical)
+	graphical.Initialize(&game.entityDB)
+
+	game.behaviors = append(game.behaviors, graphical)
+}
+
 func (game *Game) initializeScene() {
 	box := core.NewEntity()
 	box.AddComponent(components.Visual{})
@@ -46,11 +56,12 @@ func (game *Game) initializeScene() {
 }
 
 func (game *Game) RegisterEntity(entity *core.Entity) {
-	game.entities = append(game.entities, entity)
+	//	game.entityDB.Register(entity)
+	//game.entities = append(game.entities, entity)
 }
 
 func (game *Game) Tick() {
-	game.renderer.Tick(game.entities)
+	//game.renderer.Tick(game.entities)
 }
 
 func (g *Game) Shutdown() {
