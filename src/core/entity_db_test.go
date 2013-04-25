@@ -40,9 +40,9 @@ func (self *TestListener) SetUpEntity(entity *Entity) {
 func Test_EntityListenersCanRegisterWithDB(t *testing.T) {
 	db := EntityDB{}
 	listener := new(TestListener)
-	entityList := db.RegisterListener(listener, components.TRANSFORM, components.VISUAL)
+	entitySet := db.RegisterListener(listener, components.TRANSFORM, components.VISUAL)
 
-	assert.Equal(t, 0, len(entityList))
+	assert.Equal(t, 0, len(entitySet.Entities))
 	assert.Equal(t, 1, len(db.listeners))
 }
 
@@ -68,6 +68,18 @@ func Test_ListenerNotNotifiedOfNewEntityIfComponentsDontMatch(t *testing.T) {
 	db.RegisterEntity(&entity)
 
 	assert.Equal(t, 0, len(listener.setUpEntities))
+}
+
+func Test_AddsEntityToListenerEntityListIfComponentsMatch(t *testing.T) {
+	db := EntityDB{}
+	listener := new(TestListener)
+	entity := NewEntity()
+
+	entitySet := db.RegisterListener(listener, components.TRANSFORM)
+	db.RegisterEntity(entity)
+
+	assert.Equal(t, 1, len(entitySet.Entities))
+	assert.Equal(t, entity, entitySet.Entities[0])
 }
 
 // CleanUpEntity callback to listeners
