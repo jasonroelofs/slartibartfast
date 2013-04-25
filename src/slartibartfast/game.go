@@ -40,7 +40,7 @@ func (game *Game) Run() {
 
 func (game *Game) initializeScene() {
 	box := core.NewEntity()
-	box.AddComponent(components.NewVisual())
+	box.AddComponent(components.Visual{})
 
 	game.RegisterEntity(box)
 }
