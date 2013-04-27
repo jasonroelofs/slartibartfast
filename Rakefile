@@ -10,6 +10,8 @@ PACKAGES = %w(
   components
   window
   slartibartfast
+  platform
+  behaviors
 )
 
 LIBRARIES = %w(

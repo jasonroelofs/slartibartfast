@@ -18,10 +18,14 @@ func NewEntity() (entity *Entity) {
 	return
 }
 
+// AddComponent adds a given component to this Entity
+// +component+ *must* be a pointer or the system won't work.
 func (self *Entity) AddComponent(component components.Component) {
 	self.components[component.Type()] = component
 }
 
+// GetComponent returns the component on this Entity of the given type
+// To get the underlying struct, typeAssert it with .(*components.[component struct])
 func (self *Entity) GetComponent(componentType components.ComponentType) components.Component {
 	return self.components[componentType]
 }

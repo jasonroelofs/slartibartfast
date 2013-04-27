@@ -15,11 +15,10 @@ func Test_StartsWithEmptyListOfEntities(t *testing.T) {
 // Entity Management
 func Test_KeepsTrackOfEntitiesAndComponents(t *testing.T) {
 	db := EntityDB{}
-	entity := Entity{}
-	entity.AddComponent(components.Transform{})
-	entity.AddComponent(components.Visual{})
+	entity := NewEntity()
+	entity.AddComponent(new(components.Visual))
 
-	db.RegisterEntity(&entity)
+	db.RegisterEntity(entity)
 
 	assert.Equal(t, 1, len(db.allEntities))
 }
