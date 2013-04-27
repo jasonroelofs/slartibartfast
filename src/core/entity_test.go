@@ -6,33 +6,38 @@ import (
 	"testing"
 )
 
-// NewEntity()
-func Test_ReturnsANewEntity(t *testing.T) {
+func Test_NewEntity_ReturnsANewEntity(t *testing.T) {
 	entity := NewEntity()
 	assert.NotNil(t, entity)
 }
 
-func Test_InitializesEntityWithTransformComponent(t *testing.T) {
+func Test_NewEntity_InitializesEntityWithTransformComponent(t *testing.T) {
 	entity := NewEntity()
 
-	assert.Equal(t, 1, len(entity.components))
-	assert.IsType(t, components.Transform{}, entity.components[0])
+	assert.IsType(t, &components.Transform{}, entity.components[components.TRANSFORM])
 }
 
-// AddComponent
-func Test_CanAddAComponentToEntity(t *testing.T) {
+func Test_AddComponent(t *testing.T) {
 	entity := NewEntity()
-	entity.AddComponent(components.Visual{})
+	visual := new(components.Visual)
+	entity.AddComponent(visual)
 
-	assert.Equal(t, 2, len(entity.components))
+	assert.Equal(t, visual, entity.components[components.VISUAL])
 }
 
-// ComponentMap()
-func Test_CanReturnBitwiseMapOfComponents(t *testing.T) {
+func Test_GetComponent(t *testing.T) {
+	entity := NewEntity()
+	visual := new(components.Visual)
+	entity.AddComponent(visual)
+
+	assert.Equal(t, visual, entity.GetComponent(components.VISUAL))
+}
+
+func Test_ComponentMap_ReturnsBitwiseMapOfComponents(t *testing.T) {
 	entity := NewEntity()
 	assert.Equal(t, 1, entity.ComponentMap())
 
-	entity.AddComponent(components.Visual{})
+	entity.AddComponent(new(components.Visual))
 
 	// 01(transform) + 10(visual) == 11
 	assert.Equal(t, 3, entity.ComponentMap())
