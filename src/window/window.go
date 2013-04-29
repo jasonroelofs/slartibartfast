@@ -14,10 +14,14 @@ type WindowConfig struct {
 }
 
 func Open(config *configs.Config) {
-	glfw.Init()
+	var err error
+	err = glfw.Init()
+	if err != nil {
+		panic(err)
+	}
 
 	windowConfig := WindowConfig{}
-	err := config.Get("window", &windowConfig)
+	err = config.Get("window", &windowConfig)
 	if err != nil {
 		panic(err)
 	}
@@ -30,17 +34,23 @@ func Open(config *configs.Config) {
 	// Force OpenGL 3.2
 	glfw.OpenWindowHint(glfw.OpenGLVersionMajor, 3)
 	glfw.OpenWindowHint(glfw.OpenGLVersionMinor, 2)
+	glfw.OpenWindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
+	glfw.OpenWindowHint(glfw.OpenGLForwardCompat, gl.TRUE)
 
 	err = glfw.OpenWindow(
 		int(windowConfig.Width), int(windowConfig.Height),
 		// r, g, b, a
 		0, 0, 0, 0,
 		// depth, stencil
-		0, 0,
+		32, 0,
 		windowFlags)
 
 	if err != nil {
 		panic(errors.New("Unable to open window!"))
+	}
+
+	if glewError := gl.Init(); glewError != 0 {
+		panic(errors.New("Unable to initialize OpenGL"))
 	}
 
 	glfw.SetWindowTitle("Project Slartibartfast")
