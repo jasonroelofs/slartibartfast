@@ -8,7 +8,6 @@ import (
 	"events"
 	"input"
 	"platform"
-	"window"
 )
 
 type Game struct {
@@ -16,6 +15,7 @@ type Game struct {
 	entityDB  *core.EntityDB
 	behaviors []behaviors.Behavior
 	renderer  core.Renderer
+	window    core.Window
 }
 
 func NewGame(config *configs.Config) *Game {
@@ -23,9 +23,12 @@ func NewGame(config *configs.Config) *Game {
 }
 
 func (self *Game) Run() {
-	window.Open(self.config)
+	self.window = platform.NewOpenGLWindow(self.config)
+	self.window.Open()
 
-	self.initializeSystems()
+	self.entityDB = new(core.EntityDB)
+	self.renderer = new(platform.OpenGLRenderer)
+
 	self.initializeBehaviors()
 	self.initializeScene()
 
@@ -36,15 +39,10 @@ func (self *Game) Run() {
 		running = false
 	})
 
-	for running && window.StillOpen() {
+	for running && self.window.IsOpen() {
 		self.Tick()
-		window.Present()
+		self.window.SwapBuffers()
 	}
-}
-
-func (self *Game) initializeSystems() {
-	self.entityDB = new(core.EntityDB)
-	self.renderer = new(platform.OpenGLRenderer)
 }
 
 func (self *Game) initializeBehaviors() {
@@ -71,5 +69,5 @@ func (self *Game) Tick() {
 }
 
 func (self *Game) Shutdown() {
-	window.Close()
+	self.window.Close()
 }

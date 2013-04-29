@@ -8,7 +8,6 @@ PACKAGES = %w(
   events
   configs
   components
-  window
   slartibartfast
   platform
   behaviors

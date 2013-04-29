@@ -1,4 +1,4 @@
-package window
+package platform
 
 import (
 	"configs"
@@ -7,27 +7,40 @@ import (
 	"github.com/go-gl/glfw"
 )
 
-type WindowConfig struct {
+type OpenGLWindow struct {
+	// Implements core.Window
+	config windowConfig
+}
+
+type windowConfig struct {
 	Width      uint
 	Height     uint
 	Fullscreen bool
 }
 
-func Open(config *configs.Config) {
+func NewOpenGLWindow(config *configs.Config) *OpenGLWindow {
+	glWindow := new(OpenGLWindow)
+
+	windowConfig := windowConfig{}
+	err := config.Get("window", &windowConfig)
+	if err != nil {
+		panic(err)
+	}
+
+	glWindow.config = windowConfig
+
+	return glWindow
+}
+
+func (self *OpenGLWindow) Open() {
 	var err error
 	err = glfw.Init()
 	if err != nil {
 		panic(err)
 	}
 
-	windowConfig := WindowConfig{}
-	err = config.Get("window", &windowConfig)
-	if err != nil {
-		panic(err)
-	}
-
 	windowFlags := glfw.Windowed
-	if windowConfig.Fullscreen {
+	if self.config.Fullscreen {
 		windowFlags = glfw.Fullscreen
 	}
 
@@ -38,7 +51,7 @@ func Open(config *configs.Config) {
 	glfw.OpenWindowHint(glfw.OpenGLForwardCompat, gl.TRUE)
 
 	err = glfw.OpenWindow(
-		int(windowConfig.Width), int(windowConfig.Height),
+		int(self.config.Width), int(self.config.Height),
 		// r, g, b, a
 		0, 0, 0, 0,
 		// depth, stencil
@@ -56,14 +69,14 @@ func Open(config *configs.Config) {
 	glfw.SetWindowTitle("Project Slartibartfast")
 }
 
-func StillOpen() bool {
+func (self *OpenGLWindow) IsOpen() bool {
 	return glfw.WindowParam(glfw.Opened) == gl.TRUE
 }
 
-func Present() {
+func (self *OpenGLWindow) SwapBuffers() {
 	glfw.SwapBuffers()
 }
 
-func Close() {
+func (self *OpenGLWindow) Close() {
 	glfw.Terminate()
 }
