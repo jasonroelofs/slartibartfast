@@ -3,7 +3,6 @@ package behaviors
 import (
 	"components"
 	"core"
-	"github.com/go-gl/gl"
 )
 
 type MeshMap map[string]core.Mesh
@@ -47,17 +46,20 @@ func (self *Graphical) loadMesh(mesh *core.Mesh) {
 
 // Game tick
 func (self *Graphical) Update(deltaT float64) {
-	// Move this into the renderer
-	gl.ClearColor(0, 0, 0, 0)
-	gl.Clear(gl.COLOR_BUFFER_BIT)
-
-	// Set the camera manually for now
-	// A few units away and looking at the origin
+	self.renderer.BeginRender()
+	var visual *components.Visual
 
 	// Render the Visible's vertex / index arrays for each entity
 	// For each entity in entitySet
 	// - Build a render operation for that entity's data
 	// Tell renderer to render the set of render ops
 
-	//self.renderer.render()
+	// For now (prototyping) just render the mesh
+
+	for _, entity := range self.entitySet.Entities {
+		visual = entity.GetComponent(components.VISUAL).(*components.Visual)
+		self.renderer.Render(self.meshes[visual.MeshName])
+	}
+
+	self.renderer.FinishRender()
 }

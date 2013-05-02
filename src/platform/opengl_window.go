@@ -48,7 +48,6 @@ func (self *OpenGLWindow) Open() {
 	glfw.OpenWindowHint(glfw.OpenGLVersionMajor, 3)
 	glfw.OpenWindowHint(glfw.OpenGLVersionMinor, 2)
 	glfw.OpenWindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
-	glfw.OpenWindowHint(glfw.OpenGLForwardCompat, gl.TRUE)
 
 	err = glfw.OpenWindow(
 		int(self.config.Width), int(self.config.Height),

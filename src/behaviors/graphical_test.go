@@ -15,6 +15,15 @@ func (self *TestRenderer) LoadMesh(mesh *core.Mesh) {
 	self.loadedMesh = mesh
 }
 
+func (self *TestRenderer) BeginRender() {
+}
+
+func (self *TestRenderer) Render(mesh core.Mesh) {
+}
+
+func (self *TestRenderer) FinishRender() {
+}
+
 func getTestGraphical() (*Graphical, *TestRenderer, *core.EntityDB) {
 	entityDB := new(core.EntityDB)
 	renderer := new(TestRenderer)

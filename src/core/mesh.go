@@ -7,7 +7,7 @@ type Mesh struct {
 	IndexList  []int32
 
 	// Internal renderer storage
-	VertexArrayObj uint32
-	VertexBuffer   uint32
-	ColorBuffer    uint32
+	VertexArrayObj interface{}
+	VertexBuffer   interface{}
+	ColorBuffer    interface{}
 }
