@@ -21,38 +21,45 @@ func (self *OpenGLRenderer) LoadMesh(mesh *core.Mesh) {
 	attribLoc.EnableArray()
 	attribLoc.AttribPointer(3, gl.FLOAT, false, 0, nil)
 
+	if len(mesh.ColorList) > 0 {
+		colorBuffer := gl.GenBuffer()
+		colorBuffer.Bind(gl.ARRAY_BUFFER)
+		gl.BufferData(gl.ARRAY_BUFFER, len(mesh.ColorList)*4, mesh.ColorList, gl.STATIC_DRAW)
+
+		attribLoc := gl.AttribLocation(1)
+		attribLoc.EnableArray()
+		attribLoc.AttribPointer(3, gl.FLOAT, false, 0, nil)
+
+		mesh.ColorBuffer = colorBuffer
+	}
+
 	// Load some test shaders
 	vertexProgram := `
 #version 150
 
 in vec3 vertexPosition;
+in vec3 in_color;
+out vec3 vert_color;
 
 void main() {
 	gl_Position.xyz = vertexPosition;
 	gl_Position.w = 1.0;
+	vert_color = in_color;
 }
 `
 
 	fragmentProgram := `
 #version 150
 
-out vec3 color;
+in vec3 vert_color;
+out vec4 frag_color;
 
 void main() {
-	color = vec3(1, 0, 0);
+	frag_color = vec4(vert_color, 0);
 }
 `
 	program := NewGLSLProgram(vertexProgram, fragmentProgram)
 	program.Use()
-
-	//	if len(mesh.ColorList) > 0 {
-	//		colorBuffer := gl.GenBuffer()
-	//		colorBuffer.Bind(gl.ARRAY_BUFFER)
-	//		defer colorBuffer.Unbind(gl.ARRAY_BUFFER)
-	//		gl.BufferData(gl.ARRAY_BUFFER, len(mesh.ColorList) * 4, mesh.ColorList, gl.STATIC_DRAW)
-	//
-	//		mesh.ColorBuffer = colorBuffer
-	//	}
 
 	mesh.VertexArrayObj = vertexArrayObj
 	mesh.VertexBuffer = vertexBuffer
@@ -74,12 +81,6 @@ func (self *OpenGLRenderer) BeginRender() {
 func (self *OpenGLRenderer) Render(mesh core.Mesh) {
 	vertexArrayObj := mesh.VertexArrayObj.(gl.VertexArray)
 	vertexArrayObj.Bind()
-
-	//if mesh.ColorBuffer != nil {
-	//		colorBuffer := mesh.ColorBuffer.(gl.Buffer)
-	//		colorBuffer.Bind(gl.ARRAY_BUFFER)
-	//		defer colorBuffer.Unbind(gl.ARRAY_BUFFER)
-	//	}
 
 	gl.DrawArrays(gl.TRIANGLES, 0, 3)
 }
