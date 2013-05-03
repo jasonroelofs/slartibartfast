@@ -15,7 +15,9 @@ PACKAGES = %w(
 
 LIBRARIES = %w(
   github.com/go-gl/gl
+  github.com/go-gl/glu
   github.com/go-gl/glfw
+  github.com/Jragonmiris/mathgl
   github.com/stretchrcom/testify
 )
 

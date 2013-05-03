@@ -27,6 +27,10 @@ func (self *GLSLProgram) Use() {
 	self.program.Use()
 }
 
+func (self *GLSLProgram) GetUniformLocation(uniform string) gl.UniformLocation {
+	return self.program.GetUniformLocation(uniform)
+}
+
 func (self *GLSLProgram) attachAndLinkShaders() {
 	self.program.AttachShader(self.vertexShader)
 	self.program.AttachShader(self.fragmentShader)
