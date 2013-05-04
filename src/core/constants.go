@@ -5,6 +5,9 @@ package core
 // A colorful default Cube mesh!
 var DefaultMesh *Mesh
 
+// A Super Obvious default Material
+var DefaultMaterial *Material
+
 func init() {
 	DefaultMesh = &Mesh{
 		Name: "_default",
@@ -99,5 +102,13 @@ func init() {
 			0.0, 1.0, 1.0,
 			1.0, 0.0, 1.0,
 		},
+	}
+
+	DefaultMaterial = &Material{
+		Name: "_default",
+		// Texture
+		// Lighting Parameters
+		// Shader Set
+		Shaders: "default_unlit",
 	}
 }

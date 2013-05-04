@@ -71,6 +71,9 @@ void main() {
 	mesh.VertexBuffer = vertexBuffer
 }
 
+func (self *OpenGLRenderer) LoadMaterial(material *core.Material) {
+}
+
 func (self *OpenGLRenderer) BeginRender() {
 	gl.ClearColor(0, 0, 0, 0)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
