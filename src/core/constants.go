@@ -14,18 +14,6 @@ func init() {
 		// Currently a glDrawArrays setup, will convert to an indexed list
 		// once that is supported in the renderer
 		// Copied from http://www.opengl-tutorial.org/beginners-tutorials/tutorial-4-a-colored-cube/
-		/*
-		VertexList: []float32{
-			-1.0, -1.0, 0.0,
-   		1.0, -1.0, 0.0,
-   		0.0,  1.0, 0.0,
-		},
-		ColorList: []float32{
-			1.0, 0.0, 0.0,
-   		0.0, 1.0, 0.0,
-   		0.0, 0.0, 1.0,
-		},
-		*/
 		VertexList: []float32{
 			-1.0, -1.0, -1.0,
 			-1.0, -1.0, 1.0,
