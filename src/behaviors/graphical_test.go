@@ -23,7 +23,7 @@ func (self *TestRenderer) LoadMaterial(material *core.Material) {
 func (self *TestRenderer) BeginRender() {
 }
 
-func (self *TestRenderer) Render(mesh core.Mesh) {
+func (self *TestRenderer) Render(mesh *core.Mesh, material *core.Material) {
 }
 
 func (self *TestRenderer) FinishRender() {
@@ -126,3 +126,5 @@ func Test_SetUpEntity_LinksLoadedMaterialIfNameMatches(t *testing.T) {
 func Test_SetUpEntity_TellsRendererToLoadNewMaterial(t *testing.T) {
 }
 
+func Test_Update_RendersAllVisualEntityMeshesWithMaterials(t *testing.T) {
+}

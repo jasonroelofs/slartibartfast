@@ -6,6 +6,7 @@ import (
 )
 
 type GLSLProgram struct {
+	// Implements core.GPUProgram
 	program        gl.Program
 	vertexShader   gl.Shader
 	fragmentShader gl.Shader

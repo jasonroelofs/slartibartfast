@@ -7,8 +7,8 @@ import (
 	"log"
 )
 
-type MeshMap map[string]core.Mesh
-type MaterialMap map[string]core.Material
+type MeshMap map[string]*core.Mesh
+type MaterialMap map[string]*core.Material
 
 type Graphical struct {
 	renderer  core.Renderer
@@ -62,7 +62,7 @@ func (self *Graphical) linkMaterialToVisual(visual *components.Visual) {
 func (self *Graphical) LoadMesh(mesh *core.Mesh) {
 	log.Println("Loading Mesh", mesh.Name)
 	self.renderer.LoadMesh(mesh)
-	self.meshes[mesh.Name] = *mesh
+	self.meshes[mesh.Name] = mesh
 }
 
 // LoadMaterial takes a Material object and ensures it is available to the
@@ -71,7 +71,7 @@ func (self *Graphical) LoadMaterial(material *core.Material) {
 	log.Println("Loading Material", material.Name)
 	self.loadShadersIntoMaterial(material)
 	self.renderer.LoadMaterial(material)
-	self.materials[material.Name] = *material
+	self.materials[material.Name] = material
 }
 
 func (self *Graphical) loadShadersIntoMaterial(material *core.Material) {

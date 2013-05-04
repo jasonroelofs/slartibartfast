@@ -1,5 +1,7 @@
 package core
 
+// All the interfaces required for a renderer subsystem to be compliant in this system
+
 // Any renderer must adhere to this interface.
 type Renderer interface {
 
@@ -13,6 +15,6 @@ type Renderer interface {
 	// Render path
 	//
 	BeginRender()
-	Render(mesh Mesh)
+	Render(mesh *Mesh, material *Material)
 	FinishRender()
 }
