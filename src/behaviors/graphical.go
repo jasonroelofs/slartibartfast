@@ -103,7 +103,7 @@ func (self *Graphical) loadShadersIntoMaterial(material *core.Material) {
 	material.FragmentShader = string(fragSource)
 }
 
-// Game tick
+// Update is called every Game tick
 func (self *Graphical) Update(deltaT float64) {
 	self.renderer.BeginRender()
 	var visual *components.Visual
@@ -117,7 +117,7 @@ func (self *Graphical) Update(deltaT float64) {
 
 	for _, entity := range self.entitySet.Entities {
 		visual = entity.GetComponent(components.VISUAL).(*components.Visual)
-		self.renderer.Render(self.meshes[visual.MeshName])
+		self.renderer.Render(self.meshes[visual.MeshName], self.materials[visual.MaterialName])
 	}
 
 	self.renderer.FinishRender()

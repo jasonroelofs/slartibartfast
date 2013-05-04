@@ -3,17 +3,26 @@ package platform
 import (
 	"github.com/go-gl/gl"
 	"log"
+	"math3d"
 )
+
+type uniformMap map[string]gl.UniformLocation
 
 type GLSLProgram struct {
 	// Implements core.GPUProgram
 	program        gl.Program
 	vertexShader   gl.Shader
 	fragmentShader gl.Shader
+
+	// Keep track of the known uniforms for this shader
+	// so we aren't constantly doing a GPU query
+	uniforms uniformMap
 }
 
 func NewGLSLProgram(vertexProgram, fragmentProgram string) *GLSLProgram {
 	program := new(GLSLProgram)
+	program.uniforms = make(uniformMap)
+
 	program.program = gl.CreateProgram()
 	program.vertexShader = program.buildShader(gl.VERTEX_SHADER, vertexProgram)
 	program.fragmentShader = program.buildShader(gl.FRAGMENT_SHADER, fragmentProgram)
@@ -28,8 +37,23 @@ func (self *GLSLProgram) Use() {
 	self.program.Use()
 }
 
-func (self *GLSLProgram) GetUniformLocation(uniform string) gl.UniformLocation {
-	return self.program.GetUniformLocation(uniform)
+func (self *GLSLProgram) SetUniformMatrix(uniformName string, matrix math3d.Matrix) {
+	uniformLoc := self.getUniformLocation(uniformName)
+
+	if uniformLoc > -1 {
+		uniformLoc.UniformMatrix4fv(false, matrix)
+	}
+}
+
+func (self *GLSLProgram) getUniformLocation(uniformName string) gl.UniformLocation {
+	var loc gl.UniformLocation
+
+	if loc, ok := self.uniforms[uniformName]; !ok {
+		loc = self.program.GetUniformLocation(uniformName)
+		self.uniforms[uniformName] = loc
+	}
+
+	return loc
 }
 
 func (self *GLSLProgram) attachAndLinkShaders() {

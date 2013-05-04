@@ -13,4 +13,8 @@ type Material struct {
 	// Automatically filled if not set and Shaders is.
 	VertexShader   string
 	FragmentShader string
+
+	// The generated GPU program with the shader code compiled and
+	// ready to use
+	ShaderProgram GPUProgram
 }

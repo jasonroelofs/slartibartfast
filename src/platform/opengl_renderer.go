@@ -10,8 +10,6 @@ type OpenGLRenderer struct {
 	// Implements the core.Renderer interface
 }
 
-var mvpLocation gl.UniformLocation
-
 func (self *OpenGLRenderer) LoadMesh(mesh *core.Mesh) {
 	vertexArrayObj := gl.GenVertexArray()
 	vertexArrayObj.Bind()
@@ -36,42 +34,12 @@ func (self *OpenGLRenderer) LoadMesh(mesh *core.Mesh) {
 		mesh.ColorBuffer = colorBuffer
 	}
 
-	// Load some test shaders
-	vertexProgram := `
-#version 150
-
-in vec3 vertexPosition;
-in vec3 in_color;
-out vec3 vert_color;
-
-uniform mat4 MVP;
-
-void main() {
-	gl_Position = MVP * vec4(vertexPosition, 1.0);
-	vert_color = in_color;
-}
-`
-
-	fragmentProgram := `
-#version 150
-
-in vec3 vert_color;
-out vec4 frag_color;
-
-void main() {
-	frag_color = vec4(vert_color, 0);
-}
-`
-	program := NewGLSLProgram(vertexProgram, fragmentProgram)
-	program.Use()
-
-	mvpLocation = program.GetUniformLocation("MVP")
-
 	mesh.VertexArrayObj = vertexArrayObj
 	mesh.VertexBuffer = vertexBuffer
 }
 
 func (self *OpenGLRenderer) LoadMaterial(material *core.Material) {
+	material.ShaderProgram = NewGLSLProgram(material.VertexShader, material.FragmentShader)
 }
 
 func (self *OpenGLRenderer) BeginRender() {
@@ -82,7 +50,7 @@ func (self *OpenGLRenderer) BeginRender() {
 	gl.DepthFunc(gl.LESS)
 }
 
-func (self *OpenGLRenderer) Render(mesh core.Mesh) {
+func (self *OpenGLRenderer) Render(mesh *core.Mesh, material *core.Material) {
 	vertexArrayObj := mesh.VertexArrayObj.(gl.VertexArray)
 	vertexArrayObj.Bind()
 
@@ -96,9 +64,8 @@ func (self *OpenGLRenderer) Render(mesh core.Mesh) {
 	)
 	model := math3d.IdentityMatrix()
 
-	mvp := projection.Times(view).Times(model)
-
-	mvpLocation.UniformMatrix4fv(false, mvp)
+	material.ShaderProgram.SetUniformMatrix("modelViewProjection", projection.Times(view).Times(model))
+	material.ShaderProgram.Use()
 
 	gl.DrawArrays(gl.TRIANGLES, 0, len(mesh.VertexList) * 3)
 }
