@@ -7,7 +7,9 @@ import (
 	"core"
 	"events"
 	"input"
+	"log"
 	"platform"
+	"time"
 )
 
 type Game struct {
@@ -39,9 +41,28 @@ func (self *Game) Run() {
 		running = false
 	})
 
+	var frameCount int64 = 0
+	go calcAndPrintFPS(&frameCount)
+
 	for running && self.window.IsOpen() {
 		self.Tick()
 		self.window.SwapBuffers()
+		frameCount += 1
+	}
+}
+
+func calcAndPrintFPS(frameCount *int64) {
+	ticker := time.Tick(1 * time.Second)
+	var lastFrameCount int64 = *frameCount
+	fps := 0
+
+	for ; ; {
+		<- ticker
+		newCount := *frameCount
+		fps = int(newCount - lastFrameCount)
+		lastFrameCount = newCount
+
+		log.Println("FPS:", fps)
 	}
 }
 
