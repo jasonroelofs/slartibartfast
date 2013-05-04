@@ -16,6 +16,7 @@ type windowConfig struct {
 	Width      uint
 	Height     uint
 	Fullscreen bool
+	VSync      bool
 }
 
 func NewOpenGLWindow(config *configs.Config) *OpenGLWindow {
@@ -48,6 +49,14 @@ func (self *OpenGLWindow) Open() {
 	glfw.OpenWindowHint(glfw.OpenGLVersionMajor, 3)
 	glfw.OpenWindowHint(glfw.OpenGLVersionMinor, 2)
 	glfw.OpenWindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
+
+	// Toggle VSync. Turning VSync off aparently doesn't work via glfw through
+	// some ATI cards and drivers
+	if self.config.VSync {
+		glfw.SetSwapInterval(1)
+	} else {
+		glfw.SetSwapInterval(0)
+	}
 
 	err = glfw.OpenWindow(
 		int(self.config.Width), int(self.config.Height),
