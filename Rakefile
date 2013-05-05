@@ -11,6 +11,7 @@ PACKAGES = %w(
   slartibartfast
   platform
   behaviors
+  math3d
 )
 
 LIBRARIES = %w(
