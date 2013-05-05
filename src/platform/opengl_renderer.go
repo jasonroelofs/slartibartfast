@@ -58,9 +58,9 @@ func (self *OpenGLRenderer) Render(mesh *core.Mesh, material *core.Material) {
 	// only the model matrix changes per entity rendered.
 	projection := math3d.Perspective(45.0, 4.0/3.0, 0.1, 100.0)
 	view := math3d.LookAt(
-		4, 3, 3,
-		0, 0, 0,
-		0, 1, 0,
+		math3d.Vector{4, 3, 3},
+		math3d.Vector{0, 0, 0},
+		math3d.Vector{0, 1, 0},
 	)
 	model := math3d.IdentityMatrix()
 
