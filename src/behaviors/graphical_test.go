@@ -103,7 +103,7 @@ func Test_SetUpEntity_SetsDefaultMeshIfNoneSpecified(t *testing.T) {
 
 	graphical.SetUpEntity(entity)
 
-	visual := entity.GetComponent(components.VISUAL).(*components.Visual)
+	visual := components.GetVisual(entity)
 	assert.Equal(t, core.DefaultMesh.Name, visual.MeshName)
 }
 
@@ -121,7 +121,7 @@ func Test_SetUpEntity_SetsDefaultMaterialIfNoneSpecified(t *testing.T) {
 
 	graphical.SetUpEntity(entity)
 
-	visual := entity.GetComponent(components.VISUAL).(*components.Visual)
+	visual := components.GetVisual(entity)
 	assert.Equal(t, core.DefaultMaterial.Name, visual.MaterialName)
 }
 

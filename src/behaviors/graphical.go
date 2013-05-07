@@ -33,7 +33,7 @@ func NewGraphical(renderer core.Renderer, entityDB *core.EntityDB) *Graphical {
 
 // EntityListener
 func (self *Graphical) SetUpEntity(entity *core.Entity) {
-	visual := entity.GetComponent(components.VISUAL).(*components.Visual)
+	visual := components.GetVisual(entity)
 	self.linkMeshToVisual(visual)
 	self.linkMaterialToVisual(visual)
 }
