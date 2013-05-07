@@ -5,21 +5,9 @@ import (
 	"testing"
 )
 
-func Test_Type(t *testing.T) {
+func Test_Transform_Type(t *testing.T) {
 	transform := Transform{}
 	assert.Equal(t, TRANSFORM, transform.Type())
-}
-
-type TestHolder struct {
-	Holding Component
-}
-
-func (self *TestHolder) AddComponent(c Component) {
-	self.Holding = c
-}
-
-func (self *TestHolder) GetComponent(t ComponentType) Component {
-	return self.Holding
 }
 
 func Test_GetTransform(t *testing.T) {

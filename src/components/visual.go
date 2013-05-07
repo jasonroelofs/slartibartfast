@@ -10,3 +10,7 @@ type Visual struct {
 func (self Visual) Type() ComponentType {
 	return VISUAL
 }
+
+func GetVisual(holder ComponentHolder) *Visual {
+	return holder.GetComponent(VISUAL).(*Visual)
+}
