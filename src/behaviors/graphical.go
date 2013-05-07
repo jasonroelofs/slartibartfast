@@ -84,6 +84,10 @@ func (self *Graphical) loadShadersIntoMaterial(material *core.Material) {
 	vertPath := baseShaderPath + ".vert"
 	log.Println("Loading vertex shader", vertPath)
 
+	// This error handling isn't quite right. If vertex succeeds but fragment fails we have
+	// two shaders that don't work together. Maybe falling back to default isn't a good idea
+	// and should just error out here?
+
 	vertSource, err := ioutil.ReadFile(vertPath)
 	if err != nil {
 		log.Println("Error loading vertex shader", vertPath, err, "Reverting to default Material")

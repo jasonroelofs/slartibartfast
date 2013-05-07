@@ -8,6 +8,7 @@ import (
 	"events"
 	"input"
 	"log"
+	"math3d"
 	"platform"
 	"time"
 )
@@ -56,8 +57,8 @@ func calcAndPrintFPS(frameCount *int64) {
 	var lastFrameCount int64 = *frameCount
 	fps := 0
 
-	for ; ; {
-		<- ticker
+	for {
+		<-ticker
 		newCount := *frameCount
 		fps = int(newCount - lastFrameCount)
 		lastFrameCount = newCount
@@ -73,10 +74,15 @@ func (self *Game) initializeBehaviors() {
 }
 
 func (self *Game) initializeScene() {
-	box := core.NewEntity()
-	box.AddComponent(new(components.Visual))
+	var box *core.Entity
+	var i float32
 
-	self.RegisterEntity(box)
+	for i = 0; i < 10; i++ {
+		box = core.NewEntityAt(math3d.Vector{i, 0, 0})
+		box.AddComponent(new(components.Visual))
+
+		self.RegisterEntity(box)
+	}
 }
 
 func (self *Game) RegisterEntity(entity *core.Entity) {
