@@ -2,20 +2,34 @@ package core
 
 import (
 	"components"
+	"math3d"
 )
 
 type componentTypeMap map[components.ComponentType]components.Component
 
 type Entity struct {
+	// Implements ComponentHolder
 	components componentTypeMap
 }
 
+// NewEntity sets up a new Entity for use in the app complete with
+// a basic Transform component at the origin
 func NewEntity() (entity *Entity) {
 	entity = new(Entity)
 	entity.components = make(componentTypeMap)
 	entity.AddComponent(new(components.Transform))
 
 	return
+}
+
+// NewEntityAt sets up a new Entity for use in the app and sets the
+// initial Transform component's Position to the given Vector
+func NewEntityAt(startingPosition math3d.Vector) *Entity {
+	entity := NewEntity()
+	transform := components.GetTransform(entity)
+	transform.Position = startingPosition
+
+	return entity
 }
 
 // AddComponent adds a given component to this Entity

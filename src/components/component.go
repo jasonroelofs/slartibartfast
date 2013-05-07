@@ -16,3 +16,21 @@ const (
 	TRANSFORM ComponentType = 1 // ...00000001
 	VISUAL                  = 2 // ...00000010
 )
+
+// ComponentHolders are, well, objects that can contain Components.
+type ComponentHolder interface {
+	AddComponent(component Component)
+	GetComponent(componentType ComponentType) Component
+}
+
+// To help work around the type system, all Components should also have the following
+// methods defined:
+//
+//	func (self [Component]) Type() ComponentType
+//	func Get[ComponentStruct](bag ComponentHolder) *[ComponentStruct]
+//
+// See the Transform component for an example. These methods then should be used
+// throughout the application to ensure you don't have to constantly remember how
+// to type-cast back into the component type you're looking for.
+//
+

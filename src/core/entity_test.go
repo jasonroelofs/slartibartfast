@@ -3,6 +3,7 @@ package core
 import (
 	"components"
 	"github.com/stretchrcom/testify/assert"
+	"math3d"
 	"testing"
 )
 
@@ -15,6 +16,12 @@ func Test_NewEntity_InitializesEntityWithTransformComponent(t *testing.T) {
 	entity := NewEntity()
 
 	assert.IsType(t, &components.Transform{}, entity.components[components.TRANSFORM])
+}
+
+func Test_NewEntityAt_TakesAStartingPosition(t *testing.T) {
+	entity := NewEntityAt(math3d.Vector{1, 2, 3})
+	transform := components.GetTransform(entity)
+	assert.Equal(t, math3d.Vector{1, 2, 3}, transform.Position)
 }
 
 func Test_AddComponent(t *testing.T) {
