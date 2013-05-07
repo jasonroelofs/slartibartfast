@@ -10,6 +10,7 @@ import (
 	"log"
 	"math3d"
 	"platform"
+	"render"
 	"time"
 )
 
@@ -17,7 +18,7 @@ type Game struct {
 	config    *configs.Config
 	entityDB  *core.EntityDB
 	behaviors []behaviors.Behavior
-	renderer  core.Renderer
+	renderer  render.Renderer
 	window    core.Window
 }
 

@@ -5,19 +5,20 @@ import (
 	"core"
 	"io/ioutil"
 	"log"
+	"render"
 )
 
-type MeshMap map[string]*core.Mesh
-type MaterialMap map[string]*core.Material
+type MeshMap map[string]*render.Mesh
+type MaterialMap map[string]*render.Material
 
 type Graphical struct {
-	renderer  core.Renderer
+	renderer  render.Renderer
 	entitySet *core.EntitySet
 	meshes    MeshMap
 	materials MaterialMap
 }
 
-func NewGraphical(renderer core.Renderer, entityDB *core.EntityDB) *Graphical {
+func NewGraphical(renderer render.Renderer, entityDB *core.EntityDB) *Graphical {
 	obj := Graphical{}
 	obj.renderer = renderer
 	obj.entitySet = entityDB.RegisterListener(&obj, components.TRANSFORM, components.VISUAL)
@@ -25,8 +26,8 @@ func NewGraphical(renderer core.Renderer, entityDB *core.EntityDB) *Graphical {
 	obj.meshes = make(MeshMap)
 	obj.materials = make(MaterialMap)
 
-	obj.LoadMesh(core.DefaultMesh)
-	obj.LoadMaterial(core.DefaultMaterial)
+	obj.LoadMesh(render.DefaultMesh)
+	obj.LoadMaterial(render.DefaultMaterial)
 
 	return &obj
 }
@@ -41,7 +42,7 @@ func (self *Graphical) SetUpEntity(entity *core.Entity) {
 // Mesh loading
 func (self *Graphical) linkMeshToVisual(visual *components.Visual) {
 	if visual.MeshName == "" {
-		visual.MeshName = core.DefaultMesh.Name
+		visual.MeshName = render.DefaultMesh.Name
 	} else {
 		// find existing mesh?
 		// or load mesh by name
@@ -51,7 +52,7 @@ func (self *Graphical) linkMeshToVisual(visual *components.Visual) {
 // Material loading
 func (self *Graphical) linkMaterialToVisual(visual *components.Visual) {
 	if visual.MaterialName == "" {
-		visual.MaterialName = core.DefaultMaterial.Name
+		visual.MaterialName = render.DefaultMaterial.Name
 	} else {
 		// Nothing or Load new Material
 	}
@@ -59,7 +60,7 @@ func (self *Graphical) linkMaterialToVisual(visual *components.Visual) {
 
 // LoadMesh takes a given Mesh object and ensures it's contents are
 // loaded into the renderer for future use.
-func (self *Graphical) LoadMesh(mesh *core.Mesh) {
+func (self *Graphical) LoadMesh(mesh *render.Mesh) {
 	log.Println("Loading Mesh", mesh.Name)
 	self.renderer.LoadMesh(mesh)
 	self.meshes[mesh.Name] = mesh
@@ -67,14 +68,14 @@ func (self *Graphical) LoadMesh(mesh *core.Mesh) {
 
 // LoadMaterial takes a Material object and ensures it is available to the
 // renderer for future use.
-func (self *Graphical) LoadMaterial(material *core.Material) {
+func (self *Graphical) LoadMaterial(material *render.Material) {
 	log.Println("Loading Material", material.Name)
 	self.loadShadersIntoMaterial(material)
 	self.renderer.LoadMaterial(material)
 	self.materials[material.Name] = material
 }
 
-func (self *Graphical) loadShadersIntoMaterial(material *core.Material) {
+func (self *Graphical) loadShadersIntoMaterial(material *render.Material) {
 	if material.VertexShader != "" && material.FragmentShader != "" {
 		return
 	}
@@ -91,8 +92,8 @@ func (self *Graphical) loadShadersIntoMaterial(material *core.Material) {
 	vertSource, err := ioutil.ReadFile(vertPath)
 	if err != nil {
 		log.Println("Error loading vertex shader", vertPath, err, "Reverting to default Material")
-		material.Name = core.DefaultMaterial.Name
-		vertSource = []byte(core.DefaultMaterial.VertexShader)
+		material.Name = render.DefaultMaterial.Name
+		vertSource = []byte(render.DefaultMaterial.VertexShader)
 	}
 
 	fragPath := baseShaderPath + ".frag"
@@ -101,8 +102,8 @@ func (self *Graphical) loadShadersIntoMaterial(material *core.Material) {
 	fragSource, err := ioutil.ReadFile(fragPath)
 	if err != nil {
 		log.Println("Error loading fragment shader", fragPath, err, "Reverting to default Material")
-		material.Name = core.DefaultMaterial.Name
-		fragSource = []byte(core.DefaultMaterial.FragmentShader)
+		material.Name = render.DefaultMaterial.Name
+		fragSource = []byte(render.DefaultMaterial.FragmentShader)
 	}
 
 	material.VertexShader = string(vertSource)

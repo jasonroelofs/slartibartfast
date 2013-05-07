@@ -1,4 +1,4 @@
-package core
+package render
 
 type Mesh struct {
 	Name       string

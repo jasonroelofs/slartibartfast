@@ -12,6 +12,7 @@ PACKAGES = %w(
   platform
   behaviors
   math3d
+  render
 )
 
 LIBRARIES = %w(

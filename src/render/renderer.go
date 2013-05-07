@@ -1,4 +1,4 @@
-package core
+package render
 
 import (
 	"math3d"

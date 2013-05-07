@@ -1,4 +1,4 @@
-package core
+package render
 
 // Materials define the visual qualities of a given surface.
 // A material can define texture units, surface properties, and shader programs.

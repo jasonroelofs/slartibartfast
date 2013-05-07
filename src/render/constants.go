@@ -1,4 +1,4 @@
-package core
+package render
 
 // A bunch of constants used throughout the system
 
