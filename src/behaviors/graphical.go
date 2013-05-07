@@ -86,8 +86,9 @@ func (self *Graphical) loadShadersIntoMaterial(material *core.Material) {
 
 	vertSource, err := ioutil.ReadFile(vertPath)
 	if err != nil {
-		log.Println("Error loading vertex shader", vertPath, err, "Reverting to default")
+		log.Println("Error loading vertex shader", vertPath, err, "Reverting to default Material")
 		material.Name = core.DefaultMaterial.Name
+		vertSource = []byte(core.DefaultMaterial.VertexShader)
 	}
 
 	fragPath := baseShaderPath + ".frag"
@@ -95,8 +96,9 @@ func (self *Graphical) loadShadersIntoMaterial(material *core.Material) {
 
 	fragSource, err := ioutil.ReadFile(fragPath)
 	if err != nil {
-		log.Println("Error loading fragment shader", fragPath, err, "Reverting to default")
+		log.Println("Error loading fragment shader", fragPath, err, "Reverting to default Material")
 		material.Name = core.DefaultMaterial.Name
+		fragSource = []byte(core.DefaultMaterial.FragmentShader)
 	}
 
 	material.VertexShader = string(vertSource)

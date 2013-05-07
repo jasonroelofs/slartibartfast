@@ -79,6 +79,9 @@ func Test_LoadMaterial_IgnoresFileLoadIfShaderSourceExists(t *testing.T) {
 }
 
 func Test_LoadMaterial_FallsBackToDefaultMeshIfNoShaderFilesFound(t *testing.T) {
+	core.DefaultMaterial.VertexShader = "default vertex shader"
+	core.DefaultMaterial.FragmentShader = "default fragment shader"
+
 	material := &core.Material{
 		Name: "testMat",
 		Shaders: "missing",
@@ -88,6 +91,8 @@ func Test_LoadMaterial_FallsBackToDefaultMeshIfNoShaderFilesFound(t *testing.T) 
 	graphical.LoadMaterial(material)
 
 	assert.Equal(t, material.Name, core.DefaultMaterial.Name)
+	assert.Equal(t, core.DefaultMaterial.VertexShader, material.VertexShader)
+	assert.Equal(t, core.DefaultMaterial.FragmentShader, material.FragmentShader)
 }
 
 func Test_SetUpEntity_SetsDefaultMeshIfNoneSpecified(t *testing.T) {
