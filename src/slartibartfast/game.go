@@ -20,6 +20,8 @@ type Game struct {
 	behaviors []behaviors.Behavior
 	renderer  render.Renderer
 	window    core.Window
+
+	boxen     []core.Entity
 }
 
 func NewGame(config *configs.Config) *Game {
@@ -47,7 +49,7 @@ func (self *Game) Run() {
 	go calcAndPrintFPS(&frameCount)
 
 	for running && self.window.IsOpen() {
-		self.Tick()
+		self.Tick(self.window.TimeSinceLast())
 		self.window.SwapBuffers()
 		frameCount += 1
 	}
@@ -94,6 +96,8 @@ func (self *Game) initializeScene() {
 		box = core.NewEntityAt(positions[i])
 		box.AddComponent(new(components.Visual))
 
+		self.boxen = append(self.boxen, *box)
+
 		self.RegisterEntity(box)
 	}
 }
@@ -102,9 +106,16 @@ func (self *Game) RegisterEntity(entity *core.Entity) {
 	self.entityDB.RegisterEntity(entity)
 }
 
-func (self *Game) Tick() {
+func (self *Game) Tick(deltaT float64) {
+	box := self.boxen[0]
+
+	curr := components.GetTransform(&box).Position
+	components.GetTransform(&box).Position.X = curr.X + float32(deltaT)
+	components.GetTransform(&box).Position.Y = curr.Y + 2 * float32(deltaT)
+	components.GetTransform(&box).Position.Z = curr.Z + 3 * float32(deltaT)
+
 	for _, behavior := range self.behaviors {
-		behavior.Update(0)
+		behavior.Update(deltaT)
 	}
 }
 
