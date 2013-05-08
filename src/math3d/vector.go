@@ -10,6 +10,10 @@ type Vector struct {
 	X, Y, Z float32
 }
 
+func ZeroVector() Vector {
+	return Vector{0, 0, 0}
+}
+
 func (self Vector) Add(other Vector) Vector {
 	return Vector{
 		self.X + other.X,

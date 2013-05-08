@@ -106,16 +106,49 @@ func (self *Game) RegisterEntity(entity *core.Entity) {
 	self.entityDB.RegisterEntity(entity)
 }
 
-func (self *Game) Tick(deltaT float64) {
+// Figure out if I want float64 everywhere or not
+func (self *Game) Tick(timeSinceLast float64) {
+	deltaT := float32(timeSinceLast)
 	box := self.boxen[0]
 
-	curr := components.GetTransform(&box).Position
-	components.GetTransform(&box).Position.X = curr.X + float32(deltaT)
-	components.GetTransform(&box).Position.Y = curr.Y + 2 * float32(deltaT)
-	components.GetTransform(&box).Position.Z = curr.Z + 3 * float32(deltaT)
+	currPos := components.GetTransform(&box).Position
+	t := components.GetTransform(&box)
+	t.Position.X = currPos.X + deltaT
+	t.Position.Y = currPos.Y + 2 * deltaT
+	t.Position.Z = currPos.Z + 3 * deltaT
+
+	if t.Position.X > 10 {
+		t.Position.X = 0
+	}
+
+	if t.Position.Y > 10 {
+		t.Position.Y = 0
+	}
+
+	if t.Position.Z > 10 {
+		t.Position.Z = 0
+	}
+
+	box2 := self.boxen[1]
+	t = components.GetTransform(&box2)
+	t.Scale.X = t.Scale.X + deltaT
+	t.Scale.Y = t.Scale.Y + 2 * deltaT
+	t.Scale.Z = t.Scale.Z + 4 * deltaT
+
+	if t.Scale.X > 5 {
+		t.Scale.X = 1
+	}
+
+	if t.Scale.Y > 5 {
+		t.Scale.Y = 1
+	}
+
+	if t.Scale.Z > 5 {
+		t.Scale.Z = 1
+	}
 
 	for _, behavior := range self.behaviors {
-		behavior.Update(deltaT)
+		behavior.Update(timeSinceLast)
 	}
 }
 
