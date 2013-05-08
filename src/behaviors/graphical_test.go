@@ -4,13 +4,15 @@ import (
 	"components"
 	"core"
 	"github.com/stretchrcom/testify/assert"
-	"testing"
+	"math3d"
 	"render"
+	"testing"
 )
 
 type TestRenderer struct {
 	loadedMesh     *render.Mesh
 	loadedMaterial *render.Material
+	queueRendered  *render.RenderQueue
 }
 
 func (self *TestRenderer) LoadMesh(mesh *render.Mesh) {
@@ -24,7 +26,8 @@ func (self *TestRenderer) LoadMaterial(material *render.Material) {
 func (self *TestRenderer) BeginRender() {
 }
 
-func (self *TestRenderer) Render(mesh *render.Mesh, material *render.Material) {
+func (self *TestRenderer) Render(queue *render.RenderQueue) {
+	self.queueRendered = queue
 }
 
 func (self *TestRenderer) FinishRender() {
@@ -84,7 +87,7 @@ func Test_LoadMaterial_FallsBackToDefaultMeshIfNoShaderFilesFound(t *testing.T) 
 	render.DefaultMaterial.FragmentShader = "default fragment shader"
 
 	material := &render.Material{
-		Name: "testMat",
+		Name:    "testMat",
 		Shaders: "missing",
 	}
 
@@ -133,4 +136,21 @@ func Test_SetUpEntity_TellsRendererToLoadNewMaterial(t *testing.T) {
 }
 
 func Test_Update_RendersAllVisualEntityMeshesWithMaterials(t *testing.T) {
+	graphical, renderer, entityDb := getTestGraphical()
+
+	entity := core.NewEntity()
+	entity.AddComponent(new(components.Visual))
+	entityDb.RegisterEntity(entity)
+
+	graphical.Update(0)
+
+	assert.NotNil(t, renderer.queueRendered)
+
+	assert.Equal(t, 1, len(renderer.queueRendered.RenderOperations()))
+
+	renderOp := renderer.queueRendered.RenderOperations()[0]
+
+	assert.Equal(t, render.DefaultMesh, renderOp.Mesh)
+	assert.Equal(t, render.DefaultMaterial, renderOp.Material)
+	assert.Equal(t, math3d.IdentityMatrix(), renderOp.Transform)
 }

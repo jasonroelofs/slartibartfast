@@ -115,17 +115,19 @@ func (self *Graphical) Update(deltaT float64) {
 	self.renderer.BeginRender()
 	var visual *components.Visual
 
-	// Render the Visible's vertex / index arrays for each entity
-	// For each entity in entitySet
-	// - Build a render operation for that entity's data
-	// Tell renderer to render the set of render ops
-
-	// For now (prototyping) just render the mesh
+	renderQueue := render.NewRenderQueue() // will take the camera rendering this scene
 
 	for _, entity := range self.entitySet.Entities {
-		visual = entity.GetComponent(components.VISUAL).(*components.Visual)
-		self.renderer.Render(self.meshes[visual.MeshName], self.materials[visual.MaterialName])
+		visual = components.GetVisual(entity)
+
+		renderQueue.Add(render.RenderOperation{
+			Mesh:      self.meshes[visual.MeshName],
+			Material:  self.materials[visual.MaterialName],
+			Transform: components.GetTransform(entity).TransformMatrix(),
+		})
 	}
+
+	self.renderer.Render(renderQueue)
 
 	self.renderer.FinishRender()
 }
