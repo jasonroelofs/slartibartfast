@@ -16,3 +16,12 @@ func (self Transform) Type() ComponentType {
 func GetTransform(holder ComponentHolder) *Transform {
 	return holder.GetComponent(TRANSFORM).(*Transform)
 }
+
+func (self Transform) TransformMatrix() math3d.Matrix {
+	return math3d.Matrix{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		self.Position.X, self.Position.Y, self.Position.Z, 1,
+	}
+}
