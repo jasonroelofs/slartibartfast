@@ -1,16 +1,16 @@
 package platform
 
 import (
-	"core"
 	"github.com/go-gl/gl"
 	"math3d"
+	"render"
 )
 
 type OpenGLRenderer struct {
-	// Implements the core.Renderer interface
+	// Implements the render.Renderer interface
 }
 
-func (self *OpenGLRenderer) LoadMesh(mesh *core.Mesh) {
+func (self *OpenGLRenderer) LoadMesh(mesh *render.Mesh) {
 	vertexArrayObj := gl.GenVertexArray()
 	vertexArrayObj.Bind()
 
@@ -38,7 +38,7 @@ func (self *OpenGLRenderer) LoadMesh(mesh *core.Mesh) {
 	mesh.VertexBuffer = vertexBuffer
 }
 
-func (self *OpenGLRenderer) LoadMaterial(material *core.Material) {
+func (self *OpenGLRenderer) LoadMaterial(material *render.Material) {
 	material.ShaderProgram = NewGLSLProgram(material.VertexShader, material.FragmentShader)
 }
 
@@ -50,7 +50,17 @@ func (self *OpenGLRenderer) BeginRender() {
 	gl.DepthFunc(gl.LESS)
 }
 
-func (self *OpenGLRenderer) Render(mesh *core.Mesh, material *core.Material) {
+func (self *OpenGLRenderer) Render(renderQueue *render.RenderQueue) {
+	for _, renderOp := range renderQueue.RenderOperations() {
+		self.renderOne(renderOp)
+	}
+}
+
+func (self *OpenGLRenderer) renderOne(operation render.RenderOperation) {
+	mesh := operation.Mesh
+	material := operation.Material
+	transform := operation.Transform
+
 	vertexArrayObj := mesh.VertexArrayObj.(gl.VertexArray)
 	vertexArrayObj.Bind()
 
@@ -58,16 +68,16 @@ func (self *OpenGLRenderer) Render(mesh *core.Mesh, material *core.Material) {
 	// only the model matrix changes per entity rendered.
 	projection := math3d.Perspective(45.0, 4.0/3.0, 0.1, 100.0)
 	view := math3d.LookAt(
-		math3d.Vector{4, 3, 3},
+		math3d.Vector{14, 13, 13},
 		math3d.Vector{0, 0, 0},
 		math3d.Vector{0, 1, 0},
 	)
-	model := math3d.IdentityMatrix()
 
-	material.ShaderProgram.SetUniformMatrix("modelViewProjection", projection.Times(view).Times(model))
+	material.ShaderProgram.SetUniformMatrix(
+		"modelViewProjection", projection.Times(view).Times(transform))
 	material.ShaderProgram.Use()
 
-	gl.DrawArrays(gl.TRIANGLES, 0, len(mesh.VertexList) * 3)
+	gl.DrawArrays(gl.TRIANGLES, 0, len(mesh.VertexList)*3)
 }
 
 func (self *OpenGLRenderer) FinishRender() {

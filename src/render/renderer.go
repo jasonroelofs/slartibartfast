@@ -19,7 +19,7 @@ type Renderer interface {
 	// Render path
 	//
 	BeginRender()
-	Render(mesh *Mesh, material *Material)
+	Render(renderQueue *RenderQueue)
 	FinishRender()
 }
 
