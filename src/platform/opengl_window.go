@@ -10,6 +10,8 @@ import (
 type OpenGLWindow struct {
 	// Implements core.Window
 	config windowConfig
+
+	timeLastCall float64
 }
 
 type windowConfig struct {
@@ -75,6 +77,18 @@ func (self *OpenGLWindow) Open() {
 	}
 
 	glfw.SetWindowTitle("Project Slartibartfast")
+}
+
+func (self *OpenGLWindow) TimeSinceLast() float64 {
+	if self.timeLastCall == 0 {
+		self.timeLastCall = glfw.Time()
+	}
+
+	now := glfw.Time()
+	diff := now - self.timeLastCall
+	self.timeLastCall = now
+
+	return diff
 }
 
 func (self *OpenGLWindow) IsOpen() bool {
