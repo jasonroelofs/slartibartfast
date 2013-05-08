@@ -76,10 +76,22 @@ func (self *Game) initializeBehaviors() {
 
 func (self *Game) initializeScene() {
 	var box *core.Entity
-	var i float32
 
-	for i = 0; i < 10; i++ {
-		box = core.NewEntityAt(math3d.Vector{i, 0, 0})
+	positions := [10]math3d.Vector{
+		math3d.Vector{0, 0, 0},
+		math3d.Vector{4, 0, 0},
+		math3d.Vector{4, 4, 0},
+		math3d.Vector{4, 4, 4},
+		math3d.Vector{8, 0, 0},
+		math3d.Vector{8, 8, 0},
+		math3d.Vector{0, 8, 0},
+		math3d.Vector{4, 0, 4},
+		math3d.Vector{0, 4, 4},
+		math3d.Vector{0, 0, 4},
+	}
+
+	for i := 0; i < 10; i++ {
+		box = core.NewEntityAt(positions[i])
 		box.AddComponent(new(components.Visual))
 
 		self.RegisterEntity(box)
