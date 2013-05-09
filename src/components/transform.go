@@ -27,6 +27,8 @@ func GetTransform(holder ComponentHolder) *Transform {
 	return holder.GetComponent(TRANSFORM).(*Transform)
 }
 
+// TransformMatrix calculates and returns the full transformation matrix
+// for this Transform, combining Scale, Rotation, and Position.
 func (self Transform) TransformMatrix() math3d.Matrix {
 	position := math3d.PositionMatrix(self.Position)
 	scale := math3d.ScaleMatrix(self.Scale)

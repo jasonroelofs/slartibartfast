@@ -1,5 +1,6 @@
 package math3d
 
+// ScaleMatrix returns the Matrix form of the current Position Vector
 func PositionMatrix(position Vector) Matrix {
 	return Matrix{
 		1, 0, 0, 0,
@@ -9,6 +10,7 @@ func PositionMatrix(position Vector) Matrix {
 	}
 }
 
+// ScaleMatrix returns the Matrix form of the current Scaling Vector
 func ScaleMatrix(scale Vector) Matrix {
 	return Matrix{
 		scale.X, 0, 0, 0,
@@ -18,6 +20,8 @@ func ScaleMatrix(scale Vector) Matrix {
 	}
 }
 
+// RotationMatrix calculates the Matrix form of the given Quaternion
+// See http://www.cprogramming.com/tutorial/3d/quaternions.html
 func RotationMatrix(rotation Quaternion) Matrix {
 	rotXSq := (rotation.X * rotation.X)
 	rotYSq := (rotation.Y * rotation.Y)

@@ -111,6 +111,7 @@ func (self *Game) Tick(timeSinceLast float64) {
 	deltaT := float32(timeSinceLast)
 	box := self.boxen[0]
 
+	// Transitioning!
 	currPos := components.GetTransform(&box).Position
 	t := components.GetTransform(&box)
 	t.Position.X = currPos.X + deltaT
@@ -129,21 +130,22 @@ func (self *Game) Tick(timeSinceLast float64) {
 		t.Position.Z = 0
 	}
 
+	// Scaling!
 	box2 := self.boxen[1]
 	t = components.GetTransform(&box2)
 	t.Scale.X = t.Scale.X + deltaT
 	t.Scale.Y = t.Scale.Y + 2 * deltaT
 	t.Scale.Z = t.Scale.Z + 4 * deltaT
 
-	if t.Scale.X > 5 {
+	if t.Scale.X > 3 {
 		t.Scale.X = 1
 	}
 
-	if t.Scale.Y > 5 {
+	if t.Scale.Y > 3 {
 		t.Scale.Y = 1
 	}
 
-	if t.Scale.Z > 5 {
+	if t.Scale.Z > 3 {
 		t.Scale.Z = 1
 	}
 

@@ -8,12 +8,15 @@ type Quaternion struct {
 	W, X, Y, Z float32
 }
 
+// NewQuaternion returns the Unit Quaternion
 func NewQuaternion() Quaternion {
 	return Quaternion{1, 0, 0, 0}
 }
 
-func QuatFromAngleAxis(angle float32, axis Vector) Quaternion {
-	angleRad := (float32(math.Pi) * angle) / 180.0
+// QuatFromAngleAxis creates a new Quaterion calcualted from the angle and the
+// axis on which the rotation is happening.
+func QuatFromAngleAxis(angleInDegrees float32, axis Vector) Quaternion {
+	angleRad := (float32(math.Pi) * angleInDegrees) / 180.0
 	cosAngle := float32(math.Cos(float64(angleRad / 2)))
 	sinAngle := float32(math.Sin(float64(angleRad / 2)))
 
@@ -25,6 +28,7 @@ func QuatFromAngleAxis(angle float32, axis Vector) Quaternion {
 	}
 }
 
+// Times returns a new Quaternion that is the product of this Quaternion and other
 func (self Quaternion) Times(other Quaternion) Quaternion {
 	return Quaternion{
 		self.W * other.W - self.X * other.X - self.Y * other.Y - self.Z * other.Z,
@@ -34,11 +38,14 @@ func (self Quaternion) Times(other Quaternion) Quaternion {
 	}
 }
 
+// Length returns the length, or magnitude, of this Quaternion
 func (self Quaternion) Length() float32 {
 	return float32(math.Sqrt(
 		float64(self.W*self.W + self.X*self.X + self.Y*self.Y + self.Z*self.Z)))
 }
 
+// Normalize returns a new Quaternion that is the normalized version of the
+// current Quaternion
 func (self Quaternion) Normalize() Quaternion {
 	magnitude := self.Length()
 
