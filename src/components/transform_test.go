@@ -47,10 +47,8 @@ func Test_Transform_TransformMatrix_AppliesPositionTransformation(t *testing.T) 
 }
 
 func Test_Transform_TransformMatrix_AppliesScaleTransformation(t *testing.T) {
-	transform := Transform{
-		Position: math3d.Vector{0, 0, 0},
-		Scale: math3d.Vector{2, 3, 4},
-	}
+	transform := NewTransform()
+	transform.Scale = math3d.Vector{2, 3, 4}
 
 	expected := math3d.Matrix{
 		2, 0, 0, 0,

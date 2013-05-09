@@ -33,8 +33,8 @@ func (self Quaternion) Times(other Quaternion) Quaternion {
 	return Quaternion{
 		self.W * other.W - self.X * other.X - self.Y * other.Y - self.Z * other.Z,
 		self.W * other.X + self.X * other.W + self.Y * other.Z - self.Z * other.Y,
-		self.W * other.Y - self.X * other.Z + self.Y * other.W + self.Z * other.X,
-		self.W * other.Z + self.X * other.Y - self.Y * other.X + self.Z * other.W,
+		self.W * other.Y + self.Y * other.W + self.Z * other.X - self.X * other.Z,
+		self.W * other.Z + self.Z * other.W + self.X * other.Y - self.Y * other.X,
 	}
 }
 
