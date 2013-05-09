@@ -17,7 +17,9 @@ type Entity struct {
 func NewEntity() (entity *Entity) {
 	entity = new(Entity)
 	entity.components = make(componentTypeMap)
-	entity.AddComponent(new(components.Transform))
+
+	transform := components.NewTransform()
+	entity.AddComponent(&transform)
 
 	return
 }

@@ -8,10 +8,15 @@ import (
 type Transform struct {
 	Position math3d.Vector
 	Scale    math3d.Vector
+	Rotation math3d.Quaternion
+}
 
-	// I don't want a constructor method yet I want the default of Scale
-	// to be 1, 1, 1. This may or may not work out well.
-	scaleInitialized bool
+func NewTransform() Transform {
+	return Transform{
+		Position: math3d.Vector{0, 0, 0},
+		Scale:    math3d.Vector{1, 1, 1},
+		Rotation: math3d.NewQuaternion(),
+	}
 }
 
 func (self Transform) Type() ComponentType {
