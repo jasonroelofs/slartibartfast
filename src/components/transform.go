@@ -23,24 +23,9 @@ func GetTransform(holder ComponentHolder) *Transform {
 }
 
 func (self Transform) TransformMatrix() math3d.Matrix {
-	if self.Scale == math3d.ZeroVector() && !self.scaleInitialized {
-		self.Scale = math3d.Vector{1, 1, 1}
-	}
-	self.scaleInitialized = true
+	position := math3d.PositionMatrix(self.Position)
+	scale := math3d.ScaleMatrix(self.Scale)
+	rotation := math3d.RotationMatrix(self.Rotation)
 
-	position := math3d.Matrix{
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		self.Position.X, self.Position.Y, self.Position.Z, 1,
-	}
-
-	scale := math3d.Matrix{
-		self.Scale.X, 0, 0, 0,
-		0, self.Scale.Y, 0, 0,
-		0, 0, self.Scale.Z, 0,
-		0, 0, 0, 1,
-	}
-
-	return position.Times(scale)
+	return position.Times(rotation).Times(scale)
 }
