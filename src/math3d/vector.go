@@ -1,9 +1,5 @@
 package math3d
 
-import (
-	"math"
-)
-
 // Vector is your standard 3D vector.
 // Homogeneous coords is handled when needed
 type Vector struct {
@@ -39,7 +35,7 @@ func (self Vector) Times(value float32) Vector {
 }
 
 func (self Vector) Length() float32 {
-	return float32(math.Sqrt(float64(self.X * self.X + self.Y * self.Y + self.Z * self.Z)))
+	return Sqrt(self.X * self.X + self.Y * self.Y + self.Z * self.Z)
 }
 
 func (self Vector) Normalize() Vector {

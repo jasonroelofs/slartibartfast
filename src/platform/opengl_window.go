@@ -79,7 +79,7 @@ func (self *OpenGLWindow) Open() {
 	glfw.SetWindowTitle("Project Slartibartfast")
 }
 
-func (self *OpenGLWindow) TimeSinceLast() float64 {
+func (self *OpenGLWindow) TimeSinceLast() float32 {
 	if self.timeLastCall == 0 {
 		self.timeLastCall = glfw.Time()
 	}
@@ -88,7 +88,7 @@ func (self *OpenGLWindow) TimeSinceLast() float64 {
 	diff := now - self.timeLastCall
 	self.timeLastCall = now
 
-	return diff
+	return float32(diff)
 }
 
 func (self *OpenGLWindow) IsOpen() bool {

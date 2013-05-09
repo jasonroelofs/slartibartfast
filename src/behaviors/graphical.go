@@ -111,7 +111,7 @@ func (self *Graphical) loadShadersIntoMaterial(material *render.Material) {
 }
 
 // Update is called every Game tick
-func (self *Graphical) Update(deltaT float64) {
+func (self *Graphical) Update(deltaT float32) {
 	self.renderer.BeginRender()
 	var visual *components.Visual
 

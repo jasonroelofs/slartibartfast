@@ -8,5 +8,5 @@ type Window interface {
 
 	// TimeSinceLast returns the amount of time that has past in seconds
 	// since the last time this method was called.
-	TimeSinceLast() float64
+	TimeSinceLast() float32
 }

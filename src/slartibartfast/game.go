@@ -106,9 +106,7 @@ func (self *Game) RegisterEntity(entity *core.Entity) {
 	self.entityDB.RegisterEntity(entity)
 }
 
-// Figure out if I want float64 everywhere or not
-func (self *Game) Tick(timeSinceLast float64) {
-	deltaT := float32(timeSinceLast)
+func (self *Game) Tick(deltaT float32) {
 	box := self.boxen[0]
 
 	// Transitioning!
@@ -179,7 +177,7 @@ func (self *Game) Tick(timeSinceLast float64) {
 	t.Rotation = t.Rotation.RotateZ(45.0 * deltaT).RotateY(45.0 * deltaT).RotateX(45.0 * deltaT)
 
 	for _, behavior := range self.behaviors {
-		behavior.Update(timeSinceLast)
+		behavior.Update(deltaT)
 	}
 }
 
