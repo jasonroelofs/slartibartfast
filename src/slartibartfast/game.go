@@ -147,6 +147,19 @@ func (self *Game) Tick(timeSinceLast float64) {
 		t.Scale.Z = 1
 	}
 
+	// Rotating!
+	box3 := self.boxen[2]
+	t = components.GetTransform(&box3)
+	t.Rotation = t.Rotation.RotateX(45.0 * deltaT)
+
+	box4 := self.boxen[3]
+	t = components.GetTransform(&box4)
+	t.Rotation = t.Rotation.RotateY(90.0 * deltaT)
+
+	box5 := self.boxen[4]
+	t = components.GetTransform(&box5)
+	t.Rotation = t.Rotation.RotateZ(135.0 * deltaT)
+
 	for _, behavior := range self.behaviors {
 		behavior.Update(timeSinceLast)
 	}

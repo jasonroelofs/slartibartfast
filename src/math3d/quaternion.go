@@ -49,3 +49,24 @@ func (self Quaternion) Normalize() Quaternion {
 		self.Z / magnitude,
 	}
 }
+
+// RotateX returns a new Quaternion that is the current one rotated
+// by the given degrees around the X axis
+func (self Quaternion) RotateX(degrees float32) Quaternion {
+	toApply := QuatFromAngleAxis(degrees, Vector{1, 0, 0})
+	return toApply.Times(self)
+}
+
+// RotateY returns a new Quaternion that is the current one rotated
+// by the given degrees around the Y axis
+func (self Quaternion) RotateY(degrees float32) Quaternion {
+	toApply := QuatFromAngleAxis(degrees, Vector{0, 1, 0})
+	return toApply.Times(self)
+}
+
+// RotateZ returns a new Quaternion that is the current one rotated
+// by the given degrees around the Z axis
+func (self Quaternion) RotateZ(degrees float32) Quaternion {
+	toApply := QuatFromAngleAxis(degrees, Vector{0, 0, 1})
+	return toApply.Times(self)
+}
