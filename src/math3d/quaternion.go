@@ -14,7 +14,7 @@ func NewQuaternion() Quaternion {
 // QuatFromAngleAxis creates a new Quaterion calcualted from the angle and the
 // axis on which the rotation is happening.
 func QuatFromAngleAxis(angleInDegrees float32, axis Vector) Quaternion {
-	angleRad := (Pi * angleInDegrees) / 180.0
+	angleRad := DegToRad(angleInDegrees)
 	cosAngle := Cos(angleRad / 2)
 	sinAngle := Sin(angleRad / 2)
 

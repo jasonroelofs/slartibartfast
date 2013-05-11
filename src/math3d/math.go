@@ -7,6 +7,10 @@ import "math"
 
 var Pi float32 = float32(math.Pi)
 
+func DegToRad(x float32) float32 {
+	return (Pi * x) / 180.0
+}
+
 func Sqrt(x float32) float32 {
 	return float32(math.Sqrt(float64(x)))
 }

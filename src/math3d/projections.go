@@ -2,7 +2,7 @@ package math3d
 
 // Perspective calculates the Perspective Matrix for the given parameters
 func Perspective(fov, aspectRatio, nearPlane, farPlane float32) (matrix Matrix) {
-	fovRad := (fov * Pi) / 180.0
+	fovRad := DegToRad(fov)
 	f := 1.0 / Tan(fovRad/2)
 
 	matrix[0] = f / aspectRatio
