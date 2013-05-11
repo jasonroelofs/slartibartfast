@@ -82,7 +82,7 @@ func (self *Game) initializeScene() {
 
 	self.camera = core.NewCamera()
 	self.camera.Perspective(45.0, 4.0/3.0, 0.1, 100.0)
-	self.camera.Position = math3d.Vector{14, 14, 14}
+	self.camera.Position = math3d.Vector{20, 20, 20}
 	self.camera.LookAt = math3d.Vector{0, 0, 0}
 
 	positions := [10]math3d.Vector{
@@ -90,10 +90,10 @@ func (self *Game) initializeScene() {
 		math3d.Vector{4, 0, 0},
 		math3d.Vector{4, 4, 0},
 		math3d.Vector{4, 4, 4},
-		math3d.Vector{8, 0, 0},
-		math3d.Vector{8, 8, 0},
-		math3d.Vector{0, 8, 0},
-		math3d.Vector{4, 0, 4},
+		math3d.Vector{-4, 0, 0},
+		math3d.Vector{-4, -4, 0},
+		math3d.Vector{0, -4, 0},
+		math3d.Vector{-4, 0, -4},
 		math3d.Vector{0, 4, 4},
 		math3d.Vector{0, 0, 4},
 	}
@@ -111,6 +111,8 @@ func (self *Game) initializeScene() {
 func (self *Game) RegisterEntity(entity *core.Entity) {
 	self.entityDB.RegisterEntity(entity)
 }
+
+var currentRotation float32
 
 func (self *Game) Tick(deltaT float32) {
 	box := self.boxen[0]
@@ -181,6 +183,14 @@ func (self *Game) Tick(deltaT float32) {
 	box9 := self.boxen[8]
 	t = components.GetTransform(&box9)
 	t.Rotation = t.Rotation.RotateZ(45.0 * deltaT).RotateY(45.0 * deltaT).RotateX(45.0 * deltaT)
+
+	self.camera.Position = math3d.Vector{
+		math3d.Cos(math3d.DegToRad(currentRotation)) * 20,
+		self.camera.Position.Y,
+		math3d.Sin(math3d.DegToRad(currentRotation)) * 20,
+	}
+
+	currentRotation += 30 * deltaT;
 
 	// Update all behaviors
 	self.graphicalBehavior.Update(self.camera, deltaT)
