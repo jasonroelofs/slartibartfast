@@ -50,13 +50,22 @@ func (self *OpenGLRenderer) BeginRender() {
 	gl.DepthFunc(gl.LESS)
 }
 
+type RenderState struct {
+	Projection, View math3d.Matrix
+}
+
 func (self *OpenGLRenderer) Render(renderQueue *render.RenderQueue) {
+	renderState := RenderState{
+		Projection: renderQueue.ProjectionMatrix,
+		View:       renderQueue.ViewMatrix,
+	}
+
 	for _, renderOp := range renderQueue.RenderOperations() {
-		self.renderOne(renderOp)
+		self.renderOne(renderOp, renderState)
 	}
 }
 
-func (self *OpenGLRenderer) renderOne(operation render.RenderOperation) {
+func (self *OpenGLRenderer) renderOne(operation render.RenderOperation, renderState RenderState) {
 	mesh := operation.Mesh
 	material := operation.Material
 	transform := operation.Transform
@@ -64,17 +73,10 @@ func (self *OpenGLRenderer) renderOne(operation render.RenderOperation) {
 	vertexArrayObj := mesh.VertexArrayObj.(gl.VertexArray)
 	vertexArrayObj.Bind()
 
-	// The projection and view need to be set once when rendering,
-	// only the model matrix changes per entity rendered.
-	projection := math3d.Perspective(45.0, 4.0/3.0, 0.1, 100.0)
-	view := math3d.LookAt(
-		math3d.Vector{14, 13, 13},
-		math3d.Vector{0, 0, 0},
-		math3d.Vector{0, 1, 0},
-	)
-
 	material.ShaderProgram.SetUniformMatrix(
-		"modelViewProjection", projection.Times(view).Times(transform))
+		"modelViewProjection",
+		renderState.Projection.Times(renderState.View).Times(transform),
+	)
 	material.ShaderProgram.Use()
 
 	gl.DrawArrays(gl.TRIANGLES, 0, len(mesh.VertexList)*3)

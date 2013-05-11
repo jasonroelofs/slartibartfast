@@ -111,11 +111,14 @@ func (self *Graphical) loadShadersIntoMaterial(material *render.Material) {
 }
 
 // Update is called every Game tick
-func (self *Graphical) Update(deltaT float32) {
+func (self *Graphical) Update(camera *core.Camera, deltaT float32) {
 	self.renderer.BeginRender()
 	var visual *components.Visual
 
-	renderQueue := render.NewRenderQueue() // will take the camera rendering this scene
+	renderQueue := render.NewRenderQueue()
+
+	renderQueue.ProjectionMatrix = camera.ProjectionMatrix()
+	renderQueue.ViewMatrix = camera.ViewMatrix()
 
 	for _, entity := range self.entitySet.Entities {
 		visual = components.GetVisual(entity)

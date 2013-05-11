@@ -135,6 +135,21 @@ func Test_SetUpEntity_LinksLoadedMaterialIfNameMatches(t *testing.T) {
 func Test_SetUpEntity_TellsRendererToLoadNewMaterial(t *testing.T) {
 }
 
+func Test_Update_ConfiguresQueueWithViewData(t *testing.T) {
+	graphical, renderer, _ := getTestGraphical()
+
+	camera := core.NewCamera()
+	camera.Position = math3d.Vector{5, 5, 5}
+	camera.LookAt = math3d.Vector{1, 2, 3}
+
+	graphical.Update(camera, 0)
+
+	assert.NotNil(t, renderer.queueRendered)
+
+	assert.Equal(t, camera.ProjectionMatrix(), renderer.queueRendered.ProjectionMatrix)
+	assert.Equal(t, camera.ViewMatrix(), renderer.queueRendered.ViewMatrix)
+}
+
 func Test_Update_RendersAllVisualEntityMeshesWithMaterials(t *testing.T) {
 	graphical, renderer, entityDb := getTestGraphical()
 
@@ -142,7 +157,7 @@ func Test_Update_RendersAllVisualEntityMeshesWithMaterials(t *testing.T) {
 	entity.AddComponent(new(components.Visual))
 	entityDb.RegisterEntity(entity)
 
-	graphical.Update(0)
+	graphical.Update(core.NewCamera(), 0)
 
 	assert.NotNil(t, renderer.queueRendered)
 

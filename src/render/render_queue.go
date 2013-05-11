@@ -1,9 +1,16 @@
 package render
 
+import (
+	"math3d"
+)
+
 // A RenderQueue represents the full set of visual elements to be drawn for a given frame.
 // One of these will be built per frame and sent to the renderer for rendering.
 // It knows the camera, all entities, and any static geometry to be considered.
 type RenderQueue struct {
+	ProjectionMatrix math3d.Matrix
+	ViewMatrix       math3d.Matrix
+
 	renderOps []RenderOperation
 }
 

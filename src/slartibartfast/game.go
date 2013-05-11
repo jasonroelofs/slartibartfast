@@ -17,9 +17,12 @@ import (
 type Game struct {
 	config    *configs.Config
 	entityDB  *core.EntityDB
-	behaviors []behaviors.Behavior
+
 	renderer  render.Renderer
 	window    core.Window
+	camera    *core.Camera
+
+	graphicalBehavior *behaviors.Graphical
 
 	boxen     []core.Entity
 }
@@ -71,13 +74,16 @@ func calcAndPrintFPS(frameCount *int64) {
 }
 
 func (self *Game) initializeBehaviors() {
-	graphical := behaviors.NewGraphical(self.renderer, self.entityDB)
-
-	self.behaviors = append(self.behaviors, graphical)
+	self.graphicalBehavior = behaviors.NewGraphical(self.renderer, self.entityDB)
 }
 
 func (self *Game) initializeScene() {
 	var box *core.Entity
+
+	self.camera = core.NewCamera()
+	self.camera.Perspective(45.0, 4.0/3.0, 0.1, 100.0)
+	self.camera.Position = math3d.Vector{14, 14, 14}
+	self.camera.LookAt = math3d.Vector{0, 0, 0}
 
 	positions := [10]math3d.Vector{
 		math3d.Vector{0, 0, 0},
@@ -176,9 +182,8 @@ func (self *Game) Tick(deltaT float32) {
 	t = components.GetTransform(&box9)
 	t.Rotation = t.Rotation.RotateZ(45.0 * deltaT).RotateY(45.0 * deltaT).RotateX(45.0 * deltaT)
 
-	for _, behavior := range self.behaviors {
-		behavior.Update(deltaT)
-	}
+	// Update all behaviors
+	self.graphicalBehavior.Update(self.camera, deltaT)
 }
 
 func (self *Game) Shutdown() {
