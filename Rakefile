@@ -13,6 +13,7 @@ PACKAGES = %w(
   behaviors
   math3d
   render
+  freeimage
 )
 
 LIBRARIES = %w(
@@ -20,6 +21,11 @@ LIBRARIES = %w(
   github.com/go-gl/glu
   github.com/go-gl/glfw
   github.com/stretchrcom/testify
+)
+
+EXTERNAL_LIBS = %w(
+  glfw
+  freeimage
 )
 
 def shell(command)
