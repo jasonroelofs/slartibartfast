@@ -2,8 +2,10 @@ package platform
 
 import (
 	"github.com/go-gl/gl"
+	"github.com/go-gl/glu"
 	"math3d"
 	"render"
+	"log"
 )
 
 type OpenGLRenderer struct {
@@ -25,7 +27,7 @@ func (self *OpenGLRenderer) LoadMesh(mesh *render.Mesh) {
 	if len(mesh.UVList) > 0 {
 		uvBuffer := gl.GenBuffer()
 		uvBuffer.Bind(gl.ARRAY_BUFFER)
-		gl.BufferData(gl.ARRAY_BUFFER, len(mesh.UVList) * 4, mesh.UVList, gl.STATIC_DRAW)
+		gl.BufferData(gl.ARRAY_BUFFER, len(mesh.UVList)*4, mesh.UVList, gl.STATIC_DRAW)
 
 		attribLoc := gl.AttribLocation(1)
 		attribLoc.EnableArray()
@@ -50,10 +52,28 @@ func (self *OpenGLRenderer) LoadMesh(mesh *render.Mesh) {
 
 func (self *OpenGLRenderer) LoadMaterial(material *render.Material) {
 	material.Shader.Program = NewGLSLProgram(material.Shader.Vertex, material.Shader.Fragment)
+	if material.Texture != nil {
+		material.Texture.Id = self.LoadTexture(material.Texture)
+	}
+}
 
-//	if material.Texture.Bound() {
-//		material.Texture = NewOpenGLTexture(material.TextureName)
-//	}
+func (self *OpenGLRenderer) LoadTexture(texture *render.Texture) gl.Texture {
+	glTexture := gl.GenTexture()
+	glTexture.Bind(gl.TEXTURE_2D)
+
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGB,
+		texture.Image.Width(), texture.Image.Height(), 0, gl.RGB, gl.UNSIGNED_BYTE,
+		texture.Image.Bytes())
+
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+	gl.GenerateMipmap(gl.TEXTURE_2D)
+
+	self.checkErrors()
+
+	return glTexture
 }
 
 func (self *OpenGLRenderer) BeginRender() {
@@ -93,8 +113,31 @@ func (self *OpenGLRenderer) renderOne(operation render.RenderOperation, renderSt
 	)
 	material.Shader.Program.Use()
 
+	if material.Texture != nil {
+		glTexture := material.Texture.Id.(gl.Texture)
+		gl.ActiveTexture(gl.TEXTURE0)
+		glTexture.Bind(gl.TEXTURE_2D)
+		defer glTexture.Unbind(gl.TEXTURE_2D)
+
+		material.Shader.Program.SetUniformUnit("textureSampler", 0)
+	}
+
 	gl.DrawArrays(gl.TRIANGLES, 0, len(mesh.VertexList)*3)
 }
 
 func (self *OpenGLRenderer) FinishRender() {
+}
+
+func (self *OpenGLRenderer) checkErrors() {
+	e := gl.GetError()
+	for e != gl.NO_ERROR {
+		errString, err := glu.ErrorString(e)
+		if err != nil {
+			log.Println("Invalid error code found", err)
+		} else {
+			log.Printf("GLError %v => %s", e, errString)
+		}
+
+		e = gl.GetError()
+	}
 }

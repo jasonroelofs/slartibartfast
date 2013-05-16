@@ -45,6 +45,14 @@ func (self *GLSLProgram) SetUniformMatrix(uniformName string, matrix math3d.Matr
 	}
 }
 
+func (self *GLSLProgram) SetUniformUnit(uniformName string, unitIndex int) {
+	uniformLoc := self.getUniformLocation(uniformName)
+
+	if uniformLoc > -1 {
+		uniformLoc.Uniform1i(unitIndex)
+	}
+}
+
 func (self *GLSLProgram) getUniformLocation(uniformName string) gl.UniformLocation {
 	var loc gl.UniformLocation
 

@@ -15,6 +15,6 @@ type GPUProgram interface {
 	// Use tells the underlying render system to use this program
 	Use()
 
-	// SetUniformMatrix sets the uniform value in the current shaders to the given Matrix
 	SetUniformMatrix(uniformName string, matrix math3d.Matrix)
+	SetUniformUnit(uniformName string, unitIndex int)
 }
