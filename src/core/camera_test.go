@@ -35,7 +35,7 @@ func Test_ViewMatrix_CalculatesViewMatrix(t *testing.T) {
 	camera.Up = math3d.Vector{0, 1, 0}
 
 	expected := math3d.Matrix{
-		0, 0, 0, 0,
+		0, 0, 1, 0,
 		0, 1, 0, 0,
 		-1, 0, 0, 0,
 		0, 0, -1, 1,

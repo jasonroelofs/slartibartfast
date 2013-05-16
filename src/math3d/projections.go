@@ -25,7 +25,7 @@ func LookAt(position, lookAt, up Vector) Matrix {
 	dotZ := zAxis.Dot(position)
 
 	return Matrix{
-		xAxis.X, yAxis.X, zAxis.Z, 0,
+		xAxis.X, yAxis.X, zAxis.X, 0,
 		xAxis.Y, yAxis.Y, zAxis.Y, 0,
 		xAxis.Z, yAxis.Z, zAxis.Z, 0,
 		-dotX, -dotY, -dotZ, 1,

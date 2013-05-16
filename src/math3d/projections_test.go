@@ -22,10 +22,10 @@ func Test_LookAt(t *testing.T) {
 	matrix := LookAt(Vector{1, 0, 0}, Vector{0, 0, 0}, Vector{0, 1, 0})
 
 	expected := Matrix{
-		0, 0, 0, 0,
-		0, 1, 0, 0,
-		-1, 0, 0, 0,
-		0, 0, -1, 1,
+		 0, 0,  1, 0,
+		 0, 1,  0, 0,
+		-1, 0,  0, 0,
+		 0, 0, -1, 1,
 	}
 
 	assert.Equal(t, expected, matrix)
