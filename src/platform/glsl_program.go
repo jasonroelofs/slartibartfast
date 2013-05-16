@@ -54,14 +54,15 @@ func (self *GLSLProgram) SetUniformUnit(uniformName string, unitIndex int) {
 }
 
 func (self *GLSLProgram) getUniformLocation(uniformName string) gl.UniformLocation {
-	var loc gl.UniformLocation
+	var location gl.UniformLocation
+	var exists bool
 
-	if loc, ok := self.uniforms[uniformName]; !ok {
-		loc = self.program.GetUniformLocation(uniformName)
-		self.uniforms[uniformName] = loc
+	if location, exists = self.uniforms[uniformName]; !exists {
+		location = self.program.GetUniformLocation(uniformName)
+		self.uniforms[uniformName] = location
 	}
 
-	return loc
+	return location
 }
 
 func (self *GLSLProgram) attachAndLinkShaders() {
