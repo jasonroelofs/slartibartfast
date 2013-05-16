@@ -1,4 +1,4 @@
-package behaviors
+package render
 
 type DataDefaults struct {
 	LoadPath string
@@ -6,7 +6,7 @@ type DataDefaults struct {
 
 // Package-wide set of defaults, mainly so that things like data load
 // paths are changeable in tests. Got the pattern here from go's log package
-var defaults = New("data")
+var Defaults = New("data")
 
 func New(loadPath string) *DataDefaults {
 	return &DataDefaults{LoadPath: loadPath}

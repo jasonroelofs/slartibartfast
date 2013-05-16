@@ -39,7 +39,8 @@ func (self *OpenGLRenderer) LoadMesh(mesh *render.Mesh) {
 }
 
 func (self *OpenGLRenderer) LoadMaterial(material *render.Material) {
-	material.ShaderProgram = NewGLSLProgram(material.VertexShader, material.FragmentShader)
+	material.Shader.Program = NewGLSLProgram(material.Shader.Vertex, material.Shader.Fragment)
+
 }
 
 func (self *OpenGLRenderer) BeginRender() {
@@ -73,11 +74,11 @@ func (self *OpenGLRenderer) renderOne(operation render.RenderOperation, renderSt
 	vertexArrayObj := mesh.VertexArrayObj.(gl.VertexArray)
 	vertexArrayObj.Bind()
 
-	material.ShaderProgram.SetUniformMatrix(
+	material.Shader.Program.SetUniformMatrix(
 		"modelViewProjection",
 		renderState.Projection.Times(renderState.View).Times(transform),
 	)
-	material.ShaderProgram.Use()
+	material.Shader.Program.Use()
 
 	gl.DrawArrays(gl.TRIANGLES, 0, len(mesh.VertexList)*3)
 }
