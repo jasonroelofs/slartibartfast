@@ -26,4 +26,7 @@ type Material struct {
 	// Name of the set of .frag/.vert files this material uses
 	// This can be a local path from inside data/shaders
 	Shader *Shader
+
+	// Loaded Texture image data
+	Texture *Texture
 }

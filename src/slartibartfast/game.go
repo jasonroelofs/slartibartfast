@@ -15,16 +15,17 @@ import (
 )
 
 type Game struct {
-	config    *configs.Config
-	entityDB  *core.EntityDB
+	config   *configs.Config
+	entityDB *core.EntityDB
 
-	renderer  render.Renderer
-	window    core.Window
-	camera    *core.Camera
+	renderer render.Renderer
+	window   core.Window
+	camera   *core.Camera
 
 	graphicalBehavior *behaviors.Graphical
 
-	boxen     []core.Entity
+	boxen           []core.Entity
+	currentRotation float32
 }
 
 func NewGame(config *configs.Config) *Game {
@@ -106,13 +107,20 @@ func (self *Game) initializeScene() {
 
 		self.RegisterEntity(box)
 	}
+
+	self.graphicalBehavior.LoadMaterial(render.MaterialDef{
+		Name: "uvMap",
+		Texture: "uvtemplate.bmp",
+		Shaders: "1texture_unlit",
+	})
+
+	visual := components.GetVisual(&self.boxen[0])
+	visual.MaterialName = "uvMap"
 }
 
 func (self *Game) RegisterEntity(entity *core.Entity) {
 	self.entityDB.RegisterEntity(entity)
 }
-
-var currentRotation float32
 
 func (self *Game) Tick(deltaT float32) {
 	box := self.boxen[0]
@@ -121,8 +129,8 @@ func (self *Game) Tick(deltaT float32) {
 	currPos := components.GetTransform(&box).Position
 	t := components.GetTransform(&box)
 	t.Position.X = currPos.X + deltaT
-	t.Position.Y = currPos.Y + 2 * deltaT
-	t.Position.Z = currPos.Z + 3 * deltaT
+	t.Position.Y = currPos.Y + 2*deltaT
+	t.Position.Z = currPos.Z + 3*deltaT
 
 	if t.Position.X > 10 {
 		t.Position.X = 0
@@ -140,8 +148,8 @@ func (self *Game) Tick(deltaT float32) {
 	box2 := self.boxen[1]
 	t = components.GetTransform(&box2)
 	t.Scale.X = t.Scale.X + deltaT
-	t.Scale.Y = t.Scale.Y + 2 * deltaT
-	t.Scale.Z = t.Scale.Z + 4 * deltaT
+	t.Scale.Y = t.Scale.Y + 2*deltaT
+	t.Scale.Z = t.Scale.Z + 4*deltaT
 
 	if t.Scale.X > 3 {
 		t.Scale.X = 1
@@ -185,12 +193,12 @@ func (self *Game) Tick(deltaT float32) {
 	t.Rotation = t.Rotation.RotateZ(45.0 * deltaT).RotateY(45.0 * deltaT).RotateX(45.0 * deltaT)
 
 	self.camera.Position = math3d.Vector{
-		math3d.Cos(math3d.DegToRad(currentRotation)) * 20,
+		math3d.Cos(math3d.DegToRad(self.currentRotation)) * 20,
 		self.camera.Position.Y,
-		math3d.Sin(math3d.DegToRad(currentRotation)) * 20,
+		math3d.Sin(math3d.DegToRad(self.currentRotation)) * 20,
 	}
 
-	currentRotation += 30 * deltaT;
+	self.currentRotation += 30 * deltaT
 
 	// Update all behaviors
 	self.graphicalBehavior.Update(self.camera, deltaT)

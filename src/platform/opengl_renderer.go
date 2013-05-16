@@ -22,7 +22,17 @@ func (self *OpenGLRenderer) LoadMesh(mesh *render.Mesh) {
 	attribLoc.EnableArray()
 	attribLoc.AttribPointer(3, gl.FLOAT, false, 0, nil)
 
-	if len(mesh.ColorList) > 0 {
+	if len(mesh.UVList) > 0 {
+		uvBuffer := gl.GenBuffer()
+		uvBuffer.Bind(gl.ARRAY_BUFFER)
+		gl.BufferData(gl.ARRAY_BUFFER, len(mesh.UVList) * 4, mesh.UVList, gl.STATIC_DRAW)
+
+		attribLoc := gl.AttribLocation(1)
+		attribLoc.EnableArray()
+		attribLoc.AttribPointer(2, gl.FLOAT, false, 0, nil)
+
+		mesh.UVBuffer = uvBuffer
+	} else if len(mesh.ColorList) > 0 {
 		colorBuffer := gl.GenBuffer()
 		colorBuffer.Bind(gl.ARRAY_BUFFER)
 		gl.BufferData(gl.ARRAY_BUFFER, len(mesh.ColorList)*4, mesh.ColorList, gl.STATIC_DRAW)
@@ -41,6 +51,9 @@ func (self *OpenGLRenderer) LoadMesh(mesh *render.Mesh) {
 func (self *OpenGLRenderer) LoadMaterial(material *render.Material) {
 	material.Shader.Program = NewGLSLProgram(material.Shader.Vertex, material.Shader.Fragment)
 
+//	if material.Texture.Bound() {
+//		material.Texture = NewOpenGLTexture(material.TextureName)
+//	}
 }
 
 func (self *OpenGLRenderer) BeginRender() {

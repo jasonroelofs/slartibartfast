@@ -51,10 +51,18 @@ func Test_MaterialLoader_Load_LoadsRequestedShaders(t *testing.T) {
 
 	assert.Equal(t, "vertex shader\n", material.Shader.Vertex)
 	assert.Equal(t, "fragment shader\n", material.Shader.Fragment)
+}
 
-	// To do this here or not. Would require passing in the renderer into all these loaders
-	// Might keep this logic inside of Graphical
-	//assert.NotNil(t, material.Shader.Program)
+func Test_MaterialLoader_Load_LoadsRequestedTexture(t *testing.T) {
+	loader := GetMaterialLoader()
+
+	material := loader.Load(MaterialDef{
+		Name:    "testMaterial",
+		Texture: "test.png",
+		Shaders: "testing",
+	})
+
+	assert.NotNil(t, material.Texture)
 }
 
 func Test_MaterialLoader_Get_ReturnsMaterialPointer(t *testing.T) {

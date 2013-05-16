@@ -12,23 +12,31 @@ type materialMap map[string]*Material
 
 type MaterialLoader struct {
 	shaderLoader    *ShaderLoader
+	textureLoader   *TextureLoader
+
 	loadedMaterials materialMap
 }
 
 func NewMaterialLoader() *MaterialLoader {
 	loader := new(MaterialLoader)
 	loader.loadedMaterials = make(materialMap)
+
 	loader.shaderLoader = NewShaderLoader()
+	loader.textureLoader = NewTextureLoader()
 
 	return loader
 }
 
 func (self *MaterialLoader) Load(materialDefinition MaterialDef) *Material {
-	log.Println("Loading Material Definition ", materialDefinition.Name)
+	log.Println("Loading Material Definition", materialDefinition.Name)
 
 	material := Material{
 		Name: materialDefinition.Name,
 		Shader: self.shaderLoader.Load(materialDefinition.Shaders),
+	}
+
+	if materialDefinition.Texture != "" {
+		material.Texture = self.textureLoader.Load(materialDefinition.Texture)
 	}
 
 	self.loadedMaterials[material.Name] = &material
