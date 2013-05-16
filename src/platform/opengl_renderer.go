@@ -60,15 +60,19 @@ func (self *OpenGLRenderer) LoadMaterial(material *render.Material) {
 func (self *OpenGLRenderer) LoadTexture(texture *render.Texture) gl.Texture {
 	glTexture := gl.GenTexture()
 	glTexture.Bind(gl.TEXTURE_2D)
-
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGB,
-		texture.Image.Width(), texture.Image.Height(), 0, gl.RGB, gl.UNSIGNED_BYTE,
-		texture.Image.Bytes())
+	defer glTexture.Unbind(gl.TEXTURE_2D)
 
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGB,
+		texture.Image.Width(), texture.Image.Height(), 0,
+		gl.RGB, gl.UNSIGNED_BYTE,
+		texture.Image.Bytes(),
+	)
+
 	gl.GenerateMipmap(gl.TEXTURE_2D)
 
 	self.checkErrors()
@@ -126,6 +130,7 @@ func (self *OpenGLRenderer) renderOne(operation render.RenderOperation, renderSt
 }
 
 func (self *OpenGLRenderer) FinishRender() {
+	gl.Disable(gl.DEPTH_TEST)
 }
 
 func (self *OpenGLRenderer) checkErrors() {

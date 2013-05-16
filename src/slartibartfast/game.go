@@ -84,23 +84,15 @@ func (self *Game) initializeBehaviors() {
 
 func (self *Game) initializeScene() {
 	self.camera = core.NewCamera()
-	self.camera.Perspective(45.0, 4.0/3.0, 0.1, 100.0)
-	self.camera.Position = math3d.Vector{20, 20, 20}
+	// Needs to be window.Width() / window.Height()
+	self.camera.Perspective(60.0, 4.0/3.0, 0.1, 100.0)
+	self.camera.Position = math3d.Vector{20, 0, 20}
 	self.camera.LookAt = math3d.Vector{0, 0, 0}
 
-	self.currentScene = NewSpinningCubes(self)
+//	self.currentScene = NewSpinningCubes(self)
+	self.currentScene = NewTexturedCube(self)
+
 	self.currentScene.Setup()
-
-	/*
-	self.graphicalBehavior.LoadMaterial(render.MaterialDef{
-		Name:    "uvMap",
-		Texture: "uvtemplate.bmp",
-		Shaders: "1texture_unlit",
-	})
-
-	visual := components.GetVisual(&self.boxen[0])
-	visual.MaterialName = "uvMap"
-	*/
 }
 
 func (self *Game) RegisterEntity(entity *core.Entity) {
