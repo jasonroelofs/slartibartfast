@@ -16,6 +16,10 @@ type Image struct {
 }
 
 func NewImage(filePath string) *Image {
+	if !initialised {
+		Initialise()
+	}
+
 	image := new(Image)
 	image.load(filePath)
 	return image

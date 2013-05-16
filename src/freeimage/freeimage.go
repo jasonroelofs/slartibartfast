@@ -5,12 +5,16 @@ package freeimage
 // #include <stdlib.h>
 import "C"
 
+var initialised = false
+
 func Initialise() {
 	C.FreeImage_Initialise(0)
+	initialised = true
 }
 
 func DeInitialise() {
 	C.FreeImage_DeInitialise()
+	initialised = false
 }
 
 func Version() string {
