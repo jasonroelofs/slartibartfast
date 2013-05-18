@@ -72,8 +72,8 @@ func Test_Update_ConfiguresQueueWithViewData(t *testing.T) {
 	graphical, renderer, _ := getTestGraphical()
 
 	camera := core.NewCamera()
-	camera.Position = math3d.Vector{5, 5, 5}
-	camera.LookAt = math3d.Vector{1, 2, 3}
+	camera.SetPosition(math3d.Vector{5, 5, 5})
+	camera.LookAt(math3d.Vector{1, 2, 3})
 
 	graphical.Update(camera, 0)
 
