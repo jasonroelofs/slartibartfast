@@ -7,9 +7,10 @@ import (
 
 // A Camera defines how one looks at the current scene
 type Camera struct {
-	Projection math3d.Matrix
-	LookAt     math3d.Vector
 	Up         math3d.Vector
+
+	projection math3d.Matrix
+	lookAt     math3d.Vector
 
 	// Cameras link to an Entity which is their physical
 	// presence in the scene
@@ -31,18 +32,22 @@ func (self *Camera) SetPosition(newPosition math3d.Vector) {
 	components.GetTransform(self.entity).Position = newPosition
 }
 
+func (self *Camera) LookAt(point math3d.Vector) {
+	self.lookAt = point
+}
+
 func (self *Camera) Perspective(fov, aspectRatio, nearPlane, farPlane float32) {
-	self.Projection = math3d.Perspective(fov, aspectRatio, nearPlane, farPlane)
+	self.projection = math3d.Perspective(fov, aspectRatio, nearPlane, farPlane)
 }
 
 func (self *Camera) ProjectionMatrix() math3d.Matrix {
-	return self.Projection
+	return self.projection
 }
 
 func (self *Camera) ViewMatrix() math3d.Matrix {
 	return math3d.LookAt(
 		self.Position(),
-		self.LookAt,
+		self.lookAt,
 		self.Up,
 	)
 }
