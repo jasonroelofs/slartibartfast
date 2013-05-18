@@ -84,8 +84,7 @@ func (self *Game) initializeBehaviors() {
 
 func (self *Game) initializeScene() {
 	self.camera = core.NewCamera()
-	// Needs to be window.Width() / window.Height()
-	self.camera.Perspective(60.0, 4.0/3.0, 0.1, 100.0)
+	self.camera.Perspective(60.0, self.window.AspectRatio(), 0.1, 100.0)
 	self.camera.LookAt(math3d.Vector{0, 0, 0})
 	self.camera.SetPosition(math3d.Vector{20, 0, 20})
 

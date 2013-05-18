@@ -79,6 +79,11 @@ func (self *OpenGLWindow) Open() {
 	glfw.SetWindowTitle("Project Slartibartfast")
 }
 
+func (self *OpenGLWindow) AspectRatio() float32 {
+	width, height := glfw.WindowSize()
+	return float32(width) / float32(height)
+}
+
 func (self *OpenGLWindow) TimeSinceLast() float32 {
 	if self.timeLastCall == 0 {
 		self.timeLastCall = glfw.Time()
@@ -102,3 +107,4 @@ func (self *OpenGLWindow) SwapBuffers() {
 func (self *OpenGLWindow) Close() {
 	glfw.Terminate()
 }
+
