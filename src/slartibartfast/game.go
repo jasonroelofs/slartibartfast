@@ -86,8 +86,8 @@ func (self *Game) initializeScene() {
 	self.camera = core.NewCamera()
 	// Needs to be window.Width() / window.Height()
 	self.camera.Perspective(60.0, 4.0/3.0, 0.1, 100.0)
-	self.camera.Position = math3d.Vector{20, 0, 20}
 	self.camera.LookAt = math3d.Vector{0, 0, 0}
+	self.camera.SetPosition(math3d.Vector{20, 0, 20})
 
 	self.currentScene = NewSpinningCubes(self)
 //	self.currentScene = NewTexturedCube(self)
@@ -102,11 +102,11 @@ func (self *Game) RegisterEntity(entity *core.Entity) {
 func (self *Game) Tick(deltaT float32) {
 	self.currentScene.Tick(deltaT)
 
-	self.camera.Position = math3d.Vector{
+	self.camera.SetPosition(math3d.Vector{
 		math3d.Cos(math3d.DegToRad(self.currentRotation)) * 20,
-		self.camera.Position.Y,
+		self.camera.Position().Y,
 		math3d.Sin(math3d.DegToRad(self.currentRotation)) * 20,
-	}
+	})
 
 	self.currentRotation += 30 * deltaT
 
