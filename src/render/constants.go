@@ -133,9 +133,8 @@ func init() {
 
 	DefaultMaterial = MaterialDef{
 		Name: "",
-		// Texture
+		Texture: "uvtemplate.tga",
 		// Lighting Parameters
-		// Shader Set
-		Shaders: "default_unlit",
+		Shaders: "1texture_unlit",
 	}
 }

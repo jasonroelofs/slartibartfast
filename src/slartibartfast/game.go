@@ -89,8 +89,8 @@ func (self *Game) initializeScene() {
 	self.camera.Position = math3d.Vector{20, 0, 20}
 	self.camera.LookAt = math3d.Vector{0, 0, 0}
 
-//	self.currentScene = NewSpinningCubes(self)
-	self.currentScene = NewTexturedCube(self)
+	self.currentScene = NewSpinningCubes(self)
+//	self.currentScene = NewTexturedCube(self)
 
 	self.currentScene.Setup()
 }
