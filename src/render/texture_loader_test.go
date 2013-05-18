@@ -28,12 +28,3 @@ func Test_TextureLoader_Load_CachesLoadedTexturesByName(t *testing.T) {
 
 	assert.Equal(t, texture, loader.loadedTextures["test.png"])
 }
-
-func Test_TextureLoader_Load_PanicsIfCantFindTextureFile(t *testing.T) {
-	Defaults.LoadPath = "testdata"
-	loader := NewTextureLoader()
-
-	assert.Panics(t, func() {
-		loader.Load("does_not_exist")
-	})
-}

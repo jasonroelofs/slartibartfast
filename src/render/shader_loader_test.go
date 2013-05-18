@@ -28,12 +28,3 @@ func Test_ShaderLoader_Load_CachesLoadedShadersByName(t *testing.T) {
 
 	assert.Equal(t, shader, loader.loadedShaders["testing"])
 }
-
-func Test_ShaderLoader_Load_PanicsIfCantFindShaderFile(t *testing.T) {
-	Defaults.LoadPath = "testdata"
-	loader := NewShaderLoader()
-
-	assert.Panics(t, func() {
-		loader.Load("does_not_exist")
-	})
-}

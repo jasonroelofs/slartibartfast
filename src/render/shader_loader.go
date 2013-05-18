@@ -35,7 +35,7 @@ func (self *ShaderLoader) loadProgram(programName string) string {
 
 	source, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.Panic("Error loading shader", path, ": ", err)
+		log.Println("ERROR: Unable to loading shader", path, ": ", err)
 	}
 
 	return string(source)

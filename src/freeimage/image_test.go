@@ -13,12 +13,6 @@ func Test_NewImage_InitializesImageWithLoadedData(t *testing.T) {
 	assert.Equal(t, PNG, image.ImageType)
 }
 
-func Test_NewImage_PanicsOnNotFoundFile(t *testing.T) {
-	assert.Panics(t, func() {
-		NewImage("testdata/not_found.png")
-	})
-}
-
 func Test_Image_Width(t *testing.T) {
 	image := NewImage("testdata/test.png")
 	assert.Equal(t, 200, image.Width())

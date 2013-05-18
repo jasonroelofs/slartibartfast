@@ -37,7 +37,6 @@ func getTestGraphical() (*Graphical, *TestRenderer, *core.EntityDB) {
 	entityDB := new(core.EntityDB)
 	renderer := new(TestRenderer)
 
-	render.Defaults.LoadPath = "testdata"
 	graphical := NewGraphical(renderer, entityDB)
 
 	return graphical, renderer, entityDB
