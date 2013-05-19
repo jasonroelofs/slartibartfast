@@ -11,7 +11,7 @@ import (
 
 func Test_MoveForward(t *testing.T) {
 	entity := core.NewEntity()
-	event := events.Event{}
+	event := events.Event{Pressed: true}
 
 	FPSMapping[events.MoveForward](entity, event)
 
