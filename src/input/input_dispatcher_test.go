@@ -79,7 +79,7 @@ func Test_StoresKeyEventsReceived(t *testing.T) {
 	assert.False(t, mapper.storedEvents[1].Pressed)
 }
 
-func Test_EventsSinceLast_ReturnsStoredEventsAndClearsList(t *testing.T) {
+func Test_RecentEvents_ReturnsStoredEventsAndClearsList(t *testing.T) {
 	mapper := NewInputDispatcher()
 	mapper.mapKeyToEvent(KeyQ, events.Quit)
 	mapper.mapKeyToEvent(KeyD, events.MoveForward)
@@ -91,4 +91,11 @@ func Test_EventsSinceLast_ReturnsStoredEventsAndClearsList(t *testing.T) {
 
 	assert.Equal(t, 2, len(nextEvents))
 	assert.Equal(t, 0, len(mapper.storedEvents))
+}
+
+func Test_RecentEvents_ReturnsEmptyListOnNoEvents(t *testing.T) {
+	mapper := NewInputDispatcher()
+	nextEvents := mapper.RecentEvents()
+
+	assert.Equal(t, 0, len(nextEvents))
 }

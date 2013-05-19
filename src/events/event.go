@@ -8,6 +8,9 @@ type Event struct {
 }
 
 const (
-	NULL EventType = iota
-	QUIT
+	Quit EventType = iota
+	MoveForward
+	MoveBackward
+	MoveLeft
+	MoveRight
 )

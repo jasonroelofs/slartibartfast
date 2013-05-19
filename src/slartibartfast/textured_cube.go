@@ -24,6 +24,10 @@ func (self *TexturedCube) Setup() {
 	transform := components.GetTransform(self.theCube)
 	transform.Scale = math3d.Vector{5, 5, 5}
 
+	self.theCube.AddComponent(&components.Input{
+		Mapping: FPSMapping,
+	})
+
 	self.game.RegisterEntity(self.theCube)
 }
 

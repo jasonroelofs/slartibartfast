@@ -17,14 +17,16 @@ type Game struct {
 	config   *configs.Config
 	entityDB *core.EntityDB
 
-	renderer     render.Renderer
-	window       core.Window
-	camera       *core.Camera
-	currentScene Scene
+	renderer        render.Renderer
+	window          core.Window
+	camera          *core.Camera
+	inputDispatcher *input.InputDispatcher
 
+	inputBehavior     *behaviors.Input
 	graphicalBehavior *behaviors.Graphical
 
-	currentRotation float32
+	currentScene Scene
+	//	currentRotation float32
 }
 
 type Scene interface {
@@ -42,14 +44,13 @@ func (self *Game) Run() {
 
 	self.entityDB = new(core.EntityDB)
 	self.renderer = new(platform.OpenGLRenderer)
+	self.inputDispatcher = input.NewInputDispatcher()
 
 	self.initializeBehaviors()
 	self.initializeScene()
 
 	running := true
-
-	inputHandler := input.NewInputDispatcher()
-	inputHandler.On(events.Quit, func(e events.Event) {
+	self.inputDispatcher.On(events.Quit, func(e events.Event) {
 		running = false
 	})
 
@@ -79,6 +80,7 @@ func calcAndPrintFPS(frameCount *int64) {
 }
 
 func (self *Game) initializeBehaviors() {
+	self.inputBehavior = behaviors.NewInput(self.inputDispatcher, self.entityDB)
 	self.graphicalBehavior = behaviors.NewGraphical(self.renderer, self.entityDB)
 }
 
@@ -86,10 +88,10 @@ func (self *Game) initializeScene() {
 	self.camera = core.NewCamera()
 	self.camera.Perspective(60.0, self.window.AspectRatio(), 0.1, 100.0)
 	self.camera.LookAt(math3d.Vector{0, 0, 0})
-	self.camera.SetPosition(math3d.Vector{20, 0, 20})
+	self.camera.SetPosition(math3d.Vector{20, 20, 20})
 
-	self.currentScene = NewSpinningCubes(self)
-//	self.currentScene = NewTexturedCube(self)
+	//	self.currentScene = NewSpinningCubes(self)
+	self.currentScene = NewTexturedCube(self)
 
 	self.currentScene.Setup()
 }
@@ -101,15 +103,16 @@ func (self *Game) RegisterEntity(entity *core.Entity) {
 func (self *Game) Tick(deltaT float32) {
 	self.currentScene.Tick(deltaT)
 
-	self.camera.SetPosition(math3d.Vector{
-		math3d.Cos(math3d.DegToRad(self.currentRotation)) * 20,
-		self.camera.Position().Y,
-		math3d.Sin(math3d.DegToRad(self.currentRotation)) * 20,
-	})
-
-	self.currentRotation += 30 * deltaT
+	//	self.camera.SetPosition(math3d.Vector{
+	//		math3d.Cos(math3d.DegToRad(self.currentRotation)) * 20,
+	//		self.camera.Position().Y,
+	//		math3d.Sin(math3d.DegToRad(self.currentRotation)) * 20,
+	//	})
+	//
+	//	self.currentRotation += 30 * deltaT
 
 	// Update all behaviors
+	self.inputBehavior.Update(deltaT)
 	self.graphicalBehavior.Update(self.camera, deltaT)
 }
 

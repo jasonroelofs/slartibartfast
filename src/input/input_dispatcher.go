@@ -19,13 +19,19 @@ type InputDispatcher struct {
 
 func NewInputDispatcher() *InputDispatcher {
 	mapper := InputDispatcher{
-		callbacks:   make(eventCallbackMap),
-		keyMappings: make(keyEventMap),
+		callbacks:    make(eventCallbackMap),
+		keyMappings:  make(keyEventMap),
 	}
 
 	// Set up testing key mappings
 	mapper.mapKeyToEvent(KeyQ, events.Quit)
 	mapper.mapKeyToEvent(KeyEsc, events.Quit)
+
+	// MY FPS Movement mapping. Screw this WASD crap :P
+	mapper.mapKeyToEvent(KeyE, events.MoveForward)
+	mapper.mapKeyToEvent(KeyD, events.MoveBackward)
+	mapper.mapKeyToEvent(KeyS, events.MoveLeft)
+	mapper.mapKeyToEvent(KeyF, events.MoveRight)
 
 	glfw.SetKeyCallback(mapper.keyCallback)
 
