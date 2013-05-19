@@ -8,14 +8,13 @@ import (
 
 type eventCallbackMap map[events.EventType]func(events.Event)
 type keyEventMap map[int]events.EventType
-type eventList []events.Event
 
 type InputDispatcher struct {
 	callbacks   eventCallbackMap
 	keyMappings keyEventMap
 
 	// List of events received. Gets cleared when requested.
-	storedEvents eventList
+	storedEvents EventList
 }
 
 func NewInputDispatcher() *InputDispatcher {
@@ -69,8 +68,8 @@ func (self *InputDispatcher) fireLocalCallback(event events.Event) {
 // RecentEvents returns the list of events queued up since the last time
 // this method was called. This method returns a copy of the events list
 // then clears out it's internal list for the next frame.
-func (self *InputDispatcher) RecentEvents() []events.Event {
+func (self *InputDispatcher) RecentEvents() EventList {
 	eventsList := self.storedEvents
-	self.storedEvents = eventList{}
+	self.storedEvents = EventList{}
 	return eventsList
 }
