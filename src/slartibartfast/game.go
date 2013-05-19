@@ -48,8 +48,8 @@ func (self *Game) Run() {
 
 	running := true
 
-	inputHandler := input.NewInput()
-	inputHandler.On(events.QUIT, func(e events.Event) {
+	inputHandler := input.NewInputDispatcher()
+	inputHandler.On(events.Quit, func(e events.Event) {
 		running = false
 	})
 
