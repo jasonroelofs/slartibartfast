@@ -78,3 +78,29 @@ func Test_Transform_TransformMatrix_AppliesRotationTransformation(t *testing.T) 
 
 	assert.NotEqual(t, notExpected, transform.TransformMatrix())
 }
+
+func Test_Moving_SetsMoveDirection(t *testing.T) {
+	transform := Transform{}
+
+	transform.Moving(math3d.Vector{1, 0, 0})
+	assert.Equal(t, math3d.Vector{1, 0, 0}, transform.moveDirection)
+
+	transform.Moving(math3d.Vector{0, 0, 1})
+	assert.Equal(t, math3d.Vector{1, 0, 1}, transform.moveDirection)
+
+	transform.Moving(math3d.Vector{-1, 0, 0})
+	assert.Equal(t, math3d.Vector{0, 0, 1}, transform.moveDirection)
+
+	transform.Moving(math3d.Vector{0, 0, -1})
+	assert.Equal(t, math3d.Vector{0, 0, 0}, transform.moveDirection)
+}
+
+func Test_MoveDir_ReturnsNormalizedMoveDirection(t *testing.T) {
+	transform := Transform{}
+
+	transform.Moving(math3d.Vector{1, 0, 0})
+	transform.Moving(math3d.Vector{0, 0, 1})
+	transform.Moving(math3d.Vector{0, 1, 0})
+
+	assert.True(t, (1 - transform.MoveDir().Length()) < 0.0001)
+}

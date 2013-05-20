@@ -9,6 +9,9 @@ type Transform struct {
 	Position math3d.Vector
 	Scale    math3d.Vector
 	Rotation math3d.Quaternion
+
+	// The direction this Entity is currently moving
+	moveDirection math3d.Vector
 }
 
 func NewTransform() Transform {
@@ -35,4 +38,18 @@ func (self Transform) TransformMatrix() math3d.Matrix {
 	rotation := math3d.RotationMatrix(self.Rotation)
 
 	return position.Times(rotation).Times(scale)
+}
+
+// Moving sets the current direction this Transform should be moving
+// Subsequent calls to this method will apply the vector to the existing
+// move direction. This gets normalized when requested via MoveDir so set
+// the expected rate of change via Speed
+func (self *Transform) Moving(dir math3d.Vector) {
+	self.moveDirection = self.moveDirection.Add(dir)
+}
+
+// MoveDir normalizes and returns the current direction in which this
+// transform is moving.
+func (self Transform) MoveDir() math3d.Vector {
+	return self.moveDirection.Normalize()
 }

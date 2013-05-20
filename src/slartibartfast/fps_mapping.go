@@ -3,6 +3,7 @@ package main
 import (
 	"components"
 	"events"
+	"math3d"
 )
 
 // InputMapping for FPS controls
@@ -21,8 +22,7 @@ func init() {
 func moveForward(entity components.ComponentHolder, event events.Event) {
 	if event.Pressed {
 		transform := components.GetTransform(entity)
-		transform.Position.Z -= 1
-		// transform.Moving(math3d.Vector{0, 0, -1})
+		transform.Moving(math3d.Vector{0, 0, -1})
 	}
 }
 
@@ -30,7 +30,7 @@ func moveForward(entity components.ComponentHolder, event events.Event) {
 func moveBackward(entity components.ComponentHolder, event events.Event) {
 	if event.Pressed {
 		transform := components.GetTransform(entity)
-		transform.Position.Z += 1
+		transform.Moving(math3d.Vector{0, 0, 1})
 	}
 }
 
@@ -38,7 +38,7 @@ func moveBackward(entity components.ComponentHolder, event events.Event) {
 func moveLeft(entity components.ComponentHolder, event events.Event) {
 	if event.Pressed {
 		transform := components.GetTransform(entity)
-		transform.Position.X -= 1
+		transform.Moving(math3d.Vector{-1, 0, 0})
 	}
 }
 
@@ -46,6 +46,6 @@ func moveLeft(entity components.ComponentHolder, event events.Event) {
 func moveRight(entity components.ComponentHolder, event events.Event) {
 	if event.Pressed {
 		transform := components.GetTransform(entity)
-		transform.Position.X += 1
+		transform.Moving(math3d.Vector{1, 0, 0})
 	}
 }

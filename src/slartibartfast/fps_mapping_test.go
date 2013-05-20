@@ -9,12 +9,25 @@ import (
 	"testing"
 )
 
-func Test_MoveForward(t *testing.T) {
-	entity := core.NewEntity()
+var eventTests = []struct {
+	event       events.EventType
+	expectedDir math3d.Vector
+}{
+	{events.MoveForward, math3d.Vector{0, 0, -1}},
+	{events.MoveBackward, math3d.Vector{0, 0, 1}},
+	{events.MoveRight, math3d.Vector{1, 0, 0}},
+	{events.MoveLeft, math3d.Vector{-1, 0, 0}},
+}
+
+func Test_CardinalMovement(t *testing.T) {
 	event := events.Event{Pressed: true}
 
-	FPSMapping[events.MoveForward](entity, event)
+	for _, testValue := range eventTests {
+		entity := core.NewEntity()
 
-	transform := components.GetTransform(entity)
-	assert.Equal(t, math3d.Vector{0, 0, -1}, transform.Position)
+		FPSMapping[testValue.event](entity, event)
+
+		transform := components.GetTransform(entity)
+		assert.Equal(t, testValue.expectedDir, transform.MoveDir())
+	}
 }
