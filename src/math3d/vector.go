@@ -48,10 +48,14 @@ func (self Vector) Length() float32 {
 
 func (self Vector) Normalize() Vector {
 	length := self.Length()
-	return Vector {
-		self.X / length,
-		self.Y / length,
-		self.Z / length,
+	if length == 0 {
+		return self
+	} else {
+		return Vector {
+			self.X / length,
+			self.Y / length,
+			self.Z / length,
+		}
 	}
 }
 

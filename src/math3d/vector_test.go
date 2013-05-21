@@ -52,6 +52,12 @@ func Test_Normalize(t *testing.T) {
 	assert.Equal(t, Vector{1, 0, 0}, vec.Normalize())
 }
 
+func Test_Normalize_HandlesZeroLength(t *testing.T) {
+	vec := Vector{0, 0, 0}
+
+	assert.Equal(t, Vector{0, 0, 0}, vec.Normalize())
+}
+
 func Test_Dot(t *testing.T) {
 	v1 := Vector{1, 0, 0}
 	v2 := Vector{0, 1, 0}
