@@ -23,6 +23,7 @@ type Game struct {
 	inputDispatcher *input.InputDispatcher
 
 	inputBehavior     *behaviors.Input
+	transformBehavior *behaviors.Transform
 	graphicalBehavior *behaviors.Graphical
 
 	currentScene Scene
@@ -81,6 +82,7 @@ func calcAndPrintFPS(frameCount *int64) {
 
 func (self *Game) initializeBehaviors() {
 	self.inputBehavior = behaviors.NewInput(self.inputDispatcher, self.entityDB)
+	self.transformBehavior = behaviors.NewTransform(self.entityDB)
 	self.graphicalBehavior = behaviors.NewGraphical(self.renderer, self.entityDB)
 }
 
@@ -113,6 +115,7 @@ func (self *Game) Tick(deltaT float32) {
 
 	// Update all behaviors
 	self.inputBehavior.Update(deltaT)
+	self.transformBehavior.Update(deltaT)
 	self.graphicalBehavior.Update(self.camera, deltaT)
 }
 

@@ -23,6 +23,7 @@ func (self *TexturedCube) Setup() {
 
 	transform := components.GetTransform(self.theCube)
 	transform.Scale = math3d.Vector{5, 5, 5}
+	transform.Speed = math3d.Vector{5, 5, 5}
 
 	self.theCube.AddComponent(&components.Input{
 		Mapping: FPSMapping,
@@ -32,5 +33,4 @@ func (self *TexturedCube) Setup() {
 }
 
 func (self *TexturedCube) Tick(deltaT float32) {
-	// Do nothing
 }

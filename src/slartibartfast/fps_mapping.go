@@ -20,32 +20,44 @@ func init() {
 
 // Move the given entity in the -Z direction
 func moveForward(entity components.ComponentHolder, event events.Event) {
+	transform := components.GetTransform(entity)
+
 	if event.Pressed {
-		transform := components.GetTransform(entity)
 		transform.Moving(math3d.Vector{0, 0, -1})
+	} else {
+		transform.Moving(math3d.Vector{0, 0, 1})
 	}
 }
 
 // Move the given entity in the +Z direction
 func moveBackward(entity components.ComponentHolder, event events.Event) {
+	transform := components.GetTransform(entity)
+
 	if event.Pressed {
-		transform := components.GetTransform(entity)
 		transform.Moving(math3d.Vector{0, 0, 1})
+	} else {
+		transform.Moving(math3d.Vector{0, 0, -1})
 	}
 }
 
 // Move the given entity in the -X direction
 func moveLeft(entity components.ComponentHolder, event events.Event) {
+	transform := components.GetTransform(entity)
+
 	if event.Pressed {
-		transform := components.GetTransform(entity)
 		transform.Moving(math3d.Vector{-1, 0, 0})
+	} else {
+		transform.Moving(math3d.Vector{1, 0, 0})
 	}
 }
 
 // Move the given entity in the +X direction
 func moveRight(entity components.ComponentHolder, event events.Event) {
+	transform := components.GetTransform(entity)
+
 	if event.Pressed {
-		transform := components.GetTransform(entity)
 		transform.Moving(math3d.Vector{1, 0, 0})
+	} else {
+		transform.Moving(math3d.Vector{-1, 0, 0})
 	}
 }
