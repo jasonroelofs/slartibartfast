@@ -27,10 +27,17 @@ func Test_Sub(t *testing.T) {
 	assert.Equal(t,  Vector{3, 3, 3}, v2.Sub(v1))
 }
 
-func Test_Times(t *testing.T) {
+func Test_Scale(t *testing.T) {
 	vec := Vector{1, 2, 3}
 
-	assert.Equal(t,  Vector{10, 20, 30}, vec.Times(10))
+	assert.Equal(t,  Vector{10, 20, 30}, vec.Scale(10))
+}
+
+func Test_Times(t *testing.T) {
+	vec1 := Vector{1, 2, 3}
+	vec2 := Vector{2, 3, 4}
+
+	assert.Equal(t,  Vector{2, 6, 12}, vec1.Times(vec2))
 }
 
 func Test_Length(t *testing.T) {

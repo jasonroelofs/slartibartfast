@@ -26,11 +26,19 @@ func (self Vector) Sub(other Vector) Vector {
 	}
 }
 
-func (self Vector) Times(value float32) Vector {
+func (self Vector) Scale(value float32) Vector {
 	return Vector{
 		self.X * value,
 		self.Y * value,
 		self.Z * value,
+	}
+}
+
+func (self Vector) Times(other Vector) Vector {
+	return Vector{
+		self.X * other.X,
+		self.Y * other.Y,
+		self.Z * other.Z,
 	}
 }
 
