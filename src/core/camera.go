@@ -23,6 +23,13 @@ func NewCamera() *Camera {
 	return camera
 }
 
+//
+// components.Transform pass-through
+// A camera contains an Entity to keep track if its position
+// and orientation in the world, and to support hooking into
+// other behaviors as needed, like input.
+//
+
 func (self Camera) Position() math3d.Vector {
 	return components.GetTransform(self.Entity).Position
 }
@@ -47,18 +54,28 @@ func (self *Camera) AddComponent(component components.Component) {
 	self.Entity.AddComponent(component)
 }
 
+//
+// Projection and View Matrix methods
+//
+
+// LookAt changes the camera's orientation so that it is looking in
+// the direction of the requested point.
 func (self *Camera) LookAt(point math3d.Vector) {
 	self.lookAt = point
 }
 
+// Perspective calcualtes the perspective matrix this camera should apply
+// when rendering a view.
 func (self *Camera) Perspective(fov, aspectRatio, nearPlane, farPlane float32) {
 	self.projection = math3d.Perspective(fov, aspectRatio, nearPlane, farPlane)
 }
 
+// ProjectionMatrix returns the calcualted projection matrix
 func (self *Camera) ProjectionMatrix() math3d.Matrix {
 	return self.projection
 }
 
+// ViewMatrix calculates and returns the current view matrix
 func (self *Camera) ViewMatrix() math3d.Matrix {
 	return math3d.ViewMatrix(self.Position(), self.Rotation())
 }
