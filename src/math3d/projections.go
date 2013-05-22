@@ -14,7 +14,7 @@ func Perspective(fov, aspectRatio, nearPlane, farPlane float32) (matrix Matrix) 
 	return
 }
 
-// LookAt calculates the View Matrix for the given parameters (camera-centric)
+// LookAt calculates the LookAt matrix for the given parameters (camera-centric)
 func LookAt(position, lookAt, up Vector) Matrix {
 	zAxis := (position.Sub(lookAt)).Normalize()
 	xAxis := up.Normalize().Cross(zAxis)
@@ -24,10 +24,26 @@ func LookAt(position, lookAt, up Vector) Matrix {
 	dotY := yAxis.Dot(position)
 	dotZ := zAxis.Dot(position)
 
-	return Matrix{
+	viewMatrix := Matrix{
 		xAxis.X, yAxis.X, zAxis.X, 0,
 		xAxis.Y, yAxis.Y, zAxis.Y, 0,
 		xAxis.Z, yAxis.Z, zAxis.Z, 0,
 		-dotX, -dotY, -dotZ, 1,
 	}
+
+	return viewMatrix
+}
+
+// ViewMatrix calculates a full View Matrix from a Position and Rotation (Quaternion)
+// This is the Transpose of the Rotation matrix * Inverse of the position, because
+// we are moving the world into our view, not moving our view of the world.
+func ViewMatrix(position Vector, rotation Quaternion) Matrix {
+	viewMatrix := RotationMatrix(rotation).Transpose()
+	translation := position.Scale(-1)
+
+	viewMatrix[12] = translation.X
+	viewMatrix[13] = translation.Y
+	viewMatrix[14] = translation.Z
+
+	return viewMatrix
 }

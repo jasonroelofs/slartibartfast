@@ -30,3 +30,17 @@ func Test_LookAt(t *testing.T) {
 
 	assert.Equal(t, expected, matrix)
 }
+
+func Test_ViewMatrix(t *testing.T) {
+	position := Vector{1, 2, 3}
+	rotation := NewQuaternion()
+
+	expected := Matrix{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		-1, -2, -3, 1,
+	}
+
+	assert.Equal(t, expected, ViewMatrix(position, rotation))
+}

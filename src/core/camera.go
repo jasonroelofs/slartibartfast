@@ -7,19 +7,16 @@ import (
 
 // A Camera defines how one looks at the current scene
 type Camera struct {
-	Up         math3d.Vector
-
 	projection math3d.Matrix
 	lookAt     math3d.Vector
 
 	// Cameras link to an Entity which is their physical
 	// presence in the scene
-	Entity     *Entity
+	Entity *Entity
 }
 
 func NewCamera() *Camera {
 	camera := new(Camera)
-	camera.Up = math3d.Vector{0, 1, 0}
 	camera.Entity = NewEntity()
 	camera.Entity.Name = "Camera"
 
@@ -32,6 +29,14 @@ func (self Camera) Position() math3d.Vector {
 
 func (self *Camera) SetPosition(newPosition math3d.Vector) {
 	components.GetTransform(self.Entity).Position = newPosition
+}
+
+func (self *Camera) Rotation() math3d.Quaternion {
+	return components.GetTransform(self.Entity).Rotation
+}
+
+func (self *Camera) SetRotation(rotation math3d.Quaternion) {
+	components.GetTransform(self.Entity).Rotation = rotation
 }
 
 func (self *Camera) SetSpeed(newSpeed math3d.Vector) {
@@ -55,9 +60,5 @@ func (self *Camera) ProjectionMatrix() math3d.Matrix {
 }
 
 func (self *Camera) ViewMatrix() math3d.Matrix {
-	return math3d.LookAt(
-		self.Position(),
-		self.lookAt,
-		self.Up,
-	)
+	return math3d.ViewMatrix(self.Position(), self.Rotation())
 }
