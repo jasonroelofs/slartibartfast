@@ -17,6 +17,50 @@ func Test_QuatFromAngleAxis(t *testing.T) {
 	assert.NotEqual(t, zero, quat)
 }
 
+func Test_QuatFromAxes(t *testing.T) {
+	quat := QuatFromAxes(Vector{1, 0, 0}, Vector{0, 1, 0}, Vector{0, 0, 1})
+	assert.Equal(t, NewQuaternion(), quat)
+}
+
+func Test_QuatFromRotationMatrix(t *testing.T) {
+	matrix := IdentityMatrix()
+
+	assert.Equal(t, NewQuaternion(), QuatFromRotationMatrix(matrix))
+}
+
+func Test_QuatFromRotationMatrix_FirstElse(t *testing.T) {
+	matrix := Matrix{
+		1, 0, 0, 0,
+		0, -1, 0, 0,
+		0, 0, -1, 0,
+		0, 0, 0, 1,
+	}
+
+	assert.Equal(t, Quaternion{0, 1, 0, 0}, QuatFromRotationMatrix(matrix))
+}
+
+func Test_QuatFromRotationMatrix_SecondElse(t *testing.T) {
+	matrix := Matrix{
+		-1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, -1, 0,
+		0, 0, 0, 1,
+	}
+
+	assert.Equal(t, Quaternion{0, 0, 1, 0}, QuatFromRotationMatrix(matrix))
+}
+
+func Test_QuatFromRotationMatrix_ThirdElse(t *testing.T) {
+	matrix := Matrix{
+		-1, 0, 0, 0,
+		0, -1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
+	}
+
+	assert.Equal(t, Quaternion{0, 0, 0, 1}, QuatFromRotationMatrix(matrix))
+}
+
 func Test_Quaternion_Times(t *testing.T) {
 	quat1 := Quaternion{1, 1, 2, 3}
 	quat2 := Quaternion{1, 1, 2, 3}
