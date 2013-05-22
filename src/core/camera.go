@@ -14,22 +14,28 @@ type Camera struct {
 
 	// Cameras link to an Entity which is their physical
 	// presence in the scene
-	entity     *Entity
+	Entity     *Entity
 }
 
 func NewCamera() *Camera {
 	camera := new(Camera)
 	camera.Up = math3d.Vector{0, 1, 0}
-	camera.entity = NewEntity()
+	camera.Entity = NewEntity()
+	camera.Entity.Name = "Camera"
+
 	return camera
 }
 
 func (self Camera) Position() math3d.Vector {
-	return components.GetTransform(self.entity).Position
+	return components.GetTransform(self.Entity).Position
 }
 
 func (self *Camera) SetPosition(newPosition math3d.Vector) {
-	components.GetTransform(self.entity).Position = newPosition
+	components.GetTransform(self.Entity).Position = newPosition
+}
+
+func (self *Camera) AddComponent(component components.Component) {
+	self.Entity.AddComponent(component)
 }
 
 func (self *Camera) LookAt(point math3d.Vector) {

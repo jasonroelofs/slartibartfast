@@ -1,6 +1,7 @@
 package core
 
 import (
+	"components"
 	"github.com/stretchrcom/testify/assert"
 	"math3d"
 	"testing"
@@ -12,6 +13,15 @@ func Test_NewCamera_SetsGoodDefaults(t *testing.T) {
 	assert.Equal(t, math3d.Vector{0, 0, 0}, camera.lookAt)
 	assert.Equal(t, math3d.Vector{0, 0, 0}, camera.Position())
 	assert.Equal(t, math3d.Matrix{}, camera.ProjectionMatrix())
+}
+
+func Test_CanReceiveComponents(t *testing.T) {
+	camera := NewCamera()
+
+	input := new(components.Input)
+	camera.AddComponent(input)
+
+	assert.Equal(t, input, components.GetInput(camera.Entity))
 }
 
 func Test_Perspective_SetsPerspectiveMatrixAsProjection(t *testing.T) {
