@@ -49,7 +49,7 @@ type listenerRecord struct {
 
 func (self *EntityDB) notifyListenersOfNewEntity(entity *Entity) {
 	for _, listenerEntry := range self.listeners {
-		if entity.ComponentMap() & listenerEntry.componentMap > 0 {
+		if (entity.ComponentMap() & listenerEntry.componentMap) == listenerEntry.componentMap {
 			listenerEntry.entitySet.Append(entity)
 			listenerEntry.listener.SetUpEntity(entity)
 		}

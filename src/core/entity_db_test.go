@@ -81,6 +81,30 @@ func Test_AddsEntityToListenerEntityListIfComponentsMatch(t *testing.T) {
 	assert.Equal(t, entity, entitySet.Entities[0])
 }
 
+func Test_RegisterEntity_ProperlyWorksAgainstMultipleComponentTypes(t *testing.T) {
+	db := EntityDB{}
+
+	listener1 := new(TestListener)
+	listener2 := new(TestListener)
+	listener3 := new(TestListener)
+
+	es1 := db.RegisterListener(listener1, components.TRANSFORM)
+	es2 := db.RegisterListener(listener2, components.TRANSFORM, components.VISUAL)
+	es3 := db.RegisterListener(listener3, components.TRANSFORM, components.INPUT)
+
+	entity := NewEntity() // Has transform by default
+	entity.AddComponent(new(components.Input))
+
+	db.RegisterEntity(entity)
+
+	// 1 and 3 match this entity
+	assert.Equal(t, entity, es1.Entities[0])
+	assert.Equal(t, entity, es3.Entities[0])
+
+	// But 2 does not
+	assert.Equal(t, 0, len(es2.Entities))
+}
+
 // CleanUpEntity callback to listeners
 
 // Do all Entities need pointers back to the db that created them?
