@@ -7,9 +7,9 @@ import (
 // Transform holds location and rotation data of the holding Entity
 type Transform struct {
 	Position math3d.Vector
+	Rotation math3d.Quaternion
 	Scale    math3d.Vector
 	Speed    math3d.Vector
-	Rotation math3d.Quaternion
 
 	// The direction this Entity is currently moving
 	moveDirection math3d.Vector
