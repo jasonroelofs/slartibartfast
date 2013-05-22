@@ -2,6 +2,7 @@ package main
 
 import (
 	"behaviors"
+	"components"
 	"configs"
 	"core"
 	"events"
@@ -91,6 +92,15 @@ func (self *Game) initializeScene() {
 	self.camera.Perspective(60.0, self.window.AspectRatio(), 0.1, 100.0)
 	self.camera.LookAt(math3d.Vector{0, 0, 0})
 	self.camera.SetPosition(math3d.Vector{20, 20, 20})
+
+	self.camera.AddComponent(&components.Input{
+		Mapping: FPSMapping,
+	})
+
+	self.camera.SetSpeed(math3d.Vector{5, 5, 5})
+
+	// YUCK, must be a better way of doing this?
+	self.RegisterEntity(self.camera.Entity)
 
 	//	self.currentScene = NewSpinningCubes(self)
 	self.currentScene = NewTexturedCube(self)
