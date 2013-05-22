@@ -34,6 +34,10 @@ func (self *Camera) SetPosition(newPosition math3d.Vector) {
 	components.GetTransform(self.Entity).Position = newPosition
 }
 
+func (self *Camera) SetSpeed(newSpeed math3d.Vector) {
+	components.GetTransform(self.Entity).Speed = newSpeed
+}
+
 func (self *Camera) AddComponent(component components.Component) {
 	self.Entity.AddComponent(component)
 }

@@ -24,6 +24,20 @@ func Test_CanReceiveComponents(t *testing.T) {
 	assert.Equal(t, input, components.GetInput(camera.Entity))
 }
 
+func Test_SetPosition(t *testing.T) {
+	camera := NewCamera()
+	camera.SetPosition(math3d.Vector{1, 2, 3})
+
+	assert.Equal(t, math3d.Vector{1, 2, 3}, components.GetTransform(camera.Entity).Position)
+}
+
+func Test_SetSpeed(t *testing.T) {
+	camera := NewCamera()
+	camera.SetSpeed(math3d.Vector{1, 2, 3})
+
+	assert.Equal(t, math3d.Vector{1, 2, 3}, components.GetTransform(camera.Entity).Speed)
+}
+
 func Test_Perspective_SetsPerspectiveMatrixAsProjection(t *testing.T) {
 	camera := NewCamera()
 	camera.Perspective(90.0, 1, 0.0, 1.0)
