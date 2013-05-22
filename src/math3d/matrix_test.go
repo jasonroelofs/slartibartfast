@@ -63,6 +63,24 @@ func Test_Times_MultipliesMatricies(t *testing.T) {
 	assert.Equal(t, expects, got)
 }
 
+func Test_Matrix_Transpose(t *testing.T) {
+	matrix := Matrix{
+		1, 2, 3, 4,
+		5, 6, 7, 8,
+		9, 10, 11, 12,
+		13, 14, 15, 16,
+	}
+
+	expected := Matrix{
+		1, 5, 9, 13,
+		2, 6, 10, 14,
+		3, 7, 11, 15,
+		4, 8, 12, 16,
+	}
+
+	assert.Equal(t, expected, matrix.Transpose())
+}
+
 func Benchmark_Multiplcation(b *testing.B) {
 	matrix1 := Matrix{
 		1, 2, 3, 4,
