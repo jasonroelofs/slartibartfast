@@ -3,11 +3,14 @@ package core
 import (
 	"components"
 	"math3d"
+	"fmt"
 )
 
 type componentTypeMap map[components.ComponentType]components.Component
 
 type Entity struct {
+	Name string
+
 	// Implements ComponentHolder
 	components componentTypeMap
 }
@@ -52,4 +55,8 @@ func (self *Entity) ComponentMap() (typeMap components.ComponentType) {
 		typeMap |= componentType
 	}
 	return
+}
+
+func (self *Entity) String() string {
+	return fmt.Sprintf("Entity \"%s\" :: ComponentMap => %v", self.Name, self.components)
 }
