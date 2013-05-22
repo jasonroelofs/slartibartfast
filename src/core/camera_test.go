@@ -53,14 +53,14 @@ func Test_Perspective_SetsPerspectiveMatrixAsProjection(t *testing.T) {
 
 func Test_ViewMatrix_CalculatesViewMatrix(t *testing.T) {
 	camera := NewCamera()
-	camera.LookAt(math3d.Vector{0, 0, 0})
-	camera.SetPosition(math3d.Vector{1, 0, 0})
+	camera.LookAt(math3d.Vector{0, 0, -1})
+	camera.SetPosition(math3d.Vector{0, 0, 0})
 
 	expected := math3d.Matrix{
-		0, 0, 1, 0,
+		1, 0, 0, 0,
 		0, 1, 0, 0,
-		-1, 0, 0, 0,
-		0, 0, -1, 1,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
 	}
 
 	assert.Equal(t, expected, camera.ViewMatrix())

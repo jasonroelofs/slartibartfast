@@ -32,6 +32,18 @@ func GetTransform(holder ComponentHolder) *Transform {
 	return holder.GetComponent(TRANSFORM).(*Transform)
 }
 
+// LookAt changes this Transform's Rotation such that it's facing the point
+// For now, always assumes fixed Y-up axis
+func (self *Transform) LookAt(lookAtPoint math3d.Vector) {
+	fixedUp := math3d.Vector{0, 1, 0}
+
+	forward := self.Position.Sub(lookAtPoint).Normalize()
+	right := fixedUp.Cross(forward).Normalize()
+	up := forward.Cross(right).Normalize()
+
+	self.Rotation = math3d.QuatFromAxes(right, up, forward)
+}
+
 // TransformMatrix calculates and returns the full transformation matrix
 // for this Transform, combining Scale, Rotation, and Position.
 func (self Transform) TransformMatrix() math3d.Matrix {

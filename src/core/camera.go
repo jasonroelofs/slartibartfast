@@ -64,7 +64,7 @@ func (self *Camera) AddComponent(component components.Component) {
 // LookAt changes the camera's orientation so that it is looking in
 // the direction of the requested point.
 func (self *Camera) LookAt(point math3d.Vector) {
-	self.lookAt = point
+	self.transform.LookAt(point)
 }
 
 // Perspective calcualtes the perspective matrix this camera should apply

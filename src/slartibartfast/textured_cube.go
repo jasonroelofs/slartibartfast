@@ -23,7 +23,7 @@ func (self *TexturedCube) Setup() {
 	self.theCube.AddComponent(new(components.Visual))
 
 	transform := components.GetTransform(self.theCube)
-	transform.Position = math3d.Vector{0, 0, -20}
+	transform.Position = math3d.Vector{0, 0, 20}
 	transform.Scale = math3d.Vector{5, 5, 5}
 	transform.Speed = math3d.Vector{5, 5, 5}
 
