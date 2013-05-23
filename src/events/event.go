@@ -13,4 +13,6 @@ const (
 	MoveBackward
 	MoveLeft
 	MoveRight
+	TurnLeft
+	TurnRight
 )

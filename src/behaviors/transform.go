@@ -3,7 +3,6 @@ package behaviors
 import (
 	"components"
 	"core"
-	"math3d"
 )
 
 // The Transform behavior takes care of moving Entities around
@@ -24,15 +23,33 @@ func (self *Transform) SetUpEntity(entity *core.Entity) {
 
 func (self *Transform) Update(deltaT float32) {
 	var transform *components.Transform
-	var moveDir math3d.Vector
 
 	for _, entity := range self.entitySet.Entities {
 		transform = components.GetTransform(entity)
-		moveDir = transform.
-			MoveDir().
-			Times(transform.Speed).
-			Scale(deltaT)
 
-		transform.Position = transform.Position.Add(moveDir)
+		self.processMovement(deltaT, transform)
+		self.processRotation(deltaT, transform)
+	}
+}
+
+func (self *Transform) processMovement(deltaT float32, component *components.Transform) {
+	moveDir := component.MoveDir().Times(component.Speed).Scale(deltaT)
+
+	component.Position = component.Position.Add(moveDir)
+}
+
+func (self *Transform) processRotation(deltaT float32, component *components.Transform) {
+	rotateDir := component.RotateDir().Times(component.RotationSpeed).Scale(deltaT)
+
+	if rotateDir.X != 0 {
+		component.Rotation = component.Rotation.RotateX(rotateDir.X)
+	}
+
+	if rotateDir.Y != 0 {
+		component.Rotation = component.Rotation.RotateY(rotateDir.Y)
+	}
+
+	if rotateDir.Z != 0 {
+		component.Rotation = component.Rotation.RotateZ(rotateDir.Z)
 	}
 }

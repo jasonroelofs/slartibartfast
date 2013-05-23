@@ -11,6 +11,7 @@ func Test_NewTransform_InitializesGoodDefaults(t *testing.T) {
 	assert.Equal(t, math3d.Vector{0, 0, 0}, transform.Position)
 	assert.Equal(t, math3d.Vector{1, 1, 1}, transform.Scale)
 	assert.Equal(t, math3d.Quaternion{1, 0, 0, 0}, transform.Rotation)
+	assert.Equal(t, math3d.Vector{45, 45, 45}, transform.RotationSpeed)
 }
 
 func Test_Transform_Type(t *testing.T) {
@@ -110,4 +111,30 @@ func Test_MoveDir_ReturnsNormalizedMoveDirection(t *testing.T) {
 	transform.Moving(math3d.Vector{0, 1, 0})
 
 	assert.True(t, (1 - transform.MoveDir().Length()) < 0.0001)
+}
+
+func Test_Rotating_SetsRotateDirection(t *testing.T) {
+	transform := Transform{}
+
+	transform.Rotating(math3d.Vector{1, 0, 0})
+	assert.Equal(t, math3d.Vector{1, 0, 0}, transform.rotateDirection)
+
+	transform.Rotating(math3d.Vector{0, 0, 1})
+	assert.Equal(t, math3d.Vector{1, 0, 1}, transform.rotateDirection)
+
+	transform.Rotating(math3d.Vector{-1, 0, 0})
+	assert.Equal(t, math3d.Vector{0, 0, 1}, transform.rotateDirection)
+
+	transform.Rotating(math3d.Vector{0, 0, -1})
+	assert.Equal(t, math3d.Vector{0, 0, 0}, transform.rotateDirection)
+}
+
+func Test_RotatingDir_ReturnsNormalizedDirection(t *testing.T) {
+	transform := Transform{}
+
+	transform.Rotating(math3d.Vector{1, 0, 0})
+	transform.Rotating(math3d.Vector{0, 0, 1})
+	transform.Rotating(math3d.Vector{0, 1, 0})
+
+	assert.True(t, (1 - transform.RotateDir().Length()) < 0.0001)
 }

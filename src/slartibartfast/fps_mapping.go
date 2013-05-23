@@ -15,6 +15,8 @@ func init() {
 		events.MoveBackward: moveBackward,
 		events.MoveLeft:     moveLeft,
 		events.MoveRight:    moveRight,
+		events.TurnLeft:     turnLeft,
+		events.TurnRight:    turnRight,
 	}
 }
 
@@ -59,5 +61,26 @@ func moveRight(entity components.ComponentHolder, event events.Event) {
 		transform.Moving(math3d.Vector{1, 0, 0})
 	} else {
 		transform.Moving(math3d.Vector{-1, 0, 0})
+	}
+}
+
+// Rotate entity around its Y axis
+func turnLeft(entity components.ComponentHolder, event events.Event) {
+	transform := components.GetTransform(entity)
+
+	if event.Pressed {
+		transform.Rotating(math3d.Vector{0, -1, 0})
+	} else {
+		transform.Rotating(math3d.Vector{0, 1, 0})
+	}
+}
+
+func turnRight(entity components.ComponentHolder, event events.Event) {
+	transform := components.GetTransform(entity)
+
+	if event.Pressed {
+		transform.Rotating(math3d.Vector{0, 1, 0})
+	} else {
+		transform.Rotating(math3d.Vector{0, -1, 0})
 	}
 }

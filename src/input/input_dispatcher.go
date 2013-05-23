@@ -28,10 +28,13 @@ func NewInputDispatcher() *InputDispatcher {
 	mapper.mapKeyToEvent(KeyEsc, events.Quit)
 
 	// MY FPS Movement mapping. Screw this WASD crap :P
+	// Will move this to be something read from the settings file
 	mapper.mapKeyToEvent(KeyE, events.MoveForward)
 	mapper.mapKeyToEvent(KeyD, events.MoveBackward)
 	mapper.mapKeyToEvent(KeyS, events.MoveLeft)
 	mapper.mapKeyToEvent(KeyF, events.MoveRight)
+	mapper.mapKeyToEvent(KeyW, events.TurnLeft)
+	mapper.mapKeyToEvent(KeyR, events.TurnRight)
 
 	glfw.SetKeyCallback(mapper.keyCallback)
 

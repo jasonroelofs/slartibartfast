@@ -9,18 +9,29 @@ type Transform struct {
 	Position math3d.Vector
 	Rotation math3d.Quaternion
 	Scale    math3d.Vector
-	Speed    math3d.Vector
+
+	// Speed at which this Entity will move along each axis
+	// Defaults to 1 unit / second
+	Speed math3d.Vector
+
+	// Speed at which this entity will rotate around each axis
+	// Defaults to 45 degrees / second
+	RotationSpeed math3d.Vector
 
 	// The direction this Entity is currently moving
 	moveDirection math3d.Vector
+
+	// The direction this Entity is rotating
+	rotateDirection math3d.Vector
 }
 
 func NewTransform() Transform {
 	return Transform{
-		Position: math3d.Vector{0, 0, 0},
-		Scale:    math3d.Vector{1, 1, 1},
-		Speed:    math3d.Vector{1, 1, 1},
-		Rotation: math3d.NewQuaternion(),
+		Position:      math3d.Vector{0, 0, 0},
+		Scale:         math3d.Vector{1, 1, 1},
+		Speed:         math3d.Vector{1, 1, 1},
+		Rotation:      math3d.NewQuaternion(),
+		RotationSpeed: math3d.Vector{45, 45, 45},
 	}
 }
 
@@ -66,4 +77,19 @@ func (self *Transform) Moving(dir math3d.Vector) {
 // transform is moving.
 func (self *Transform) MoveDir() math3d.Vector {
 	return self.moveDirection.Normalize()
+}
+
+// Rotating sets a vector defining the axis and direction (positive / negative)
+// of the rotation. So to rotate this entity around the X axis in negative degrees,
+// give Vector{-1, 0, 0}. Multiple rotation directions can be running at the
+// same time, subsequent calls to this method will combine the directions.
+// As with Moving, don't use dir to define Speed, instead use RotationSpeed to
+// set how fast this Entity will rotate.
+func (self *Transform) Rotating(dir math3d.Vector) {
+	self.rotateDirection = self.rotateDirection.Add(dir)
+}
+
+// RotateDir returns a normalized Vector from Rotating
+func (self *Transform) RotateDir() math3d.Vector {
+	return self.rotateDirection.Normalize()
 }
