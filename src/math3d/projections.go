@@ -35,15 +35,22 @@ func LookAt(position, lookAt, up Vector) Matrix {
 }
 
 // ViewMatrix calculates a full View Matrix from a Position and Rotation (Quaternion)
-// This is the Transpose of the Rotation matrix * Inverse of the position, because
-// we are moving the world into our view, not moving our view of the world.
+//
+// Got the working formula from http://www.dhpoware.com/demos/glCamera2.html
 func ViewMatrix(position Vector, rotation Quaternion) Matrix {
-	viewMatrix := RotationMatrix(rotation).Transpose()
-	translation := position.Scale(-1)
+	viewMatrix := RotationMatrix(rotation.Inverse())
 
-	viewMatrix[12] = translation.X
-	viewMatrix[13] = translation.Y
-	viewMatrix[14] = translation.Z
+	xAxis := Vector{viewMatrix[0], viewMatrix[4], viewMatrix[8]}
+	yAxis := Vector{viewMatrix[1], viewMatrix[5], viewMatrix[9]}
+	zAxis := Vector{viewMatrix[2], viewMatrix[6], viewMatrix[10]}
+
+	dotX := xAxis.Dot(position)
+	dotY := yAxis.Dot(position)
+	dotZ := zAxis.Dot(position)
+
+	viewMatrix[12] = -dotX
+	viewMatrix[13] = -dotY
+	viewMatrix[14] = -dotZ
 
 	return viewMatrix
 }
