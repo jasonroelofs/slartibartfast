@@ -44,18 +44,15 @@ func QuatFromAxes(xAxis, yAxis, zAxis Vector) Quaternion {
 // QuatFromRotationMatrix returns a Quaternion built from the given
 // rotation matrix. Algorithm copied from
 // http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
-func QuatFromRotationMatrix(rotation Matrix) Quaternion {
+func QuatFromRotationMatrix(rotation Matrix) (quat Quaternion) {
 	trace := rotation[0] + rotation[5] + rotation[10]
-	var root float32
-	var quat Quaternion
 
 	if trace > 0.0 {
-		root = Sqrt(trace + 1.0)
-		quat.W = 0.5 * root
-		root = 0.5 / root
-		quat.X = (rotation[9] - rotation[6]) * root
-		quat.Y = (rotation[2] - rotation[8]) * root
-		quat.Z = (rotation[4] - rotation[1]) * root
+		s := Sqrt(trace + 1.0) * 2.0
+		quat.W = 0.25 * s
+		quat.X = (rotation[6] - rotation[9]) / s
+		quat.Y = (rotation[8] - rotation[2]) / s
+		quat.Z = (rotation[1] - rotation[4]) / s
 	} else {
 		if rotation[0] > rotation[5] && rotation[0] > rotation[10] {
 			s := 2.0 * Sqrt(1.0 + rotation[0] - rotation[5] - rotation[10])
@@ -78,7 +75,7 @@ func QuatFromRotationMatrix(rotation Matrix) Quaternion {
 		}
 	}
 
-	return quat
+	return
 }
 
 // Times returns a new Quaternion that is the product of this Quaternion and other
