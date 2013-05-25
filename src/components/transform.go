@@ -48,11 +48,8 @@ func GetTransform(holder ComponentHolder) *Transform {
 func (self *Transform) LookAt(lookAtPoint math3d.Vector) {
 	fixedUp := math3d.Vector{0, 1, 0}
 
-	forward := self.Position.Sub(lookAtPoint).Normalize()
-	right := fixedUp.Cross(forward).Normalize()
-	up := forward.Cross(right).Normalize()
-
-	self.Rotation = math3d.QuatFromAxes(right, up, forward)
+	rotMatrix := math3d.LookAt(self.Position, lookAtPoint, fixedUp)
+	self.Rotation = math3d.QuatFromRotationMatrix(rotMatrix)
 }
 
 // TransformMatrix calculates and returns the full transformation matrix
