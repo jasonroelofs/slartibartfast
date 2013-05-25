@@ -2,7 +2,7 @@ package input
 
 import (
 	"events"
-	"fmt"
+	"log"
 	"github.com/go-gl/glfw"
 )
 
@@ -38,6 +38,10 @@ func NewInputDispatcher() *InputDispatcher {
 
 	glfw.SetKeyCallback(mapper.keyCallback)
 
+	glfw.SetMouseButtonCallback(mapper.keyCallback)
+	glfw.SetMousePosCallback(mapper.mouseCallback)
+	glfw.SetMouseWheelCallback(mapper.mouseWheelCallback)
+
 	return &mapper
 }
 
@@ -54,7 +58,7 @@ func (self *InputDispatcher) mapKeyToEvent(key int, eventType events.EventType) 
 }
 
 func (self *InputDispatcher) keyCallback(key, state int) {
-	fmt.Println("Key pressed! ", key, state, string(key))
+	log.Println("Key pressed! ", key, state, string(key))
 
 	if eventFromKey, ok := self.keyMappings[key]; ok {
 		event := events.Event{
@@ -65,6 +69,18 @@ func (self *InputDispatcher) keyCallback(key, state int) {
 		self.storedEvents = append(self.storedEvents, event)
 		self.fireLocalCallback(event)
 	}
+}
+
+func (self *InputDispatcher) mouseCallback(x, y int) {
+	log.Println("Mouse Moved", x, y)
+}
+
+func (self *InputDispatcher) mouseButtonCallback(button, state int) {
+	log.Println("Mouse Button pressed", button, state)
+}
+
+func (self *InputDispatcher) mouseWheelCallback(position int) {
+	log.Println("Mouse wheel", position)
 }
 
 func (self *InputDispatcher) fireLocalCallback(event events.Event) {
