@@ -33,8 +33,13 @@ func (self *Transform) Update(deltaT float32) {
 }
 
 func (self *Transform) processMovement(deltaT float32, component *components.Transform) {
-	moveDir := component.MoveDir().Times(component.Speed).Scale(deltaT)
+	moveDir := component.MoveDir()
 
+	if component.MoveRelativeToRotation {
+		moveDir = component.Rotation.Inverse().TimesV(moveDir)
+	}
+
+	moveDir = moveDir.Times(component.Speed).Scale(deltaT)
 	component.Position = component.Position.Add(moveDir)
 }
 

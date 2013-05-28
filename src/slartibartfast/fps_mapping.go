@@ -69,9 +69,9 @@ func turnLeft(entity components.ComponentHolder, event events.Event) {
 	transform := components.GetTransform(entity)
 
 	if event.Pressed {
-		transform.Rotating(math3d.Vector{0, -1, 0})
-	} else {
 		transform.Rotating(math3d.Vector{0, 1, 0})
+	} else {
+		transform.Rotating(math3d.Vector{0, -1, 0})
 	}
 }
 
@@ -79,8 +79,8 @@ func turnRight(entity components.ComponentHolder, event events.Event) {
 	transform := components.GetTransform(entity)
 
 	if event.Pressed {
-		transform.Rotating(math3d.Vector{0, 1, 0})
-	} else {
 		transform.Rotating(math3d.Vector{0, -1, 0})
+	} else {
+		transform.Rotating(math3d.Vector{0, 1, 0})
 	}
 }

@@ -68,6 +68,13 @@ func Test_Quaternion_Times(t *testing.T) {
 	assert.Equal(t, Quaternion{-13, 2, 4, 6}, quat2.Times(quat1))
 }
 
+func Test_Quaternion_TimesV(t *testing.T) {
+	quat := Quaternion{0, 0, 1, 0}
+	vec := Vector{1, 0, 0}
+
+	assert.Equal(t, Vector{-1, 0, 0}, quat.TimesV(vec))
+}
+
 func Test_Quaternion_Normalize(t *testing.T) {
 	quat := Quaternion{1080, 10, 10, 10}
 

@@ -22,6 +22,7 @@ func NewCamera() *Camera {
 	camera.Entity.Name = "Camera"
 
 	camera.transform = components.GetTransform(camera.Entity)
+	camera.transform.MoveRelativeToRotation = true
 
 	return camera
 }

@@ -88,6 +88,19 @@ func (self Quaternion) Times(other Quaternion) Quaternion {
 	}
 }
 
+// TimesV multiplies the Quaternion with a Vector, returning a Unit vector pointed
+// in the direction of the Quaternion.
+// Formula from the nvidia SDK
+func (self Quaternion) TimesV(vector Vector) Vector {
+	qVec := Vector{self.X, self.Y, self.Z}
+	uv := qVec.Cross(vector)
+	uuv := qVec.Cross(uv)
+	uv = uv.Scale(2.0 * self.W)
+	uuv = uuv.Scale(2.0)
+
+	return vector.Add(uv).Add(uuv)
+}
+
 // Length returns the length, or magnitude, of this Quaternion
 func (self Quaternion) Length() float32 {
 	return Sqrt(self.W*self.W + self.X*self.X + self.Y*self.Y + self.Z*self.Z)

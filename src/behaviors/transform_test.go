@@ -54,6 +54,23 @@ func Test_Update_AppliesSpeedToMovingDir(t *testing.T) {
 	assert.Equal(t, math3d.Vector{1, 0, 0}, eTransform.Position)
 }
 
+func Test_Update_MovesWithRotationIfSoFlagged(t *testing.T) {
+	transform, entityDb := getTestTransform()
+
+	entity := core.NewEntity()
+	entityDb.RegisterEntity(entity)
+
+	eTransform := components.GetTransform(entity)
+	eTransform.Moving(math3d.Vector{1, 0, 0})
+	eTransform.Speed = math3d.Vector{1, 1, 1}
+	eTransform.Rotation = math3d.Quaternion{0, 0, 1, 0}
+	eTransform.MoveRelativeToRotation = true
+
+	// Time passed? change!
+	transform.Update(1)
+	assert.Equal(t, math3d.Vector{-1, 0, 0}, eTransform.Position)
+}
+
 func Test_Update_AppliesRotationDir(t *testing.T) {
 	transform, entityDb := getTestTransform()
 

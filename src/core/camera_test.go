@@ -12,6 +12,8 @@ func Test_NewCamera_SetsGoodDefaults(t *testing.T) {
 	assert.Equal(t, math3d.Vector{0, 0, 0}, camera.lookAt)
 	assert.Equal(t, math3d.Vector{0, 0, 0}, camera.Position())
 	assert.Equal(t, math3d.Matrix{}, camera.ProjectionMatrix())
+
+	assert.True(t, camera.transform.MoveRelativeToRotation)
 }
 
 func Test_CanReceiveComponents(t *testing.T) {

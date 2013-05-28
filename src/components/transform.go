@@ -18,6 +18,10 @@ type Transform struct {
 	// Defaults to 45 degrees / second
 	RotationSpeed math3d.Vector
 
+	// Should this Entity move in the direction the entity
+	// is currently facing?
+	MoveRelativeToRotation bool
+
 	// The direction this Entity is currently moving
 	moveDirection math3d.Vector
 
