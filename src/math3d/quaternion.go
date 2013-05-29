@@ -121,15 +121,13 @@ func (self Quaternion) Normalize() Quaternion {
 
 // Inverse calculates the inverse rotation
 func (self Quaternion) Inverse() Quaternion {
-//	norm := self.W*self.W + self.X*self.X + self.Y*self.Y + self.Z*self.Z
-//	invNorm := 1.0 / norm
 	normed := self.Normalize()
 
 	return Quaternion{
-		normed.W, // * invNorm,
-		-normed.X, // * invNorm,
-		-normed.Y, // * invNorm,
-		-normed.Z, // * invNorm,
+		normed.W,
+		-normed.X,
+		-normed.Y,
+		-normed.Z,
 	}
 }
 

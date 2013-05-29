@@ -90,21 +90,27 @@ func (self *Game) initializeBehaviors() {
 func (self *Game) initializeScene() {
 	self.camera = core.NewCamera()
 	self.camera.Perspective(60.0, self.window.AspectRatio(), 0.1, 100.0)
-	self.camera.SetPosition(math3d.Vector{8, 8, 8})
+	self.camera.SetPosition(math3d.Vector{0, 0, 0})
 	self.camera.LookAt(math3d.Vector{0, 0, 0})
 
 	log.Println(self.camera.Rotation())
 
-	self.camera.AddComponent(&components.Input{
+	input := components.Input{
 		Mapping: FPSMapping,
-	})
+	}
+
+	log.Println(input)
+
+//	self.camera.AddComponent(&input)
 
 	self.camera.SetSpeed(math3d.Vector{5, 5, 5})
 
 	// YUCK, must be a better way of doing this?
+	// Will probably move camera creation into Graphical so it
+	// can take care of situations like this.
 	self.RegisterEntity(self.camera.Entity)
 
-	//	self.currentScene = NewSpinningCubes(self)
+//	self.currentScene = NewSpinningCubes(self)
 	self.currentScene = NewTexturedCube(self)
 
 	self.currentScene.Setup()

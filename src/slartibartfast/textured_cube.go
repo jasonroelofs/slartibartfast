@@ -27,6 +27,11 @@ func (self *TexturedCube) Setup() {
 	transform.Scale = math3d.Vector{2, 2, 2}
 	transform.Speed = math3d.Vector{5, 5, 5}
 
+	transform.MoveRelativeToRotation = true
+	self.theCube.AddComponent(&components.Input{
+		Mapping: FPSMapping,
+	})
+
 	self.game.RegisterEntity(self.theCube)
 }
 
