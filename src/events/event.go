@@ -5,6 +5,10 @@ type EventType int
 type Event struct {
 	EventType EventType
 	Pressed   bool
+
+	// Mouse Position differential from Center of Screen
+	MouseXDiff int
+	MouseYDiff int
 }
 
 const (
@@ -15,4 +19,5 @@ const (
 	MoveRight
 	TurnLeft
 	TurnRight
+	MouseMove
 )

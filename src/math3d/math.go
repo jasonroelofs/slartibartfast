@@ -2,6 +2,33 @@ package math3d
 
 import "math"
 
+// KeepWithinRange takes the given value and transforms it so that the value
+// always falls within the range min and max given. For example, to keep an
+// angle always within -360 to 360:
+//
+//    KeepWithinRange(angle, -360, 360)
+//
+func KeepWithinRange(angle, rangeMin, rangeMax float32) float32 {
+	if angle >= rangeMin && angle <= rangeMax {
+		return angle
+	} else if angle <= rangeMin {
+		return (angle - rangeMin) + rangeMax
+	} else {
+		return (angle - rangeMax) + rangeMin
+	}
+}
+
+// ClampAngle ensures a hard max and minimum limit of the given number
+func Clamp(value, min, max float32) float32 {
+	if value >= min && value <= max {
+		return value
+	} else if value < min {
+		return min
+	} else {
+		return max
+	}
+}
+
 // A collection of wrappers around common math routines so I don't
 // have to keep converting to and from float32/64
 

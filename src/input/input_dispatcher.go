@@ -15,6 +15,8 @@ type InputDispatcher struct {
 
 	// List of events received. Gets cleared when requested.
 	storedEvents EventList
+
+	firstMouseMoveIgnored bool
 }
 
 func NewInputDispatcher() *InputDispatcher {
@@ -41,6 +43,10 @@ func NewInputDispatcher() *InputDispatcher {
 	glfw.SetMouseButtonCallback(mapper.keyCallback)
 	glfw.SetMousePosCallback(mapper.mouseCallback)
 	glfw.SetMouseWheelCallback(mapper.mouseWheelCallback)
+
+	glfw.Disable(glfw.MouseCursor)
+
+	mapper.resetMouse()
 
 	return &mapper
 }
@@ -72,7 +78,25 @@ func (self *InputDispatcher) keyCallback(key, state int) {
 }
 
 func (self *InputDispatcher) mouseCallback(x, y int) {
-	log.Println("Mouse Moved", x, y)
+	if !self.firstMouseMoveIgnored {
+		self.firstMouseMoveIgnored = true
+		return
+	}
+
+	event := events.Event{
+		EventType: events.MouseMove,
+		MouseXDiff: x,
+		MouseYDiff: y,
+	}
+
+	log.Println("Mouse Moved", event)
+
+	self.storedEvents = append(self.storedEvents, event)
+	self.resetMouse()
+}
+
+func (self *InputDispatcher) resetMouse() {
+	glfw.SetMousePos(0, 0)
 }
 
 func (self *InputDispatcher) mouseButtonCallback(button, state int) {

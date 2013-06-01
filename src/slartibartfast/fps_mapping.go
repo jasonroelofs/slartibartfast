@@ -17,6 +17,7 @@ func init() {
 		events.MoveRight:    moveRight,
 		events.TurnLeft:     turnLeft,
 		events.TurnRight:    turnRight,
+		events.MouseMove:    mouseMoved,
 	}
 }
 
@@ -83,4 +84,21 @@ func turnRight(entity components.ComponentHolder, event events.Event) {
 	} else {
 		transform.Rotating(math3d.Vector{0, -1, 0})
 	}
+}
+
+// Mouse movement handler. Turn the object in FPS fashion
+func mouseMoved(entity components.ComponentHolder, event events.Event) {
+	transform := components.GetTransform(entity)
+
+	// Keep yaw within 0 - 360 degrees as a precaution
+	transform.CurrentYaw = math3d.KeepWithinRange(
+		transform.CurrentYaw + float32(event.MouseXDiff),
+		0.0, 360.0,
+	)
+
+	// Don't let the pitch go past vertical up or down, or strange things happen.
+	transform.CurrentPitch = math3d.Clamp(
+		transform.CurrentPitch + float32(event.MouseYDiff),
+		-89, 89,
+	)
 }
