@@ -34,6 +34,13 @@ func Test_LookAt_ChangesRotationToLookAtPoint(t *testing.T) {
 	assert.Equal(t, math3d.Quaternion{0, 0, 1, 0}, transform.Rotation)
 }
 
+func Test_LookAt_DoesNothingIfLookAtIsPosition(t *testing.T) {
+	transform := NewTransform()
+	transform.LookAt(math3d.Vector{0, 0, 0})
+
+	assert.Equal(t, math3d.NewQuaternion(), transform.Rotation)
+}
+
 func Test_Transform_TransformMatrix_DefaultsIdentity(t *testing.T) {
 	transform := NewTransform()
 

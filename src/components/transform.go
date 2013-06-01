@@ -50,6 +50,11 @@ func GetTransform(holder ComponentHolder) *Transform {
 // LookAt changes this Transform's Rotation such that it's facing the point
 // For now, always assumes fixed Y-up axis
 func (self *Transform) LookAt(lookAtPoint math3d.Vector) {
+	// Trying to look at ourselves makes for weird rotations
+	if lookAtPoint == self.Position {
+		return
+	}
+
 	fixedUp := math3d.Vector{0, 1, 0}
 
 	rotMatrix := math3d.LookAt(self.Position, lookAtPoint, fixedUp)
