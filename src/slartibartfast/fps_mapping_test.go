@@ -44,8 +44,8 @@ var turnTests = []struct {
 	event       events.EventType
 	expectedDir math3d.Vector
 }{
-	{events.TurnLeft, math3d.Vector{0, 1, 0}},
-	{events.TurnRight, math3d.Vector{0, -1, 0}},
+	{events.TurnLeft, math3d.Vector{0, -1, 0}},
+	{events.TurnRight, math3d.Vector{0, 1, 0}},
 }
 
 func Test_Turning(t *testing.T) {
