@@ -22,6 +22,9 @@ type Transform struct {
 	// is currently facing?
 	MoveRelativeToRotation bool
 
+	// Can also use Euler values to rotate this transform
+	CurrentYaw, CurrentPitch, CurrentRoll float32
+
 	// The direction this Entity is currently moving
 	moveDirection math3d.Vector
 
@@ -98,4 +101,14 @@ func (self *Transform) Rotating(dir math3d.Vector) {
 // RotateDir returns a normalized Vector from Rotating
 func (self *Transform) RotateDir() math3d.Vector {
 	return self.rotateDirection.Normalize()
+}
+
+// RecalculateCurrentRotation takes the current Euler angles (roll, pitch, yaw)
+// and rebuilds the internal Quaternion to match those new values
+func (self *Transform) RecalculateCurrentRotation() {
+	rollQuat := math3d.QuatFromAngleAxis(self.CurrentRoll, math3d.Vector{0, 0, 1})
+	pitchQuat := math3d.QuatFromAngleAxis(self.CurrentPitch, math3d.Vector{1, 0, 0})
+	yawQuat := math3d.QuatFromAngleAxis(self.CurrentYaw, math3d.Vector{0, 1, 0})
+
+	self.Rotation = rollQuat.Times(pitchQuat).Times(yawQuat)
 }

@@ -47,14 +47,16 @@ func (self *Transform) processRotation(deltaT float32, component *components.Tra
 	rotateDir := component.RotateDir().Times(component.RotationSpeed).Scale(deltaT)
 
 	if rotateDir.X != 0 {
-		component.Rotation = component.Rotation.RotateX(rotateDir.X)
+		component.CurrentPitch += rotateDir.X
 	}
 
 	if rotateDir.Y != 0 {
-		component.Rotation = component.Rotation.RotateY(rotateDir.Y)
+		component.CurrentYaw += rotateDir.Y
 	}
 
 	if rotateDir.Z != 0 {
-		component.Rotation = component.Rotation.RotateZ(rotateDir.Z)
+		component.CurrentRoll += rotateDir.Z
 	}
+
+	component.RecalculateCurrentRotation()
 }

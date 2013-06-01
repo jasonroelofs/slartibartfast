@@ -90,3 +90,17 @@ func Test_Update_AppliesRotationDir(t *testing.T) {
 	transform.Update(1)
 	assert.NotEqual(t, startingQuat, eTransform.Rotation)
 }
+
+func Test_Update_AppliesEulerAngles(t *testing.T) {
+	transform, entityDb := getTestTransform()
+
+	entity := core.NewEntity()
+	entityDb.RegisterEntity(entity)
+
+	eTransform := components.GetTransform(entity)
+	startingQuat := eTransform.Rotation
+	eTransform.CurrentPitch = 45
+
+	transform.Update(1)
+	assert.NotEqual(t, startingQuat, eTransform.Rotation)
+}
