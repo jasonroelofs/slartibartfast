@@ -91,9 +91,9 @@ func (self *Game) initializeScene() {
 	self.camera = core.NewCamera()
 	self.camera.Perspective(60.0, self.window.AspectRatio(), 0.1, 100.0)
 	self.camera.SetPosition(math3d.Vector{0, 0, 0})
-	self.camera.LookAt(math3d.Vector{0, 0, 0})
+	self.camera.LookAt(math3d.Vector{0, 0, -5})
 
-	log.Println(self.camera.Rotation())
+	log.Println("Camera lookat", self.camera.Rotation())
 
 	input := components.Input{
 		Mapping: FPSMapping,
@@ -101,7 +101,7 @@ func (self *Game) initializeScene() {
 
 	log.Println(input)
 
-//	self.camera.AddComponent(&input)
+	self.camera.AddComponent(&input)
 
 	self.camera.SetSpeed(math3d.Vector{5, 5, 5})
 

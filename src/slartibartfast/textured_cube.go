@@ -23,14 +23,14 @@ func (self *TexturedCube) Setup() {
 	self.theCube.AddComponent(new(components.Visual))
 
 	transform := components.GetTransform(self.theCube)
-	transform.Position = math3d.Vector{0, 0, 0}
+	transform.Position = math3d.Vector{0, 0, -5}
 	transform.Scale = math3d.Vector{2, 2, 2}
 	transform.Speed = math3d.Vector{5, 5, 5}
 
-	transform.MoveRelativeToRotation = true
-	self.theCube.AddComponent(&components.Input{
-		Mapping: FPSMapping,
-	})
+//	transform.MoveRelativeToRotation = true
+//	self.theCube.AddComponent(&components.Input{
+//		Mapping: FPSMapping,
+//	})
 
 	self.game.RegisterEntity(self.theCube)
 }
