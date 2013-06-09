@@ -20,7 +20,7 @@ type Game struct {
 
 	renderer        render.Renderer
 	window          core.Window
-	camera          *core.Camera
+	Camera          *core.Camera
 	inputDispatcher *input.InputDispatcher
 
 	inputBehavior     *behaviors.Input
@@ -88,12 +88,12 @@ func (self *Game) initializeBehaviors() {
 }
 
 func (self *Game) initializeScene() {
-	self.camera = core.NewCamera()
-	self.camera.Perspective(60.0, self.window.AspectRatio(), 0.1, 100.0)
-	self.camera.SetPosition(math3d.Vector{0, 0, 0})
-	self.camera.LookAt(math3d.Vector{0, 0, -5})
+	self.Camera = core.NewCamera()
+	self.Camera.Perspective(60.0, self.window.AspectRatio(), 0.1, 100.0)
+	self.Camera.SetPosition(math3d.Vector{0, 0, 0})
+	self.Camera.LookAt(math3d.Vector{0, 0, -5})
 
-	log.Println("Camera lookat", self.camera.Rotation())
+	log.Println("Camera lookat", self.Camera.Rotation())
 
 	input := components.Input{
 		Mapping: FPSMapping,
@@ -101,14 +101,14 @@ func (self *Game) initializeScene() {
 
 	log.Println(input)
 
-	self.camera.AddComponent(&input)
+	self.Camera.AddComponent(&input)
 
-	self.camera.SetSpeed(math3d.Vector{5, 5, 5})
+	self.Camera.SetSpeed(math3d.Vector{5, 5, 5})
 
 	// YUCK, must be a better way of doing this?
 	// Will probably move camera creation into Graphical so it
 	// can take care of situations like this.
-	self.RegisterEntity(self.camera.Entity)
+	self.RegisterEntity(self.Camera.Entity)
 
 //	self.currentScene = NewSpinningCubes(self)
 	self.currentScene = NewTexturedCube(self)
@@ -134,7 +134,7 @@ func (self *Game) Tick(deltaT float32) {
 	// Update all behaviors
 	self.inputBehavior.Update(deltaT)
 	self.transformBehavior.Update(deltaT)
-	self.graphicalBehavior.Update(self.camera, deltaT)
+	self.graphicalBehavior.Update(self.Camera, deltaT)
 }
 
 func (self *Game) Shutdown() {
