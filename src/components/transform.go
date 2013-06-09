@@ -30,6 +30,10 @@ type Transform struct {
 
 	// The direction this Entity is rotating
 	rotateDirection math3d.Vector
+
+	// If set, this Transform will be given the position of this Entity every frame,
+	// ignoring any other attempts to move it.
+	UsingPositionOf ComponentHolder
 }
 
 func NewTransform() Transform {

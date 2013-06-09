@@ -11,96 +11,114 @@ import (
 func getTestTransform() (*Transform, *core.EntityDB) {
 	entityDB := new(core.EntityDB)
 
-	graphical := NewTransform(entityDB)
+	behavior := NewTransform(entityDB)
 
-	return graphical, entityDB
+	return behavior, entityDB
 }
 
 func Test_NewTransform(t *testing.T) {
-	graphical, _ := getTestTransform()
-	assert.NotNil(t, graphical.entitySet)
+	behavior, _ := getTestTransform()
+	assert.NotNil(t, behavior.entitySet)
 }
 
 func Test_Update_AppliesMovementDirOnTransforms(t *testing.T) {
-	transform, entityDb := getTestTransform()
+	behavior, entityDb := getTestTransform()
 
 	entity := core.NewEntity()
 	entityDb.RegisterEntity(entity)
 
-	eTransform := components.GetTransform(entity)
-	eTransform.Moving(math3d.Vector{1, 0, 0})
+	transform := components.GetTransform(entity)
+	transform.Moving(math3d.Vector{1, 0, 0})
 
 	// No time passed? no change
-	transform.Update(0)
-	assert.Equal(t, math3d.Vector{0, 0, 0}, eTransform.Position)
+	behavior.Update(0)
+	assert.Equal(t, math3d.Vector{0, 0, 0}, transform.Position)
 
 	// Time passed? change!
-	transform.Update(1)
-	assert.Equal(t, math3d.Vector{1, 0, 0}, eTransform.Position)
+	behavior.Update(1)
+	assert.Equal(t, math3d.Vector{1, 0, 0}, transform.Position)
 }
 
 func Test_Update_AppliesSpeedToMovingDir(t *testing.T) {
-	transform, entityDb := getTestTransform()
+	behavior, entityDb := getTestTransform()
 
 	entity := core.NewEntity()
 	entityDb.RegisterEntity(entity)
 
-	eTransform := components.GetTransform(entity)
-	eTransform.Moving(math3d.Vector{1, 0, 0})
-	eTransform.Speed = math3d.Vector{2, 2, 2}
+	transform := components.GetTransform(entity)
+	transform.Moving(math3d.Vector{1, 0, 0})
+	transform.Speed = math3d.Vector{2, 2, 2}
 
 	// Time passed? change!
-	transform.Update(0.5)
-	assert.Equal(t, math3d.Vector{1, 0, 0}, eTransform.Position)
+	behavior.Update(0.5)
+	assert.Equal(t, math3d.Vector{1, 0, 0}, transform.Position)
 }
 
 func Test_Update_MovesWithRotationIfSoFlagged(t *testing.T) {
-	transform, entityDb := getTestTransform()
+	behavior, entityDb := getTestTransform()
 
 	entity := core.NewEntity()
 	entityDb.RegisterEntity(entity)
 
-	eTransform := components.GetTransform(entity)
-	eTransform.Moving(math3d.Vector{1, 0, 0})
-	eTransform.Speed = math3d.Vector{1, 1, 1}
-	eTransform.Rotation = math3d.Quaternion{0, 0, 1, 0}
-	eTransform.MoveRelativeToRotation = true
+	transform := components.GetTransform(entity)
+	transform.Moving(math3d.Vector{1, 0, 0})
+	transform.Speed = math3d.Vector{1, 1, 1}
+	transform.Rotation = math3d.Quaternion{0, 0, 1, 0}
+	transform.MoveRelativeToRotation = true
 
 	// Time passed? change!
-	transform.Update(1)
-	assert.Equal(t, math3d.Vector{-1, 0, 0}, eTransform.Position)
+	behavior.Update(1)
+	assert.Equal(t, math3d.Vector{-1, 0, 0}, transform.Position)
 }
 
 func Test_Update_AppliesRotationDir(t *testing.T) {
-	transform, entityDb := getTestTransform()
+	behavior, entityDb := getTestTransform()
 
 	entity := core.NewEntity()
 	entityDb.RegisterEntity(entity)
 
-	eTransform := components.GetTransform(entity)
-	eTransform.Rotating(math3d.Vector{0, 1, 0})
+	transform := components.GetTransform(entity)
+	transform.Rotating(math3d.Vector{0, 1, 0})
 
-	startingQuat := eTransform.Rotation
+	startingQuat := transform.Rotation
 
 	// No time passed? no change
-	transform.Update(0)
-	assert.Equal(t, startingQuat, eTransform.Rotation)
+	behavior.Update(0)
+	assert.Equal(t, startingQuat, transform.Rotation)
 
 	// Time passed? change!
-	transform.Update(1)
-	assert.NotEqual(t, startingQuat, eTransform.Rotation)
+	behavior.Update(1)
+	assert.NotEqual(t, startingQuat, transform.Rotation)
 }
 
 func Test_Update_AppliesEulerAngles(t *testing.T) {
-	transform, entityDb := getTestTransform()
+	behavior, entityDb := getTestTransform()
 
 	entity := core.NewEntity()
 	entityDb.RegisterEntity(entity)
 
-	eTransform := components.GetTransform(entity)
-	startingQuat := eTransform.Rotation
-	eTransform.CurrentPitch = 45
+	transform := components.GetTransform(entity)
+	startingQuat := transform.Rotation
+	transform.CurrentPitch = 45
 
-	transform.Update(1)
-	assert.NotEqual(t, startingQuat, eTransform.Rotation)
+	behavior.Update(1)
+	assert.NotEqual(t, startingQuat, transform.Rotation)
+}
+
+func Test_Update_CopiesPositionFromLinkedEntity(t *testing.T) {
+	behavior, entityDb := getTestTransform()
+
+	entity := core.NewEntity()
+	entityDb.RegisterEntity(entity)
+
+	followee := core.NewEntity()
+	followeeTransform := components.GetTransform(followee)
+	followeeTransform.Position = math3d.Vector{10, 11, -12}
+
+	transform := components.GetTransform(entity)
+	transform.UsingPositionOf = followee
+
+	behavior.Update(1)
+
+	assert.Equal(t, math3d.Vector{10, 11, -12}, transform.Position)
 }

@@ -27,8 +27,12 @@ func (self *Transform) Update(deltaT float32) {
 	for _, entity := range self.entitySet.Entities {
 		transform = components.GetTransform(entity)
 
-		self.processMovement(deltaT, transform)
-		self.processRotation(deltaT, transform)
+		if transform.UsingPositionOf == nil {
+			self.processMovement(deltaT, transform)
+			self.processRotation(deltaT, transform)
+		} else {
+			transform.Position = components.GetTransform(transform.UsingPositionOf).Position
+		}
 	}
 }
 
