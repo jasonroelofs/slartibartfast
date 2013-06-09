@@ -14,6 +14,7 @@ PACKAGES = %w(
   math3d
   render
   freeimage
+  factories
 )
 
 LIBRARIES = %w(
