@@ -28,6 +28,8 @@ func (self *ShaderLoader) Load(shaderName string) *Shader {
 	return &shader
 }
 
+// TODO improve error handling. Right now if the program file is
+// not found everything explodes rather spectacularly.
 func (self *ShaderLoader) loadProgram(programName string) string {
 	log.Println("Loading shader program", programName)
 

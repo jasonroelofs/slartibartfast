@@ -33,7 +33,7 @@ func (self *Image) load(filePath string) {
 	self.bitmap = C.FreeImage_Load(self.ImageType, pathStr, 0)
 
 	if self.bitmap == nil {
-		log.Println("[ERROR] Unable to find image at %s", filePath)
+		log.Println("[ERROR] Unable to find image at", filePath)
 	}
 }
 
