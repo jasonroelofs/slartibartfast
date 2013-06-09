@@ -45,13 +45,14 @@ func (self *MaterialLoader) Load(materialDefinition MaterialDef) *Material {
 }
 
 // Get returns the Material with the given name. If no material has been loaded
-// with the requested name, then returns the Default material
+// with the requested name, this returns the Default material.
 func (self *MaterialLoader) Get(materialName string) *Material {
 	material, ok := self.loadedMaterials[materialName]
 
 	if !ok {
-		log.Println("Unable to find material", materialName, "defaulting to the default")
+		log.Printf("Unable to find material %s, using default instead", materialName)
 		material = self.loadedMaterials[defaultMaterialName]
+		self.loadedMaterials[materialName] = material
 	}
 
 	return material

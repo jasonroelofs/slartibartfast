@@ -82,4 +82,5 @@ func Test_MaterialLoader_Get_ReturnsDefaultMaterialIfNoneMatchName(t *testing.T)
 	})
 
 	assert.Equal(t, defaultMaterial, loader.Get("Some Unknown Material"))
+	assert.Equal(t, defaultMaterial, loader.loadedMaterials["Some Unknown Material"])
 }
