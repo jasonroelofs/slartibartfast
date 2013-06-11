@@ -7,9 +7,9 @@ import (
 	"testing"
 )
 
-func Test_NewSkyBox(t *testing.T) {
+func Test_SkyBox(t *testing.T) {
 	camera := core.NewCamera()
-	skybox := NewSkyBox("testMap", camera)
+	skybox := SkyBox("testMap", camera)
 
 	visual := components.GetVisual(skybox)
 	transform := components.GetTransform(skybox)

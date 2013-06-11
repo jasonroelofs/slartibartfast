@@ -5,11 +5,11 @@ import (
 	"core"
 )
 
-// NewSkyBox returns an Entity that is set up as a SkyBox. The material given
+// SkyBox returns an Entity that is set up as a SkyBox. The material given
 // needs to be the name of a cube-map Material definition. The resulting entity
 // will be position-locked to the passed in camera so that it never looks like
 // it's moving.
-func NewSkyBox(skyboxMaterial string, camera *core.Camera) *core.Entity {
+func SkyBox(skyboxMaterial string, camera *core.Camera) *core.Entity {
 	entity := core.NewEntity()
 	entity.Name = "Skybox " + skyboxMaterial
 
