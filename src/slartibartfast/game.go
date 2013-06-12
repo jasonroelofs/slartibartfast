@@ -49,6 +49,7 @@ func (self *Game) Run() {
 	self.inputDispatcher = input.NewInputDispatcher()
 
 	self.initializeBehaviors()
+	self.loadAllMaterials()
 	self.initializeScene()
 
 	running := true
@@ -87,19 +88,28 @@ func (self *Game) initializeBehaviors() {
 	self.graphicalBehavior = behaviors.NewGraphical(self.renderer, self.entityDB)
 }
 
+// TODO Read from data/ to get material definitions and send them
+// down into the loader. For now this is a hard-coded set of materials
+func (self *Game) loadAllMaterials() {
+	// The stevecube space skybox texture from Ogre!
+	self.graphicalBehavior.LoadMaterial(render.MaterialDef{
+		Name:      "stevecube",
+		Texture:   "stevecube.jpg",
+		Shaders:   "cubemap",
+		IsCubeMap: true,
+	})
+
+}
+
 func (self *Game) initializeScene() {
 	self.Camera = core.NewCamera()
 	self.Camera.Perspective(60.0, self.window.AspectRatio(), 0.1, 100.0)
 	self.Camera.SetPosition(math3d.Vector{0, 0, 0})
 	self.Camera.LookAt(math3d.Vector{0, 0, -5})
 
-	log.Println("Camera lookat", self.Camera.Rotation())
-
 	input := components.Input{
 		Mapping: FPSMapping,
 	}
-
-	log.Println(input)
 
 	self.Camera.AddComponent(&input)
 
@@ -110,7 +120,7 @@ func (self *Game) initializeScene() {
 	// can take care of situations like this.
 	self.RegisterEntity(self.Camera.Entity)
 
-//	self.currentScene = NewSpinningCubes(self)
+	//	self.currentScene = NewSpinningCubes(self)
 	self.currentScene = NewTexturedCube(self)
 
 	self.currentScene.Setup()
