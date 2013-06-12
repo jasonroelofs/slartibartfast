@@ -3,7 +3,7 @@ package main
 import (
 	"components"
 	"core"
-//	"factories"
+	"factories"
 	"math3d"
 )
 
@@ -33,9 +33,9 @@ func (self *TexturedCube) Setup() {
 	//		Mapping: FPSMapping,
 	//	})
 
-//	skybox := factories.SkyBox("stevecube", self.game.Camera)
+	skybox := factories.SkyBox("stevecube", self.game.Camera)
 
-//	self.game.RegisterEntity(skybox)
+	self.game.RegisterEntity(skybox)
 	self.game.RegisterEntity(self.theCube)
 }
 

@@ -6,6 +6,7 @@ import (
 	"configs"
 	"core"
 	"events"
+	"factories"
 	"input"
 	"log"
 	"math3d"
@@ -50,6 +51,7 @@ func (self *Game) Run() {
 
 	self.initializeBehaviors()
 	self.loadAllMaterials()
+	self.loadAllMeshes()
 	self.initializeScene()
 
 	running := true
@@ -86,6 +88,11 @@ func (self *Game) initializeBehaviors() {
 	self.inputBehavior = behaviors.NewInput(self.inputDispatcher, self.entityDB)
 	self.transformBehavior = behaviors.NewTransform(self.entityDB)
 	self.graphicalBehavior = behaviors.NewGraphical(self.renderer, self.entityDB)
+}
+
+// TODO also read from data/ to pull in any mesh files there.
+func (self *Game) loadAllMeshes() {
+	self.graphicalBehavior.LoadMesh(factories.SkyBoxMesh)
 }
 
 // TODO Read from data/ to get material definitions and send them
