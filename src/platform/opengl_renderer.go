@@ -58,10 +58,11 @@ func (self *OpenGLRenderer) LoadMaterial(material *render.Material) {
 	} else if material.Texture != nil {
 		material.Texture.Id = self.LoadTexture(material.Texture)
 	}
+
+	self.checkErrors()
 }
 
 func (self *OpenGLRenderer) loadCubeMap(material *render.Material) gl.Texture {
-	gl.Enable(gl.TEXTURE_CUBE_MAP)
 	glTexture := gl.GenTexture()
 	glTexture.Bind(gl.TEXTURE_CUBE_MAP)
 	defer glTexture.Unbind(gl.TEXTURE_CUBE_MAP)
@@ -97,8 +98,6 @@ func (self *OpenGLRenderer) LoadTexture(texture *render.Texture) gl.Texture {
 	self.glTexImage2D(gl.TEXTURE_2D, texture)
 
 	gl.GenerateMipmap(gl.TEXTURE_2D)
-
-	self.checkErrors()
 
 	return glTexture
 }
@@ -142,22 +141,38 @@ func (self *OpenGLRenderer) renderOne(operation render.RenderOperation, renderSt
 	vertexArrayObj := mesh.VertexArrayObj.(gl.VertexArray)
 	vertexArrayObj.Bind()
 
+	material.Shader.Program.Use()
 	material.Shader.Program.SetUniformMatrix(
 		"modelViewProjection",
 		renderState.Projection.Times(renderState.View).Times(transform),
 	)
-	material.Shader.Program.Use()
 
 	if material.Texture != nil {
 		glTexture := material.Texture.Id.(gl.Texture)
 		gl.ActiveTexture(gl.TEXTURE0)
-		glTexture.Bind(gl.TEXTURE_2D)
-		defer glTexture.Unbind(gl.TEXTURE_2D)
 
-		material.Shader.Program.SetUniformUnit("textureSampler", 0)
+		if !material.IsCubeMap {
+			glTexture.Bind(gl.TEXTURE_2D)
+			defer glTexture.Unbind(gl.TEXTURE_2D)
+			material.Shader.Program.SetUniformUnit("textureSampler", 0)
+
+		} else {
+			gl.Disable(gl.DEPTH_TEST)
+			defer gl.Enable(gl.DEPTH_TEST)
+
+			glTexture.Bind(gl.TEXTURE_CUBE_MAP)
+			defer glTexture.Unbind(gl.TEXTURE_CUBE_MAP)
+			material.Shader.Program.SetUniformUnit("cubeMap", 0)
+		}
+
 	}
 
-	gl.DrawArrays(gl.TRIANGLES, 0, len(mesh.VertexList)*3)
+	if len(mesh.IndexList) == 0 {
+		gl.DrawArrays(gl.TRIANGLES, 0, len(mesh.VertexList)*3)
+	} else {
+		// TODO make the render type configurable
+		gl.DrawElements(gl.QUADS, len(mesh.IndexList), gl.UNSIGNED_SHORT, mesh.IndexList)
+	}
 }
 
 func (self *OpenGLRenderer) FinishRender() {
