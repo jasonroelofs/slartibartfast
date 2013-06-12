@@ -84,3 +84,39 @@ func Test_MaterialLoader_Get_ReturnsDefaultMaterialIfNoneMatchName(t *testing.T)
 	assert.Equal(t, defaultMaterial, loader.Get("Some Unknown Material"))
 	assert.Equal(t, defaultMaterial, loader.loadedMaterials["Some Unknown Material"])
 }
+
+func Test_MaterialLoader_LoadMaterial_LoadsCubeMaps(t *testing.T) {
+	loader := GetMaterialLoader()
+
+	def := MaterialDef{
+		Name:      "cubemap Test",
+		Texture:   "test.png",
+		IsCubeMap: true,
+	}
+
+	material := loader.Load(def)
+
+	assert.True(t, material.IsCubeMap)
+	assert.NotNil(t, material.Texture)
+	for i := 0; i < 6; i++ {
+		assert.NotNil(t, material.CubeMap[i], "Cube map face %d was nil", i)
+	}
+}
+
+/*
+func Test_MaterialLoader_LoadMaterial_LeavesCubeMapEmptyOnError(t *testing.T) {
+	loader := GetMaterialLoader()
+
+	def := MaterialDef{
+		Name:      "cubemap Test",
+		Texture:   "part.png",
+		IsCubeMap: true,
+	}
+
+	material := loader.Load(def)
+
+	for i := 0; i < 6; i++ {
+		assert.Nil(t, material.CubeMap[i], "Cube map face %d was not nil", i)
+	}
+}
+*/

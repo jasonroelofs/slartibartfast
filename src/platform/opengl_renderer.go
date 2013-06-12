@@ -3,9 +3,9 @@ package platform
 import (
 	"github.com/go-gl/gl"
 	"github.com/go-gl/glu"
+	"log"
 	"math3d"
 	"render"
-	"log"
 )
 
 type OpenGLRenderer struct {
@@ -52,9 +52,36 @@ func (self *OpenGLRenderer) LoadMesh(mesh *render.Mesh) {
 
 func (self *OpenGLRenderer) LoadMaterial(material *render.Material) {
 	material.Shader.Program = NewGLSLProgram(material.Shader.Vertex, material.Shader.Fragment)
-	if material.Texture != nil {
+
+	if material.IsCubeMap {
+		material.Texture.Id = self.loadCubeMap(material)
+	} else if material.Texture != nil {
 		material.Texture.Id = self.LoadTexture(material.Texture)
 	}
+}
+
+func (self *OpenGLRenderer) loadCubeMap(material *render.Material) gl.Texture {
+	gl.Enable(gl.TEXTURE_CUBE_MAP)
+	glTexture := gl.GenTexture()
+	glTexture.Bind(gl.TEXTURE_CUBE_MAP)
+	defer glTexture.Unbind(gl.TEXTURE_CUBE_MAP)
+
+	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE)
+
+	self.glTexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, material.CubeMap[render.CubeFace_Right])
+	self.glTexImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, material.CubeMap[render.CubeFace_Left])
+
+	self.glTexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, material.CubeMap[render.CubeFace_Top])
+	self.glTexImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, material.CubeMap[render.CubeFace_Bottom])
+
+	self.glTexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, material.CubeMap[render.CubeFace_Front])
+	self.glTexImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, material.CubeMap[render.CubeFace_Back])
+
+	return glTexture
 }
 
 func (self *OpenGLRenderer) LoadTexture(texture *render.Texture) gl.Texture {
@@ -67,17 +94,21 @@ func (self *OpenGLRenderer) LoadTexture(texture *render.Texture) gl.Texture {
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
 
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGB,
-		texture.Image.Width(), texture.Image.Height(), 0,
-		gl.RGB, gl.UNSIGNED_BYTE,
-		texture.Image.Bytes(),
-	)
+	self.glTexImage2D(gl.TEXTURE_2D, texture)
 
 	gl.GenerateMipmap(gl.TEXTURE_2D)
 
 	self.checkErrors()
 
 	return glTexture
+}
+
+func (self *OpenGLRenderer) glTexImage2D(textureType gl.GLenum, texture *render.Texture) {
+	gl.TexImage2D(textureType, 0, gl.RGB,
+		texture.Image.Width(), texture.Image.Height(), 0,
+		gl.RGB, gl.UNSIGNED_BYTE,
+		texture.Image.Bytes(),
+	)
 }
 
 func (self *OpenGLRenderer) BeginRender() {
