@@ -3,8 +3,8 @@
 in vec3 cubeUVCoords;
 out vec4 fragColor;
 
-uniform samplerCube cubemap;
+uniform samplerCube cubeMap;
 
 void main() {
-  fragColor = texture(cubemap, cubeUVCoords);
+  fragColor = texture(cubeMap, cubeUVCoords);
 }
