@@ -93,6 +93,46 @@ func (self *Game) initializeBehaviors() {
 // TODO also read from data/ to pull in any mesh files there.
 func (self *Game) loadAllMeshes() {
 	self.graphicalBehavior.LoadMesh(factories.SkyBoxMesh)
+
+	colorCubeMesh := &render.Mesh{
+		Name: "ColorIndexCube",
+		VertexList: []float32{
+			-1.0, 1.0, -1.0,
+			1.0, 1.0, -1.0,
+			-1.0, -1.0, -1.0,
+			1.0, -1.0, -1.0,
+			-1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0,
+			-1.0, -1.0, 1.0,
+			1.0, -1.0, 1.0,
+		},
+		ColorList: []float32{
+			0.0, 0.0, 0.0,
+			1.0, 0.0, 0.0,
+			0.0, 1.0, 0.0,
+			0.0, 0.0, 1.0,
+			1.0, 1.0, 0.0,
+			0.0, 1.0, 1.0,
+			1.0, 0.0, 1.0,
+			1.0, 1.0, 1.0,
+		},
+		IndexList: []int32{
+			2, 0, 3,
+			3, 1, 0,
+			3, 1, 7,
+			7, 5, 1,
+			6, 4, 2,
+			2, 0, 4,
+			7, 5, 6,
+			6, 4, 5,
+			0, 4, 1,
+			1, 5, 4,
+			6, 2, 7,
+			7, 3, 2,
+		},
+	}
+
+	self.graphicalBehavior.LoadMesh(colorCubeMesh)
 }
 
 // TODO Read from data/ to get material definitions and send them
@@ -104,6 +144,11 @@ func (self *Game) loadAllMaterials() {
 		Texture:   "stevecube.jpg",
 		Shaders:   "cubemap",
 		IsCubeMap: true,
+	})
+
+	self.graphicalBehavior.LoadMaterial(render.MaterialDef{
+		Name: "only_color",
+		Shaders: "color_unlit",
 	})
 
 }
