@@ -12,4 +12,5 @@ type Mesh struct {
 	VertexBuffer   interface{}
 	ColorBuffer    interface{}
 	UVBuffer       interface{}
+	IndexBuffer    interface{}
 }

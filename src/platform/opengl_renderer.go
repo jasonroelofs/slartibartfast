@@ -46,6 +46,14 @@ func (self *OpenGLRenderer) LoadMesh(mesh *render.Mesh) {
 		mesh.ColorBuffer = colorBuffer
 	}
 
+	if len(mesh.IndexList) > 0 {
+		indexBuffer := gl.GenBuffer()
+		indexBuffer.Bind(gl.ELEMENT_ARRAY_BUFFER)
+		gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(mesh.IndexList)*4, mesh.IndexList, gl.STATIC_DRAW)
+
+		mesh.IndexBuffer = indexBuffer
+	}
+
 	mesh.VertexArrayObj = vertexArrayObj
 	mesh.VertexBuffer = vertexBuffer
 }
@@ -171,7 +179,7 @@ func (self *OpenGLRenderer) renderOne(operation render.RenderOperation, renderSt
 		gl.DrawArrays(gl.TRIANGLES, 0, len(mesh.VertexList)*3)
 	} else {
 		// TODO make the render type configurable
-		gl.DrawElements(gl.QUADS, len(mesh.IndexList), gl.UNSIGNED_SHORT, mesh.IndexList)
+		gl.DrawElements(gl.TRIANGLES, len(mesh.IndexList), gl.UNSIGNED_INT, nil)
 	}
 }
 
