@@ -113,7 +113,7 @@ func (self *OpenGLRenderer) LoadTexture(texture *render.Texture) gl.Texture {
 func (self *OpenGLRenderer) glTexImage2D(textureType gl.GLenum, texture *render.Texture) {
 	gl.TexImage2D(textureType, 0, gl.RGB,
 		texture.Image.Width(), texture.Image.Height(), 0,
-		gl.RGB, gl.UNSIGNED_BYTE,
+		gl.BGR, gl.UNSIGNED_BYTE,
 		texture.Image.Bytes(),
 	)
 }
