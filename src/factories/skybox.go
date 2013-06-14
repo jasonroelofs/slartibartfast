@@ -31,6 +31,8 @@ func SkyBox(skyboxMaterial string, camera *core.Camera) *core.Entity {
 }
 
 func init() {
+	// This mesh has no Texture coords or color settings because it is processed
+	// as a cube map, and as such the Vertex positions double as texture coords.
 	SkyBoxMesh = &render.Mesh{
 		Name: "SkyBoxMesh",
 		VertexList: []float32{
