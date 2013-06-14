@@ -31,27 +31,31 @@ func SkyBox(skyboxMaterial string, camera *core.Camera) *core.Entity {
 }
 
 func init() {
-	// Helpfully provided by
-	// http://www.keithlantz.net/2011/10/rendering-a-skybox-using-a-cube-map-with-opengl-and-glsl/
 	SkyBoxMesh = &render.Mesh{
 		Name: "SkyBoxMesh",
 		VertexList: []float32{
-			-1.0, 1.0, 1.0,
-			-1.0, -1.0, 1.0,
-			1.0, -1.0, 1.0,
-			1.0, 1.0, 1.0,
 			-1.0, 1.0, -1.0,
+			1.0, 1.0, -1.0,
 			-1.0, -1.0, -1.0,
 			1.0, -1.0, -1.0,
-			1.0, 1.0, -1.0,
+			-1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0,
+			-1.0, -1.0, 1.0,
+			1.0, -1.0, 1.0,
 		},
 		IndexList: []int32{
-			0, 1, 2, 3,
-			3, 2, 6, 7,
-			7, 6, 5, 4,
-			4, 5, 1, 0,
-			0, 3, 7, 4,
-			1, 2, 6, 5,
+			2, 0, 3,
+			3, 1, 0,
+			3, 1, 7,
+			7, 5, 1,
+			6, 4, 2,
+			2, 0, 4,
+			7, 5, 6,
+			6, 4, 5,
+			0, 4, 1,
+			1, 5, 4,
+			6, 2, 7,
+			7, 3, 2,
 		},
 	}
 }
