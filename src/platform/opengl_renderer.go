@@ -178,7 +178,6 @@ func (self *OpenGLRenderer) renderOne(operation render.RenderOperation, renderSt
 	if len(mesh.IndexList) == 0 {
 		gl.DrawArrays(gl.TRIANGLES, 0, len(mesh.VertexList)*3)
 	} else {
-		// TODO make the render type configurable
 		gl.DrawElements(gl.TRIANGLES, len(mesh.IndexList), gl.UNSIGNED_INT, nil)
 	}
 }

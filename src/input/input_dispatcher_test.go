@@ -79,6 +79,25 @@ func Test_StoresKeyEventsReceived(t *testing.T) {
 	assert.False(t, mapper.storedEvents[1].Pressed)
 }
 
+func Test_StoresMouseEventsReceived(t *testing.T) {
+	mapper := NewInputDispatcher()
+
+	// First mouse move is ignored
+	mapper.mouseCallback(100, 400)
+
+	mapper.mouseCallback(10, 20)
+	mapper.mouseCallback(-5, 13)
+
+	assert.Equal(t, 2, len(mapper.storedEvents))
+	assert.Equal(t, events.MouseMove, mapper.storedEvents[0].EventType)
+	assert.Equal(t, 10, mapper.storedEvents[0].MouseXDiff)
+	assert.Equal(t, 20, mapper.storedEvents[0].MouseYDiff)
+
+	assert.Equal(t, events.MouseMove, mapper.storedEvents[1].EventType)
+	assert.Equal(t, -5, mapper.storedEvents[1].MouseXDiff)
+	assert.Equal(t, 13, mapper.storedEvents[1].MouseYDiff)
+}
+
 func Test_RecentEvents_ReturnsStoredEventsAndClearsList(t *testing.T) {
 	mapper := NewInputDispatcher()
 	mapper.mapKeyToEvent(KeyQ, events.Quit)
