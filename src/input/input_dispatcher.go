@@ -16,6 +16,10 @@ type InputDispatcher struct {
 	// List of events received. Gets cleared when requested.
 	storedEvents EventList
 
+	// GLFW, when disabling the cursor, seems to end up triggering
+	// a mouse-move event that is the distance mouse moved to be the
+	// center of the window. This is making crazy swinging so I'm ignoring
+	// it until I find a better way to handle this.
 	firstMouseMoveIgnored bool
 }
 

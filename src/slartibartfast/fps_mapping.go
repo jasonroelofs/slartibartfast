@@ -92,13 +92,13 @@ func mouseMoved(entity components.ComponentHolder, event events.Event) {
 
 	// Keep yaw within 0 - 360 degrees as a precaution
 	transform.CurrentYaw = math3d.KeepWithinRange(
-		transform.CurrentYaw + float32(event.MouseXDiff),
+		transform.CurrentYaw + (float32(event.MouseXDiff) * 0.5),
 		0.0, 360.0,
 	)
 
 	// Don't let the pitch go past vertical up or down, or strange things happen.
 	transform.CurrentPitch = math3d.Clamp(
-		transform.CurrentPitch + float32(event.MouseYDiff),
+		transform.CurrentPitch + (float32(event.MouseYDiff) * 0.5),
 		-89, 89,
 	)
 }
