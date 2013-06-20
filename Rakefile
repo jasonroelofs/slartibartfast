@@ -22,6 +22,7 @@ LIBRARIES = %w(
   github.com/go-gl/glu
   github.com/go-gl/glfw
   github.com/stretchrcom/testify
+  github.com/stretchrcom/testify/assert
 )
 
 EXTERNAL_LIBS = %w(
