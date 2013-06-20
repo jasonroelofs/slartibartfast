@@ -1,0 +1,12 @@
+[submodule "src/github.com/go-gl/glfw"]
+	path = src/github.com/go-gl/glfw
+	url = git://github.com/go-gl/glfw.git
+[submodule "src/github.com/go-gl/glu"]
+	path = src/github.com/go-gl/glu
+	url = git://github.com/go-gl/glu.git
+[submodule "src/github.com/go-gl/gl"]
+	path = src/github.com/go-gl/gl
+	url = git://github.com/go-gl/gl.git
+[submodule "src/github.com/stretchrcom/testify"]
+	path = src/github.com/stretchrcom/testify
+	url = git://github.com/stretchrcom/testify.git
