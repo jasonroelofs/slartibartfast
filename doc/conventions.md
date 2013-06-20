@@ -1,3 +1,9 @@
+Dependencies
+------------
+
+`go get` the dependency, add it to the appropriate array in the Rakefile, then `git submodule add [url] [dir]` to ensure
+the version is saved in git.
+
 Shader Conventions
 ------------------
 
