@@ -80,8 +80,8 @@ func Test_MouseMove(t *testing.T) {
 
 	FPSMapping[events.MouseMove](entity, event)
 
-	assert.Equal(t, 30, transform.CurrentYaw)
-	assert.Equal(t, 40, transform.CurrentPitch)
+	assert.Equal(t, 15, transform.CurrentYaw)
+	assert.Equal(t, 20, transform.CurrentPitch)
 }
 
 func Test_MouseMove_ConstrainsYaw(t *testing.T) {
@@ -96,7 +96,7 @@ func Test_MouseMove_ConstrainsYaw(t *testing.T) {
 
 	FPSMapping[events.MouseMove](entity, event)
 
-	assert.Equal(t, 30, transform.CurrentYaw)
+	assert.Equal(t, 10, transform.CurrentYaw)
 }
 
 func Test_MouseMove_ClampsPitch(t *testing.T) {
