@@ -1,10 +1,16 @@
 package components
 
+import(
+	"render"
+)
+
 // The Visual component holds information relating to
 // graphical representation of the owning Entity
 type Visual struct {
 	MeshName     string
 	MaterialName string
+
+	Mesh *render.Mesh
 }
 
 func (self Visual) Type() ComponentType {

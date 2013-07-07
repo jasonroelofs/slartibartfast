@@ -34,8 +34,15 @@ func NewGraphical(renderer render.Renderer, entityDB *core.EntityDB) *Graphical 
 	return &obj
 }
 
-// EntityListener
+// EntityListener. Will load up the mesh hooked to the given entity's
+// Visual component if one was given directly instead of via MeshName
 func (self *Graphical) SetUpEntity(entity *core.Entity) {
+	visual := components.GetVisual(entity)
+
+	if visual.Mesh != nil {
+		log.Println("Loading Mesh for Entity", entity.Name)
+		self.renderer.LoadMesh(visual.Mesh)
+	}
 }
 
 // LoadMesh takes a given Mesh object and ensures it's contents are
