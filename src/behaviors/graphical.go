@@ -16,7 +16,7 @@ type Graphical struct {
 
 	materialLoader *render.MaterialLoader
 
-	meshes    MeshMap
+	meshes MeshMap
 }
 
 func NewGraphical(renderer render.Renderer, entityDB *core.EntityDB) *Graphical {

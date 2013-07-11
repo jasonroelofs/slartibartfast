@@ -15,6 +15,7 @@ PACKAGES = %w(
   render
   freeimage
   factories
+  volume
 )
 
 LIBRARIES = %w(
