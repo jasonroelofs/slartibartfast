@@ -13,6 +13,10 @@ type OpenGLRenderer struct {
 }
 
 func (self *OpenGLRenderer) LoadMesh(mesh *render.Mesh) {
+	if len(mesh.VertexList) == 0 {
+		return
+	}
+
 	vertexArrayObj := gl.GenVertexArray()
 	vertexArrayObj.Bind()
 
@@ -145,6 +149,12 @@ func (self *OpenGLRenderer) renderOne(operation render.RenderOperation, renderSt
 	mesh := operation.Mesh
 	material := operation.Material
 	transform := operation.Transform
+
+	// No attributes? no loaded or empty?
+	if mesh.VertexArrayObj == nil {
+		log.Println("WARNING: Trying to render an invalid mesh", mesh)
+		return
+	}
 
 	vertexArrayObj := mesh.VertexArrayObj.(gl.VertexArray)
 	vertexArrayObj.Bind()
