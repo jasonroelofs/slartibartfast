@@ -110,3 +110,18 @@ func Test_Update_RendersAllVisualEntityMeshesWithMaterials(t *testing.T) {
 	assert.Equal(t, render.DefaultMaterial.Name, renderOp.Material.Name)
 	assert.Equal(t, math3d.IdentityMatrix(), renderOp.Transform)
 }
+
+func Test_Update_UsesMeshLinkedToVisualIfExists(t *testing.T) {
+	graphical, renderer, entityDb := getTestGraphical()
+
+	mesh := &render.Mesh{}
+
+	entity := core.NewEntity()
+	entity.AddComponent(&components.Visual{Mesh: mesh})
+	entityDb.RegisterEntity(entity)
+
+	graphical.Update(core.NewCamera(), 0)
+	renderOp := renderer.queueRendered.RenderOperations()[0]
+
+	assert.Equal(t, mesh, renderOp.Mesh)
+}

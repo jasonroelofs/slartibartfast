@@ -75,7 +75,7 @@ func (self *Graphical) Update(camera *core.Camera, deltaT float32) {
 		visual = components.GetVisual(entity)
 
 		renderQueue.Add(render.RenderOperation{
-			Mesh:      self.meshes[visual.MeshName],
+			Mesh:      self.meshFromVisual(visual),
 			Material:  self.materialLoader.Get(visual.MaterialName),
 			Transform: components.GetTransform(entity).TransformMatrix(),
 		})
@@ -84,4 +84,14 @@ func (self *Graphical) Update(camera *core.Camera, deltaT float32) {
 	self.renderer.Render(renderQueue)
 
 	self.renderer.FinishRender()
+}
+
+// Either use the mesh that's directly linked to the Visual component or look
+// up preloaded meshes by name
+func (self *Graphical) meshFromVisual(visual *components.Visual) *render.Mesh {
+	if visual.Mesh != nil {
+		return visual.Mesh
+	} else {
+		return self.meshes[visual.MeshName]
+	}
 }
