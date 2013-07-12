@@ -47,9 +47,9 @@ func NewInputDispatcher() *InputDispatcher {
 
 	glfw.SetKeyCallback(mapper.keyCallback)
 
-	glfw.SetMouseButtonCallback(mapper.keyCallback)
 	glfw.SetMousePosCallback(mapper.mouseCallback)
 	glfw.SetMouseWheelCallback(mapper.mouseWheelCallback)
+	glfw.SetMouseButtonCallback(mapper.mouseButtonCallback)
 
 	glfw.Disable(glfw.MouseCursor)
 
@@ -66,35 +66,60 @@ func (self *InputDispatcher) On(event events.EventType, callback func(events.Eve
 	self.callbacks[event] = callback
 }
 
-// OnKey registers a callback for when a raw key event happens. Use when there isn't an appropriate
-// event defined or just for testing things out
+// OnKey registers a callback for when a raw key event happens.
+// Use this when you don't want to deal with the events mapping system and just want
+// to watch for a key press. Should not be used with anything players will use.
 func (self *InputDispatcher) OnKey(key int, callback func(events.Event)) {
 	self.keyCallbacks[key] = callback
+}
+
+// RecentEvents returns the list of events queued up since the last time
+// this method was called. This method returns a copy of the events list
+// then clears out it's internal list for the next frame.
+func (self *InputDispatcher) RecentEvents() EventList {
+	eventsList := self.storedEvents
+	self.storedEvents = EventList{}
+	return eventsList
 }
 
 func (self *InputDispatcher) mapKeyToEvent(key int, eventType events.EventType) {
 	self.keyMappings[key] = eventType
 }
 
+// Hook into GLFW when a key is pressed
 func (self *InputDispatcher) keyCallback(key, state int) {
 	log.Println("Key pressed! ", key, state, string(key))
 
-	event := events.Event{
-		Pressed: state == 1,
-	}
+	self.processKeyCallback(key, state)
+	self.processEventCallbacks(key, state)
+}
 
+func (self *InputDispatcher) processKeyCallback(key, state int) {
 	if callbackFromKey, ok := self.keyCallbacks[key]; ok {
-		callbackFromKey(event)
+		callbackFromKey(events.Event{Pressed: state == 1})
 	}
+}
 
+func (self *InputDispatcher) processEventCallbacks(key, state int) {
 	if eventFromKey, ok := self.keyMappings[key]; ok {
-		event.EventType = eventFromKey
+		event := events.Event{
+			Pressed:   state == 1,
+			EventType: eventFromKey,
+		}
 
 		self.storedEvents = append(self.storedEvents, event)
 		self.fireLocalCallback(event)
 	}
 }
 
+func (self *InputDispatcher) fireLocalCallback(event events.Event) {
+	eventToCallback := self.callbacks[event.EventType]
+	if eventToCallback != nil {
+		eventToCallback(event)
+	}
+}
+
+// Hook into GLFW for when the mouse is moved
 func (self *InputDispatcher) mouseCallback(x, y int) {
 	if !self.firstMouseMoveIgnored {
 		self.firstMouseMoveIgnored = true
@@ -117,26 +142,12 @@ func (self *InputDispatcher) resetMouse() {
 	glfw.SetMousePos(0, 0)
 }
 
+// Hook into GLFW for when a mouse button event is triggered
 func (self *InputDispatcher) mouseButtonCallback(button, state int) {
 	log.Println("Mouse Button pressed", button, state)
 }
 
+// Hook into GLFW for when the mouse wheel moves
 func (self *InputDispatcher) mouseWheelCallback(position int) {
 	log.Println("Mouse wheel", position)
-}
-
-func (self *InputDispatcher) fireLocalCallback(event events.Event) {
-	eventToCallback := self.callbacks[event.EventType]
-	if eventToCallback != nil {
-		eventToCallback(event)
-	}
-}
-
-// RecentEvents returns the list of events queued up since the last time
-// this method was called. This method returns a copy of the events list
-// then clears out it's internal list for the next frame.
-func (self *InputDispatcher) RecentEvents() EventList {
-	eventsList := self.storedEvents
-	self.storedEvents = EventList{}
-	return eventsList
 }
