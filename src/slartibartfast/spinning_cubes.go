@@ -3,6 +3,7 @@ package main
 import (
 	"components"
 	"core"
+	"factories"
 	"math3d"
 )
 
@@ -32,6 +33,9 @@ func (self *SpinningCubes) Setup() {
 		math3d.Vector{0, 4, 4},
 		math3d.Vector{0, 0, 4},
 	}
+
+	skybox := factories.SkyBox("stevecube", self.game.Camera)
+	self.game.RegisterEntity(skybox)
 
 	for i := 0; i < 10; i++ {
 		box = core.NewEntityAt(positions[i])

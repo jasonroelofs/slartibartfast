@@ -172,8 +172,9 @@ func (self *Game) initializeScene() {
 	// can take care of situations like this.
 	self.RegisterEntity(self.Camera.Entity)
 
-	//	self.currentScene = NewSpinningCubes(self)
-	self.currentScene = NewTexturedCube(self)
+//	self.currentScene = NewSpinningCubes(self)
+// self.currentScene = NewTexturedCube(self)
+	self.currentScene = NewVolumeScene(self)
 
 	self.currentScene.Setup()
 }
