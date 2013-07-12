@@ -2,16 +2,18 @@ package input
 
 import (
 	"events"
-	"log"
 	"github.com/go-gl/glfw"
+	"log"
 )
 
 type eventCallbackMap map[events.EventType]func(events.Event)
+type keyCallbackMap map[int]func(events.Event)
 type keyEventMap map[int]events.EventType
 
 type InputDispatcher struct {
-	callbacks   eventCallbackMap
-	keyMappings keyEventMap
+	callbacks    eventCallbackMap
+	keyMappings  keyEventMap
+	keyCallbacks keyCallbackMap
 
 	// List of events received. Gets cleared when requested.
 	storedEvents EventList
@@ -27,6 +29,7 @@ func NewInputDispatcher() *InputDispatcher {
 	mapper := InputDispatcher{
 		callbacks:    make(eventCallbackMap),
 		keyMappings:  make(keyEventMap),
+		keyCallbacks: make(keyCallbackMap),
 	}
 
 	// Set up testing key mappings
@@ -63,6 +66,12 @@ func (self *InputDispatcher) On(event events.EventType, callback func(events.Eve
 	self.callbacks[event] = callback
 }
 
+// OnKey registers a callback for when a raw key event happens. Use when there isn't an appropriate
+// event defined or just for testing things out
+func (self *InputDispatcher) OnKey(key int, callback func(events.Event)) {
+	self.keyCallbacks[key] = callback
+}
+
 func (self *InputDispatcher) mapKeyToEvent(key int, eventType events.EventType) {
 	self.keyMappings[key] = eventType
 }
@@ -70,11 +79,16 @@ func (self *InputDispatcher) mapKeyToEvent(key int, eventType events.EventType) 
 func (self *InputDispatcher) keyCallback(key, state int) {
 	log.Println("Key pressed! ", key, state, string(key))
 
+	event := events.Event{
+		Pressed: state == 1,
+	}
+
+	if callbackFromKey, ok := self.keyCallbacks[key]; ok {
+		callbackFromKey(event)
+	}
+
 	if eventFromKey, ok := self.keyMappings[key]; ok {
-		event := events.Event{
-			EventType: eventFromKey,
-			Pressed:   state == 1,
-		}
+		event.EventType = eventFromKey
 
 		self.storedEvents = append(self.storedEvents, event)
 		self.fireLocalCallback(event)
@@ -88,7 +102,7 @@ func (self *InputDispatcher) mouseCallback(x, y int) {
 	}
 
 	event := events.Event{
-		EventType: events.MouseMove,
+		EventType:  events.MouseMove,
 		MouseXDiff: x,
 		MouseYDiff: y,
 	}

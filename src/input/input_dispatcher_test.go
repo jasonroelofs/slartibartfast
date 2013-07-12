@@ -24,6 +24,22 @@ func Test_On_RegistersACallbackForAnEvent(t *testing.T) {
 	assert.True(t, quitCalled, "Quit callback was not called")
 }
 
+func Test_OnKey_RegistersCallbackForRawKeyEvent(t *testing.T) {
+	mapper := NewInputDispatcher()
+	pKeyHit := false
+	var pKeyEvent events.Event
+
+	mapper.OnKey(KeyP, func(event events.Event) {
+		pKeyHit = true
+		pKeyEvent = event
+	})
+
+	mapper.keyCallback(KeyP, 1)
+
+	assert.True(t, pKeyHit, "P key callback was not called")
+	assert.True(t, pKeyEvent.Pressed)
+}
+
 func Test_DoesNothingIfNoEventForKey(t *testing.T) {
 	mapper := NewInputDispatcher()
 
