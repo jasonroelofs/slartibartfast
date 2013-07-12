@@ -53,3 +53,7 @@ func Sin(x float32) float32 {
 func Tan(x float32) float32 {
 	return float32(math.Tan(float64(x)))
 }
+
+func Abs(x float32) float32 {
+	return float32(math.Abs(float64(x)))
+}
