@@ -9,7 +9,7 @@ import (
 type uniformMap map[string]gl.UniformLocation
 
 type GLSLProgram struct {
-	// Implements core.GPUProgram
+	// Implements render.GPUProgram
 	program        gl.Program
 	vertexShader   gl.Shader
 	fragmentShader gl.Shader

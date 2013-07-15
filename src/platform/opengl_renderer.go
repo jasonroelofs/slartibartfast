@@ -14,6 +14,7 @@ type OpenGLRenderer struct {
 
 func (self *OpenGLRenderer) LoadMesh(mesh *render.Mesh) {
 	if len(mesh.VertexList) == 0 {
+		log.Println("WARNING Stopping load of mesh [", mesh.Name, "] with no verticies")
 		return
 	}
 
@@ -150,7 +151,8 @@ func (self *OpenGLRenderer) renderOne(operation render.RenderOperation, renderSt
 	material := operation.Material
 	transform := operation.Transform
 
-	// No attributes? no loaded or empty?
+	// No attributes? no loaded or empty? Better way to handle this than spamming
+	// the console?
 	if mesh.VertexArrayObj == nil {
 		log.Println("WARNING: Trying to render an invalid mesh", mesh)
 		return
@@ -173,7 +175,6 @@ func (self *OpenGLRenderer) renderOne(operation render.RenderOperation, renderSt
 			glTexture.Bind(gl.TEXTURE_2D)
 			defer glTexture.Unbind(gl.TEXTURE_2D)
 			material.Shader.Program.SetUniformUnit("textureSampler", 0)
-
 		} else {
 			gl.Disable(gl.DEPTH_TEST)
 			defer gl.Enable(gl.DEPTH_TEST)
@@ -182,7 +183,6 @@ func (self *OpenGLRenderer) renderOne(operation render.RenderOperation, renderSt
 			defer glTexture.Unbind(gl.TEXTURE_CUBE_MAP)
 			material.Shader.Program.SetUniformUnit("cubeMap", 0)
 		}
-
 	}
 
 	if len(mesh.IndexList) == 0 {

@@ -47,7 +47,7 @@ func (self *Graphical) SetUpEntity(entity *core.Entity) {
 }
 
 func (self *Graphical) checkDefaultsOnVisual(component *components.Visual) {
-	// Ensure we load something for this Visual
+	// Ensure we load something for this Visual.
 	if component.Mesh == nil && component.MeshName == "" {
 		component.MeshName = render.DefaultMeshName
 	}

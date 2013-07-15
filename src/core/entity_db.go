@@ -13,6 +13,15 @@ type EntityDB struct {
 	listeners   []listenerRecord
 }
 
+// Struct to keep track of a listener and the set of
+// components said Listener registered to receive notifications of
+type listenerRecord struct {
+	listener     EntityListener
+	componentMap components.ComponentType
+	entitySet    *EntitySet
+}
+
+// Interface all Entity Listeners must adhere to
 type EntityListener interface {
 	SetUpEntity(entity *Entity)
 }
@@ -36,15 +45,6 @@ func (self *EntityDB) RegisterListener(
 
 	self.listeners = append(self.listeners, record)
 	return record.entitySet
-}
-
-
-// Struct to keep track of a listener and the set of
-// components said Listener registered to receive notifications of
-type listenerRecord struct {
-	listener     EntityListener
-	componentMap components.ComponentType
-	entitySet    *EntitySet
 }
 
 func (self *EntityDB) notifyListenersOfNewEntity(entity *Entity) {
