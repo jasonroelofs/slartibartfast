@@ -1,21 +1,20 @@
 package volume
 
 import (
-//	"log"
+	//	"log"
+	"math/rand"
 	"math3d"
 	"render"
-	"math/rand"
 )
 
 func MarchingCubes(volume Volume, extents math3d.Vector, cubeSize float32) *render.Mesh {
 	var verticies []math3d.Vector
 	var x, y, z float32
 
-	// Fix, seed at the start of the game
+	// FIXME, seed at the start of the game
 	r := rand.New(rand.NewSource(100))
 
 	finalMesh := new(render.Mesh)
-//	color := math3d.Vector{1.0, 0.0, 0.0}
 
 	for x = 0; x < extents.X; x += cubeSize {
 		for y = 0; y < extents.Y; y += cubeSize {
@@ -49,9 +48,25 @@ func MarchingCubes(volume Volume, extents math3d.Vector, cubeSize float32) *rend
 //  0 --- 1
 
 func marchCube(volume Volume, x, y, z, cubeSize float32) (verticies []math3d.Vector) {
-	// Check each of the 8 cube verticies to see which ones are in the volume
+	corners := calculateCornerLocations(x, y, z, cubeSize)
+	cornerValues := calculateCornerValues(volume, corners)
+	edgeFlagMap := findWhichEdgesIntersectVolume(cornerValues)
 
-	corners := [8]math3d.Vector{
+	// Query the table to find out if we really do intersect with
+	// the volume. Returns 0 if the cube is all out or all in the volume
+	edgeFlags := mc_CubeEdgeFlags[edgeFlagMap]
+	if edgeFlags == 0 {
+		return
+	}
+
+	edgeVerticies := calculateLocationOfEdgeIntersections(cornerValues, edgeFlags, x, y, z, cubeSize)
+	verticies = buildTrianglesFromEdgesVerticies(edgeVerticies, edgeFlagMap)
+
+	return
+}
+
+func calculateCornerLocations(x, y, z, cubeSize float32) [8]math3d.Vector {
+	return [8]math3d.Vector{
 		math3d.Vector{x, y, z},
 		math3d.Vector{x + cubeSize, y, z},
 		math3d.Vector{x + cubeSize, y, z + cubeSize},
@@ -61,8 +76,10 @@ func marchCube(volume Volume, x, y, z, cubeSize float32) (verticies []math3d.Vec
 		math3d.Vector{x + cubeSize, y + cubeSize, z + cubeSize},
 		math3d.Vector{x, y + cubeSize, z + cubeSize},
 	}
+}
 
-	cornerValues := [8]float32{
+func calculateCornerValues(volume Volume, corners [8]math3d.Vector) [8]float32 {
+	return [8]float32{
 		volume.Density(corners[0].X, corners[0].Y, corners[0].Z),
 		volume.Density(corners[1].X, corners[1].Y, corners[1].Z),
 		volume.Density(corners[2].X, corners[2].Y, corners[2].Z),
@@ -72,8 +89,9 @@ func marchCube(volume Volume, x, y, z, cubeSize float32) (verticies []math3d.Vec
 		volume.Density(corners[6].X, corners[6].Y, corners[6].Z),
 		volume.Density(corners[7].X, corners[7].Y, corners[7].Z),
 	}
+}
 
-	var edgeFlagMap uint
+func findWhichEdgesIntersectVolume(cornerValues [8]float32) (edgeFlagMap uint) {
 	var edgeIndex int
 	var cornerValue float32
 
@@ -83,39 +101,19 @@ func marchCube(volume Volume, x, y, z, cubeSize float32) (verticies []math3d.Vec
 		}
 	}
 
-	edgeFlags := mc_CubeEdgeFlags[edgeFlagMap]
+	return
+}
 
-	if edgeFlags == 0 {
-		return
-	}
+func calculateLocationOfEdgeIntersections(cornerValues [8]float32, edgeFlags int, x, y, z, cubeSize float32) (edgeVerticies [12]math3d.Vector) {
+	var vertexOffset float32
+	var newVertex math3d.Vector
 
-	// Will do something about these inline tables. For now still learning
-	// the algorithm and how to implement. Tables updated to work with my winding
-	// and opengl's left-handed coordinate system.
-	edgeConnections := [12][2]int{
-    {0,1}, {1,2}, {2,3}, {3,0},
-    {4,5}, {5,6}, {6,7}, {7,4},
-    {0,4}, {1,5}, {2,6}, {3,7},
-  }
-
-	edgeDirections := [12][3]float32{
-    {1.0, 0.0, 0.0},{0.0, 0.0, 1.0},{-1.0, 0.0, 0.0},{0.0, 0.0, -1.0},
-    {1.0, 0.0, 0.0},{0.0, 0.0, 1.0},{-1.0, 0.0, 0.0},{0.0, 0.0, -1.0},
-    {0.0, 1.0, 0.0},{0.0, 1.0, 0.0},{ 0.0, 1.0, 0.0},{0.0, 1.0, 0.0},
-  }
-
-  vertexOffsets := [8][3]float32{
-    {0.0, 0.0, 0.0},{1.0, 0.0, 0.0},{1.0, 0.0, 1.0},{0.0, 0.0, 1.0},
-    {0.0, 1.0, 0.0},{1.0, 1.0, 0.0},{1.0, 1.0, 1.0},{0.0, 1.0, 1.0},
-  }
-
-  var vertexOffset float32
-  var edgeVertecies [12]math3d.Vector
-  var newVertex math3d.Vector
-
-  // For each edge that is intersected find out where the vertex goes
-	for edge := 0; edge < 12; edge ++{
-		if edgeFlags & (1 << uint(edge)) > 0 {
+	// For each edge that is intersected find out where the vertex goes.
+	// TODO Right now a basic average of the values on the two verticies linked
+	// to the current edge. Will need to update to better interpolation like trilinear
+	// and the like.
+	for edge := 0; edge < 12; edge++ {
+		if edgeFlags&(1<<uint(edge)) > 0 {
 
 			vertexOffset = calculateSurfaceValueOffset(
 				cornerValues[edgeConnections[edge][0]],
@@ -123,23 +121,27 @@ func marchCube(volume Volume, x, y, z, cubeSize float32) (verticies []math3d.Vec
 			)
 
 			newVertex = math3d.Vector{
-				x + (vertexOffsets[ edgeConnections[edge][0] ][0] + vertexOffset * edgeDirections[edge][0]) * cubeSize,
-				y + (vertexOffsets[ edgeConnections[edge][0] ][1] + vertexOffset * edgeDirections[edge][1]) * cubeSize,
-				z + (vertexOffsets[ edgeConnections[edge][0] ][2] + vertexOffset * edgeDirections[edge][2]) * cubeSize,
+				x + (vertexOffsets[edgeConnections[edge][0]][0]+vertexOffset*edgeDirections[edge][0])*cubeSize,
+				y + (vertexOffsets[edgeConnections[edge][0]][1]+vertexOffset*edgeDirections[edge][1])*cubeSize,
+				z + (vertexOffsets[edgeConnections[edge][0]][2]+vertexOffset*edgeDirections[edge][2])*cubeSize,
 			}
-			edgeVertecies[edge] = newVertex
+			edgeVerticies[edge] = newVertex
 		}
 	}
 
+	return
+}
+
+func buildTrianglesFromEdgesVerticies(edgeVerticies [12]math3d.Vector, edgeFlagMap uint) (verticies []math3d.Vector) {
 	// For each edge vertex, convert into triangles.
 	for i := 0; i < 5; i++ {
-		if mc_TriangleConnectionTable[edgeFlagMap][3 * i] < 0 {
+		if mc_TriangleConnectionTable[edgeFlagMap][3*i] < 0 {
 			break
 		}
 
 		for corner := 0; corner < 3; corner++ {
-			vertexIndex := mc_TriangleConnectionTable[edgeFlagMap][3 * i + corner]
-			verticies = append(verticies, edgeVertecies[vertexIndex])
+			vertexIndex := mc_TriangleConnectionTable[edgeFlagMap][3*i+corner]
+			verticies = append(verticies, edgeVerticies[vertexIndex])
 		}
 	}
 
@@ -152,5 +154,38 @@ func calculateSurfaceValueOffset(value1, value2 float32) float32 {
 		return 0.5
 	} else {
 		return math3d.Abs(diff / 2.0)
+	}
+}
+
+/**
+ * Extra MarchingCubes data tables. Alternative to this is unrolling the loops
+ * above, but will only do that if it is a necessary performance boost
+ */
+
+// Which verticies are connected to this edge?
+var edgeConnections [12][2]int
+
+// In what direction is the edge traversing?
+var edgeDirections [12][3]float32
+
+// Where in the current step cube are we building a vertex from?
+var vertexOffsets [8][3]float32
+
+func init() {
+	edgeConnections = [12][2]int{
+		{0, 1}, {1, 2}, {2, 3}, {3, 0},
+		{4, 5}, {5, 6}, {6, 7}, {7, 4},
+		{0, 4}, {1, 5}, {2, 6}, {3, 7},
+	}
+
+	edgeDirections = [12][3]float32{
+		{1.0, 0.0, 0.0}, {0.0, 0.0, 1.0}, {-1.0, 0.0, 0.0}, {0.0, 0.0, -1.0},
+		{1.0, 0.0, 0.0}, {0.0, 0.0, 1.0}, {-1.0, 0.0, 0.0}, {0.0, 0.0, -1.0},
+		{0.0, 1.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 1.0, 0.0},
+	}
+
+	vertexOffsets = [8][3]float32{
+		{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {1.0, 0.0, 1.0}, {0.0, 0.0, 1.0},
+		{0.0, 1.0, 0.0}, {1.0, 1.0, 0.0}, {1.0, 1.0, 1.0}, {0.0, 1.0, 1.0},
 	}
 }
