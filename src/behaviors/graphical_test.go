@@ -62,8 +62,8 @@ func Test_NewGraphical_PreLoadsDefaultMaterial(t *testing.T) {
 	assert.Equal(t, render.DefaultMaterial.Name, renderer.loadedMaterial.Name)
 }
 
-func Test_SetUpEntity_TellsRendererToLoadNewMesh(t *testing.T) {
-	_, renderer, entityDb := getTestGraphical()
+func Test_SetUpEntity_TellsRendererToLoadNewMeshFromVisual(t *testing.T) {
+	graphical, renderer, entityDb := getTestGraphical()
 
 	mesh := &render.Mesh{}
 	entity := core.NewEntity()
@@ -71,6 +71,7 @@ func Test_SetUpEntity_TellsRendererToLoadNewMesh(t *testing.T) {
 	entityDb.RegisterEntity(entity)
 
 	assert.Equal(t, mesh, renderer.loadedMesh)
+	assert.NotEqual(t, mesh, graphical.meshes[mesh.Name])
 }
 
 func Test_SetUpEntity_TellsRendererToLoadNewMaterial(t *testing.T) {

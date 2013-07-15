@@ -39,9 +39,21 @@ func NewGraphical(renderer render.Renderer, entityDB *core.EntityDB) *Graphical 
 func (self *Graphical) SetUpEntity(entity *core.Entity) {
 	visual := components.GetVisual(entity)
 
+	self.checkDefaultsOnVisual(visual)
+
 	if visual.Mesh != nil {
-		log.Println("Loading Mesh for Entity", entity.Name)
-		self.renderer.LoadMesh(visual.Mesh)
+		self.LoadMesh(visual.Mesh)
+	}
+}
+
+func (self *Graphical) checkDefaultsOnVisual(component *components.Visual) {
+	// Ensure we load something for this Visual
+	if component.Mesh == nil && component.MeshName == "" {
+		component.MeshName = render.DefaultMeshName
+	}
+
+	if component.MaterialName == "" {
+		component.MaterialName = render.DefaultMaterialName
 	}
 }
 
@@ -51,7 +63,10 @@ func (self *Graphical) LoadMesh(mesh *render.Mesh) {
 	log.Println("Loading Mesh", mesh.Name)
 
 	self.renderer.LoadMesh(mesh)
-	self.meshes[mesh.Name] = mesh
+
+	if mesh.Name != "" {
+		self.meshes[mesh.Name] = mesh
+	}
 }
 
 // LoadMaterial takes a MaterialDef object and ensures it is available to the

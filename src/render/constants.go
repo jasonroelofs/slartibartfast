@@ -4,13 +4,18 @@ package render
 
 // A colorful default Cube mesh!
 var DefaultMesh *Mesh
+var DefaultMeshName string
 
 // A Super Visually Obvious default Material
 var DefaultMaterial MaterialDef
+var DefaultMaterialName string
 
 func init() {
+	DefaultMeshName = "_default"
+	DefaultMaterialName = "_default"
+
 	DefaultMesh = &Mesh{
-		Name: "",
+		Name: DefaultMeshName,
 		// Currently a glDrawArrays setup, will convert to an indexed list
 		// once that is supported in the renderer
 		// Copied from http://www.opengl-tutorial.org/beginners-tutorials/tutorial-4-a-colored-cube/
@@ -132,7 +137,7 @@ func init() {
 	}
 
 	DefaultMaterial = MaterialDef{
-		Name: "",
+		Name:    DefaultMaterialName,
 		Texture: "uvtemplate.tga",
 		// Lighting Parameters
 		Shaders: "1texture_unlit",
