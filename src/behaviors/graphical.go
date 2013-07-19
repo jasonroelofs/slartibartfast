@@ -86,7 +86,7 @@ func (self *Graphical) Update(camera *core.Camera, deltaT float32) {
 	renderQueue.ProjectionMatrix = camera.ProjectionMatrix()
 	renderQueue.ViewMatrix = camera.ViewMatrix()
 
-	for _, entity := range self.entitySet.Entities {
+	for _, entity := range self.entitySet.Entities() {
 		visual = components.GetVisual(entity)
 
 		renderQueue.Add(render.RenderOperation{

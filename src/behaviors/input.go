@@ -27,7 +27,7 @@ func (self *Input) Update(deltaT float32) {
 	var input *components.Input
 	nextEvents := self.inputQueue.RecentEvents()
 
-	for _, entity := range self.entitySet.Entities {
+	for _, entity := range self.entitySet.Entities() {
 		input = components.GetInput(entity)
 
 		for _, event := range nextEvents {

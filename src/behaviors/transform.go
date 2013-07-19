@@ -24,7 +24,7 @@ func (self *Transform) SetUpEntity(entity *core.Entity) {
 func (self *Transform) Update(deltaT float32) {
 	var transform *components.Transform
 
-	for _, entity := range self.entitySet.Entities {
+	for _, entity := range self.entitySet.Entities() {
 		transform = components.GetTransform(entity)
 
 		if transform.UsingPositionOf == nil {

@@ -9,7 +9,7 @@ import (
 // Construction
 func Test_StartsWithEmptyListOfEntities(t *testing.T) {
 	db := EntityDB{}
-	assert.Equal(t, 0, len(db.allEntities))
+	assert.Equal(t, 0, db.allEntities.Len())
 }
 
 // Entity Management
@@ -20,7 +20,7 @@ func Test_KeepsTrackOfEntitiesAndComponents(t *testing.T) {
 
 	db.RegisterEntity(entity)
 
-	assert.Equal(t, 1, len(db.allEntities))
+	assert.Equal(t, 1, db.allEntities.Len())
 }
 
 //
@@ -41,7 +41,7 @@ func Test_EntityListenersCanRegisterWithDB(t *testing.T) {
 	listener := new(TestListener)
 	entitySet := db.RegisterListener(listener, components.TRANSFORM, components.VISUAL)
 
-	assert.Equal(t, 0, len(entitySet.Entities))
+	assert.Equal(t, 0, entitySet.Len())
 	assert.Equal(t, 1, len(db.listeners))
 }
 
@@ -77,8 +77,8 @@ func Test_AddsEntityToListenerEntityListIfComponentsMatch(t *testing.T) {
 	entitySet := db.RegisterListener(listener, components.TRANSFORM)
 	db.RegisterEntity(entity)
 
-	assert.Equal(t, 1, len(entitySet.Entities))
-	assert.Equal(t, entity, entitySet.Entities[0])
+	assert.Equal(t, 1, entitySet.Len())
+	assert.Equal(t, entity, entitySet.Get(0))
 }
 
 func Test_RegisterEntity_ProperlyWorksAgainstMultipleComponentTypes(t *testing.T) {
@@ -98,11 +98,11 @@ func Test_RegisterEntity_ProperlyWorksAgainstMultipleComponentTypes(t *testing.T
 	db.RegisterEntity(entity)
 
 	// 1 and 3 match this entity
-	assert.Equal(t, entity, es1.Entities[0])
-	assert.Equal(t, entity, es3.Entities[0])
+	assert.Equal(t, entity, es1.Get(0))
+	assert.Equal(t, entity, es3.Get(0))
 
 	// But 2 does not
-	assert.Equal(t, 0, len(es2.Entities))
+	assert.Equal(t, 0, es2.Len())
 }
 
 // CleanUpEntity callback to listeners

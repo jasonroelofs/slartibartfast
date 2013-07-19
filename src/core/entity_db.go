@@ -9,7 +9,7 @@ import (
 // with Entities depending on their Components. EntityDB handles the routing
 // and management logic behind all this
 type EntityDB struct {
-	allEntities []Entity
+	allEntities EntitySet
 	listeners   []listenerRecord
 }
 
@@ -28,7 +28,7 @@ type EntityListener interface {
 
 // RegisterEntity saves and processes a given Entity for inclusion in the system.
 func (self *EntityDB) RegisterEntity(entity *Entity) {
-	self.allEntities = append(self.allEntities, *entity)
+	self.allEntities.Append(entity)
 	self.notifyListenersOfNewEntity(entity)
 }
 
