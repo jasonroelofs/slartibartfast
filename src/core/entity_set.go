@@ -29,3 +29,22 @@ func (self *EntitySet) Get(index int) *Entity {
 func (self *EntitySet) Entities() []*Entity {
 	return self.entities
 }
+
+// Delete removes the given Entity from this set
+func (self *EntitySet) Delete(entity *Entity) {
+	var inList *Entity
+	var index int
+
+	for index, inList = range self.entities {
+		if inList == entity {
+			break
+		}
+	}
+
+	if inList != nil {
+		// From https://code.google.com/p/go-wiki/wiki/SliceTricks
+		copy(self.entities[index:], self.entities[index+1:])
+		self.entities[len(self.entities)-1] = nil
+		self.entities = self.entities[:len(self.entities)-1]
+	}
+}
