@@ -15,6 +15,9 @@ type Entity struct {
 
 	components       componentTypeMap
 	destroyNextFrame bool
+
+	// Flag to keep track if components have been added this frame
+	componentsAdded  bool
 }
 
 // NewEntity sets up a new Entity for use in the app complete with
@@ -49,6 +52,7 @@ func (self *Entity) Destroy() {
 // +component+ *must* be a pointer or the system won't work.
 func (self *Entity) AddComponent(component components.Component) {
 	self.components[component.Type()] = component
+	self.componentsAdded = true
 }
 
 // GetComponent returns the component on this Entity of the given type

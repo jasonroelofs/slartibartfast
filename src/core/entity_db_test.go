@@ -158,12 +158,21 @@ func Test_Update_ProcessesDeletedEntities_TellsListenersToCleanUpEntities(t *tes
 }
 
 func Test_Update_TellsListenersToSetUpNewEntityOnNewComponents(t *testing.T) {
-//	db, listeners := RegisterDBAndListeners()
-//	entity := NewEntity()
-//	db.RegisterEntity(entity)
+	db, listeners := RegisterDBAndListeners()
+	entity := NewEntity()
+	db.RegisterEntity(entity)
 
+	entity.AddComponent(new(components.Visual))
+	db.Update()
 
+	// Check set up callback triggered
+	assert.Equal(t, entity, listeners[1].setUpEntities[0])
+	// And added to the listener's entity set
+	assert.Equal(t, entity, listeners[1].entitySet.Entities()[0])
 }
 
 func Test_Update_TellsListenersToTearDownEntityOnComponentRemoval(t *testing.T) {
+}
+
+func Test_Update_HandlesRemovedComponentsFirstBeforeAddingNew(t *testing.T) {
 }

@@ -31,6 +31,11 @@ type EntityListener interface {
 func (self *EntityDB) RegisterEntity(entity *Entity) {
 	self.allEntities.Append(entity)
 	self.notifyListenersOfNewEntity(entity)
+
+	// Clear entity flags relating added and removed components
+	// so Update() doesn't re-apply the initial state of the Entity
+	entity.componentsAdded = false
+	// entity.removedComponents()
 }
 
 // RegisterListener registers the given listener to receive events and notifications
@@ -63,6 +68,14 @@ func (self *EntityDB) Update() {
 		if entity.destroyNextFrame {
 			self.destroyEntity(entity)
 			self.allEntities.Delete(entity)
+		}
+
+		//		if entity.removedComponents() {
+		//		}
+
+		if entity.componentsAdded {
+			entity.componentsAdded = false
+			self.notifyListenersOfNewEntity(entity)
 		}
 	}
 }
