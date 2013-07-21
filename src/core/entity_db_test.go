@@ -28,11 +28,17 @@ func Test_KeepsTrackOfEntitiesAndComponents(t *testing.T) {
 //
 
 type TestListener struct {
-	setUpEntities []*Entity
+	entitySet        *EntitySet
+	setUpEntities    []*Entity
+	tearDownEntities []*Entity
 }
 
 func (self *TestListener) SetUpEntity(entity *Entity) {
 	self.setUpEntities = append(self.setUpEntities, entity)
+}
+
+func (self *TestListener) TearDownEntity(entity *Entity) {
+	self.tearDownEntities = append(self.tearDownEntities, entity)
 }
 
 // Registering a Listener
@@ -105,7 +111,59 @@ func Test_RegisterEntity_ProperlyWorksAgainstMultipleComponentTypes(t *testing.T
 	assert.Equal(t, 0, es2.Len())
 }
 
-// CleanUpEntity callback to listeners
+//
+// Dirty Entity Processing
+//
 
-// Do all Entities need pointers back to the db that created them?
-// so Entity can inform DB when components change?
+func RegisterDBAndListeners() (*EntityDB, [3]*TestListener) {
+	db := new(EntityDB)
+
+	listener1 := new(TestListener)
+	listener2 := new(TestListener)
+	listener3 := new(TestListener)
+
+	listener1.entitySet = db.RegisterListener(listener1, components.TRANSFORM)
+	listener2.entitySet = db.RegisterListener(listener2, components.TRANSFORM, components.VISUAL)
+	listener3.entitySet = db.RegisterListener(listener3, components.TRANSFORM, components.INPUT)
+
+	return db, [3]*TestListener{listener1, listener2, listener3}
+}
+
+func Test_Update_ProcessesDeletedEntities_RemovesEntitiesFromSets(t *testing.T) {
+	db, listeners := RegisterDBAndListeners()
+	entity := NewEntity()
+	db.RegisterEntity(entity)
+
+	entity.Destroy()
+	db.Update()
+
+	assert.Equal(t, 0, listeners[0].entitySet.Len())
+	assert.Equal(t, 0, listeners[1].entitySet.Len())
+	assert.Equal(t, 0, listeners[2].entitySet.Len())
+}
+
+func Test_Update_ProcessesDeletedEntities_TellsListenersToCleanUpEntities(t *testing.T) {
+	db, listeners := RegisterDBAndListeners()
+	entity := NewEntity()
+	db.RegisterEntity(entity)
+
+	entity.Destroy()
+	db.Update()
+
+	// Triggers on listeners who want the entity
+	assert.Equal(t, entity, listeners[0].tearDownEntities[0])
+	// Ignores all others
+	assert.Equal(t, 0, len(listeners[1].tearDownEntities))
+	assert.Equal(t, 0, len(listeners[2].tearDownEntities))
+}
+
+func Test_Update_TellsListenersToSetUpNewEntityOnNewComponents(t *testing.T) {
+//	db, listeners := RegisterDBAndListeners()
+//	entity := NewEntity()
+//	db.RegisterEntity(entity)
+
+
+}
+
+func Test_Update_TellsListenersToTearDownEntityOnComponentRemoval(t *testing.T) {
+}

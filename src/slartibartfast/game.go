@@ -186,6 +186,8 @@ func (self *Game) RegisterEntity(entity *core.Entity) {
 func (self *Game) Tick(deltaT float32) {
 	self.currentScene.Tick(deltaT)
 
+	self.entityDB.Update()
+
 	//	self.camera.SetPosition(math3d.Vector{
 	//		math3d.Cos(math3d.DegToRad(self.currentRotation)) * 20,
 	//		self.camera.Position().Y,

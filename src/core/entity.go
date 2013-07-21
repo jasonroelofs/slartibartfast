@@ -2,17 +2,19 @@ package core
 
 import (
 	"components"
-	"math3d"
 	"fmt"
+	"math3d"
 )
 
 type componentTypeMap map[components.ComponentType]components.Component
 
 type Entity struct {
+	// Implements components.ComponentHolder
+
 	Name string
 
-	// Implements ComponentHolder
-	components componentTypeMap
+	components       componentTypeMap
+	destroyNextFrame bool
 }
 
 // NewEntity sets up a new Entity for use in the app complete with
@@ -35,6 +37,12 @@ func NewEntityAt(startingPosition math3d.Vector) *Entity {
 	transform.Position = startingPosition
 
 	return entity
+}
+
+// Destroy flags this Entity to be destroyed at the beginning
+// of the next frame.
+func (self *Entity) Destroy() {
+	self.destroyNextFrame = true
 }
 
 // AddComponent adds a given component to this Entity

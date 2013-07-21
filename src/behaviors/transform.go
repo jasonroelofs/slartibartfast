@@ -17,8 +17,12 @@ func NewTransform(entityDB *core.EntityDB) *Transform {
 	return transform
 }
 
-// EntityListener
+// SetUpEntity :: EntityListener
 func (self *Transform) SetUpEntity(entity *core.Entity) {
+}
+
+// TearDownEntity :: EntityListener
+func (self *Transform) TearDownEntity(entity *core.Entity) {
 }
 
 func (self *Transform) Update(deltaT float32) {

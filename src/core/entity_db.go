@@ -24,6 +24,7 @@ type listenerRecord struct {
 // Interface all Entity Listeners must adhere to
 type EntityListener interface {
 	SetUpEntity(entity *Entity)
+	TearDownEntity(entity *Entity)
 }
 
 // RegisterEntity saves and processes a given Entity for inclusion in the system.
@@ -49,9 +50,33 @@ func (self *EntityDB) RegisterListener(
 
 func (self *EntityDB) notifyListenersOfNewEntity(entity *Entity) {
 	for _, listenerEntry := range self.listeners {
-		if (entity.ComponentMap() & listenerEntry.componentMap) == listenerEntry.componentMap {
+		if self.listenerWantsEntity(listenerEntry, entity) {
 			listenerEntry.entitySet.Append(entity)
 			listenerEntry.listener.SetUpEntity(entity)
 		}
 	}
+}
+
+// Update is called every frame and checks for dirty and/or delete-flagged Entities
+func (self *EntityDB) Update() {
+	for _, entity := range self.allEntities.Entities() {
+		if entity.destroyNextFrame {
+			self.destroyEntity(entity)
+			self.allEntities.Delete(entity)
+		}
+	}
+}
+
+func (self *EntityDB) destroyEntity(entity *Entity) {
+	for _, listenerEntry := range self.listeners {
+		// Find only the listeners who manage components this Entity uses
+		if self.listenerWantsEntity(listenerEntry, entity) {
+			listenerEntry.entitySet.Delete(entity)
+			listenerEntry.listener.TearDownEntity(entity)
+		}
+	}
+}
+
+func (self *EntityDB) listenerWantsEntity(le listenerRecord, entity *Entity) bool {
+	return (entity.ComponentMap() & le.componentMap) == le.componentMap
 }

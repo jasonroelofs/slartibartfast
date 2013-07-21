@@ -19,8 +19,12 @@ func NewInput(queue input.InputQueue, entityDB *core.EntityDB) *Input {
 	return input
 }
 
-// EntityListener
+// SetUpEntity :: EntityListener
 func (self *Input) SetUpEntity(entity *core.Entity) {
+}
+
+// TearDownEntity :: EntityListener
+func (self *Input) TearDownEntity(entity *core.Entity) {
 }
 
 func (self *Input) Update(deltaT float32) {
