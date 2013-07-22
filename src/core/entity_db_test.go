@@ -13,7 +13,7 @@ func Test_StartsWithEmptyListOfEntities(t *testing.T) {
 }
 
 // Entity Management
-func Test_KeepsTrackOfEntitiesAndComponents(t *testing.T) {
+func Test_RegisterEntity_KeepsTrackOfEntitiesAndComponents(t *testing.T) {
 	db := EntityDB{}
 	entity := NewEntity()
 	entity.AddComponent(new(components.Visual))
@@ -21,6 +21,14 @@ func Test_KeepsTrackOfEntitiesAndComponents(t *testing.T) {
 	db.RegisterEntity(entity)
 
 	assert.Equal(t, 1, db.allEntities.Len())
+}
+
+func Test_RegisterEntity_GivesSelfPointerToEntity(t *testing.T) {
+	db := EntityDB{}
+	entity := NewEntity()
+	db.RegisterEntity(entity)
+
+	assert.Equal(t, &db, entity.entityDB)
 }
 
 //

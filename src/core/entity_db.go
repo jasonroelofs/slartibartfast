@@ -4,11 +4,19 @@ import (
 	"components"
 )
 
+type EntityDatabase interface {
+	ComponentAdded(*Entity)
+	ComponentRemoved(*Entity, components.Component)
+	EntityDestroyed(*Entity)
+}
+
 // EntityDB is as the name implies the database of entities in the system
 // Entities can have any number of Components on them, and Behaviors interact
 // with Entities depending on their Components. EntityDB handles the routing
 // and management logic behind all this
 type EntityDB struct {
+	// Implements EntityDatabase
+
 	allEntities EntitySet
 	listeners   []listenerRecord
 }
@@ -27,17 +35,6 @@ type EntityListener interface {
 	TearDownEntity(entity *Entity)
 }
 
-// RegisterEntity saves and processes a given Entity for inclusion in the system.
-func (self *EntityDB) RegisterEntity(entity *Entity) {
-	self.allEntities.Append(entity)
-	self.notifyListenersOfNewEntity(entity)
-
-	// Clear entity flags relating added and removed components
-	// so Update() doesn't re-apply the initial state of the Entity
-	entity.finalizeComponentAddition()
-	entity.finalizeComponentRemoval()
-}
-
 // RegisterListener registers the given listener to receive events and notifications
 // when entities are processed through the system that contain the given set of components
 func (self *EntityDB) RegisterListener(
@@ -53,24 +50,20 @@ func (self *EntityDB) RegisterListener(
 	return record.entitySet
 }
 
-// Update is called every frame and checks for dirty and/or delete-flagged Entities
-func (self *EntityDB) Update() {
-	for _, entity := range self.allEntities.Entities() {
-		if entity.destroyNextFrame {
-			self.notifyListenersOfDeletedEntity(entity)
-			self.allEntities.Delete(entity)
-		}
+// RegisterEntity saves and processes a given Entity for inclusion in the system.
+func (self *EntityDB) RegisterEntity(entity *Entity) {
+	self.allEntities.Append(entity)
+	self.notifyListenersOfNewEntity(entity)
+	entity.entityDB = self
+}
 
-		if entity.anyComponentsRemoved() {
-			self.notifyListenersOfChangedComponents(entity)
-			entity.finalizeComponentRemoval()
-		}
+func (self *EntityDB) ComponentAdded(entity *Entity) {
+}
 
-		if entity.anyComponentsAdded() {
-			self.notifyListenersOfNewEntity(entity)
-			entity.finalizeComponentAddition()
-		}
-	}
+func (self *EntityDB) ComponentRemoved(entity *Entity, removedComponent components.Component) {
+}
+
+func (self *EntityDB) EntityDestroyed(entity *Entity) {
 }
 
 func (self *EntityDB) notifyListenersOfNewEntity(entity *Entity) {

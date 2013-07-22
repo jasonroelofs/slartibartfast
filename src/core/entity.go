@@ -16,9 +16,8 @@ type Entity struct {
 	components       componentTypeMap
 	destroyNextFrame bool
 
-	// Flag to keep track if components have been added/removed this frame
-	componentsAdded   bool
-	componentsRemoved componentTypeMap
+	// The EntityDB this Entity is registered with
+	entityDB EntityDatabase
 }
 
 // NewEntity sets up a new Entity for use in the app complete with
@@ -26,7 +25,6 @@ type Entity struct {
 func NewEntity() (entity *Entity) {
 	entity = new(Entity)
 	entity.components = make(componentTypeMap)
-	entity.componentsRemoved = make(componentTypeMap)
 
 	transform := components.NewTransform()
 	entity.AddComponent(&transform)
@@ -44,43 +42,34 @@ func NewEntityAt(startingPosition math3d.Vector) *Entity {
 	return entity
 }
 
-// Destroy flags this Entity to be destroyed at the beginning
-// of the next frame.
+// Destroy this Entity, removing it and all of it's components entirely
 func (self *Entity) Destroy() {
-	self.destroyNextFrame = true
+	if self.entityDB != nil {
+		self.entityDB.EntityDestroyed(self)
+	}
 }
 
 // AddComponent adds a given component to this Entity
 // +component+ *must* be a pointer or the system won't work.
 func (self *Entity) AddComponent(component components.Component) {
 	self.components[component.Type()] = component
-	self.componentsAdded = true
-}
 
-func (self *Entity) anyComponentsAdded() bool {
-	return self.componentsAdded
-}
-
-func (self *Entity) finalizeComponentAddition() {
-	self.componentsAdded = false
+	if self.entityDB != nil {
+		self.entityDB.ComponentAdded(self)
+	}
 }
 
 // RemoveComponent removes the component of the given ComponentType from
 // this Entity.
-func (self *Entity) RemoveComponent(componentType components.ComponentType) {
-	self.componentsRemoved[componentType] = self.components[componentType]
-}
+func (self *Entity) RemoveComponent(componentType components.ComponentType) (removed components.Component) {
+	removed = self.components[componentType]
+	delete(self.components, componentType)
 
-func (self *Entity) anyComponentsRemoved() bool {
-	return len(self.componentsRemoved) > 0
-}
-
-func (self *Entity) finalizeComponentRemoval() {
-	for componentType, _ := range self.componentsRemoved {
-		self.components[componentType] = nil
+	if self.entityDB != nil {
+		self.entityDB.ComponentRemoved(self, removed)
 	}
 
-	self.componentsRemoved = make(componentTypeMap)
+	return
 }
 
 // GetComponent returns the component on this Entity of the given type
@@ -93,9 +82,7 @@ func (self *Entity) GetComponent(componentType components.ComponentType) compone
 func (self *Entity) ComponentMap() (typeMap components.ComponentType) {
 	typeMap = 0
 	for componentType, _ := range self.components {
-		if self.componentsRemoved[componentType] == nil {
-			typeMap |= componentType
-		}
+		typeMap |= componentType
 	}
 	return
 }
