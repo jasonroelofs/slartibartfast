@@ -41,6 +41,23 @@ func Test_AddComponent(t *testing.T) {
 	assert.Equal(t, visual, entity.components[components.VISUAL])
 }
 
+func Test_RemoveComponent(t *testing.T) {
+	entity := NewEntity()
+	visual := new(components.Visual)
+	entity.AddComponent(visual)
+	entity.RemoveComponent(components.VISUAL)
+
+	assert.Equal(t, visual, entity.componentsRemoved[components.VISUAL])
+}
+
+func Test_RemoveComponent_NoOpsIfNoComponent(t *testing.T) {
+	entity := NewEntity()
+	entity.RemoveComponent(components.VISUAL)
+
+	assert.Nil(t, entity.components[components.VISUAL])
+	assert.Nil(t, entity.componentsRemoved[components.VISUAL])
+}
+
 func Test_GetComponent(t *testing.T) {
 	entity := NewEntity()
 	visual := new(components.Visual)
@@ -54,6 +71,17 @@ func Test_ComponentMap_ReturnsBitwiseMapOfComponents(t *testing.T) {
 	assert.Equal(t, 1, entity.ComponentMap())
 
 	entity.AddComponent(new(components.Visual))
+
+	// 01(transform) + 10(visual) == 11
+	assert.Equal(t, 3, entity.ComponentMap())
+}
+
+func Test_ComponentMap_IgnoresComponentsFlaggedForRemoval(t *testing.T) {
+	entity := NewEntity()
+	entity.AddComponent(new(components.Visual))
+	entity.AddComponent(new(components.Input))
+
+	entity.RemoveComponent(components.INPUT)
 
 	// 01(transform) + 10(visual) == 11
 	assert.Equal(t, 3, entity.ComponentMap())
