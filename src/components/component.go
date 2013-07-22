@@ -15,12 +15,13 @@ type ComponentType int32
 const (
 	TRANSFORM ComponentType = 1 // ...00000001
 	VISUAL                  = 2 // ...00000010
-	INPUT 									= 4 // ...00000100
+	INPUT                   = 4 // ...00000100
 )
 
 // ComponentHolders are, well, objects that can contain Components.
 type ComponentHolder interface {
 	AddComponent(component Component)
+	RemoveComponent(componentType ComponentType) Component
 	GetComponent(componentType ComponentType) Component
 }
 
@@ -34,4 +35,3 @@ type ComponentHolder interface {
 // throughout the application to ensure you don't have to constantly remember how
 // to type-cast back into the component type you're looking for.
 //
-

@@ -6,6 +6,7 @@ package components
 
 type TestHolder struct {
 	Holding Component
+	Removed []ComponentType
 }
 
 func (self *TestHolder) AddComponent(c Component) {
@@ -16,3 +17,6 @@ func (self *TestHolder) GetComponent(t ComponentType) Component {
 	return self.Holding
 }
 
+func (self *TestHolder) RemoveComponent(t ComponentType) {
+	self.Removed = append(self.Removed, t)
+}
