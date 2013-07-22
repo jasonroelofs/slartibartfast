@@ -17,6 +17,7 @@ func (self *TestHolder) GetComponent(t ComponentType) Component {
 	return self.Holding
 }
 
-func (self *TestHolder) RemoveComponent(t ComponentType) {
+func (self *TestHolder) RemoveComponent(t ComponentType) Component {
 	self.Removed = append(self.Removed, t)
+	return nil
 }

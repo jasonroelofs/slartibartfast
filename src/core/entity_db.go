@@ -57,13 +57,22 @@ func (self *EntityDB) RegisterEntity(entity *Entity) {
 	entity.entityDB = self
 }
 
+// ComponentAdded is called by Entities when they recieve a new Component
+// Tells all pertinent listeners that they have a new Entity to process
 func (self *EntityDB) ComponentAdded(entity *Entity) {
+	self.notifyListenersOfNewEntity(entity)
 }
 
+// ComponentRemoved is called by Entities when they lose a Component
+// Tells all pertinent listeners that they need to clean up and ignore this Entity
 func (self *EntityDB) ComponentRemoved(entity *Entity, removedComponent components.Component) {
+	self.notifyListenersOfRemovedComponent(entity, removedComponent)
 }
 
+// EntityDestroyed is called by Entities when they are destroyed
+// Tells all pertinent listeners to clean up and ignore this Entity
 func (self *EntityDB) EntityDestroyed(entity *Entity) {
+	self.notifyListenersOfDestroyedEntity(entity)
 }
 
 func (self *EntityDB) notifyListenersOfNewEntity(entity *Entity) {
@@ -75,9 +84,8 @@ func (self *EntityDB) notifyListenersOfNewEntity(entity *Entity) {
 	}
 }
 
-func (self *EntityDB) notifyListenersOfDeletedEntity(entity *Entity) {
+func (self *EntityDB) notifyListenersOfDestroyedEntity(entity *Entity) {
 	for _, listenerEntry := range self.listeners {
-		// Find only the listeners who manage components this Entity uses
 		if self.listenerWantsEntity(listenerEntry, entity) {
 			listenerEntry.entitySet.Delete(entity)
 			listenerEntry.listener.TearDownEntity(entity)
@@ -85,12 +93,12 @@ func (self *EntityDB) notifyListenersOfDeletedEntity(entity *Entity) {
 	}
 }
 
-func (self *EntityDB) notifyListenersOfChangedComponents(entity *Entity) {
+func (self *EntityDB) notifyListenersOfRemovedComponent(entity *Entity, component components.Component) {
 	for _, listenerEntry := range self.listeners {
 		// Find listeners who know about this Entity but no longer want this
 		// entity (because the component map no longer matches the requested map)
 		if listenerEntry.entitySet.Contains(entity) &&
-			!self.listenerWantsEntity(listenerEntry, entity) {
+			(listenerEntry.componentMap & component.Type()) > 0 {
 
 			listenerEntry.entitySet.Delete(entity)
 			listenerEntry.listener.TearDownEntity(entity)

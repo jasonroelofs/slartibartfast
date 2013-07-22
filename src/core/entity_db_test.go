@@ -60,7 +60,7 @@ func Test_EntityListenersCanRegisterWithDB(t *testing.T) {
 }
 
 // SetupEntity callback to listeners
-func Test_ListenerNotifiedOfNewEntityMatchingComponents(t *testing.T) {
+func Test_RegisterEntity_ListenerNotifiedOfNewEntityMatchingComponents(t *testing.T) {
 	db := EntityDB{}
 	listener := new(TestListener)
 	entity := NewEntity()
@@ -72,7 +72,7 @@ func Test_ListenerNotifiedOfNewEntityMatchingComponents(t *testing.T) {
 	assert.Equal(t, entity, listener.setUpEntities[0])
 }
 
-func Test_ListenerNotNotifiedOfNewEntityIfComponentsDontMatch(t *testing.T) {
+func Test_RegisterEntity_ListenerNotNotifiedOfNewEntityIfComponentsDontMatch(t *testing.T) {
 	db := EntityDB{}
 	listener := new(TestListener)
 	entity := Entity{}
@@ -83,7 +83,7 @@ func Test_ListenerNotNotifiedOfNewEntityIfComponentsDontMatch(t *testing.T) {
 	assert.Equal(t, 0, len(listener.setUpEntities))
 }
 
-func Test_AddsEntityToListenerEntityListIfComponentsMatch(t *testing.T) {
+func Test_RegisterEntity_AddsEntityToListenerEntityListIfComponentsMatch(t *testing.T) {
 	db := EntityDB{}
 	listener := new(TestListener)
 	entity := NewEntity()
@@ -120,7 +120,7 @@ func Test_RegisterEntity_ProperlyWorksAgainstMultipleComponentTypes(t *testing.T
 }
 
 //
-// Dirty Entity Processing
+// Entity Processing (EntityDatabase interface)
 //
 
 func RegisterDBAndListeners() (*EntityDB, [3]*TestListener) {
@@ -137,26 +137,24 @@ func RegisterDBAndListeners() (*EntityDB, [3]*TestListener) {
 	return db, [3]*TestListener{listener1, listener2, listener3}
 }
 
-func Test_Update_ProcessesDeletedEntities_RemovesEntitiesFromSets(t *testing.T) {
+func Test_EntityDestroyed_RemovesEntityFromEntitySets(t *testing.T) {
 	db, listeners := RegisterDBAndListeners()
 	entity := NewEntity()
 	db.RegisterEntity(entity)
 
 	entity.Destroy()
-	db.Update()
 
 	assert.Equal(t, 0, listeners[0].entitySet.Len())
 	assert.Equal(t, 0, listeners[1].entitySet.Len())
 	assert.Equal(t, 0, listeners[2].entitySet.Len())
 }
 
-func Test_Update_ProcessesDeletedEntities_TellsListenersToCleanUpEntities(t *testing.T) {
+func Test_EntityDestroyed_TellsListenersToCleanUpEntities(t *testing.T) {
 	db, listeners := RegisterDBAndListeners()
 	entity := NewEntity()
 	db.RegisterEntity(entity)
 
 	entity.Destroy()
-	db.Update()
 
 	// Triggers on listeners who want the entity
 	assert.Equal(t, entity, listeners[0].tearDownEntities[0])
@@ -165,13 +163,12 @@ func Test_Update_ProcessesDeletedEntities_TellsListenersToCleanUpEntities(t *tes
 	assert.Equal(t, 0, len(listeners[2].tearDownEntities))
 }
 
-func Test_Update_TellsListenersToSetUpNewEntityOnNewComponents(t *testing.T) {
+func Test_ComponentAdded_TellsListenersToSetUpNewEntityOnNewComponents(t *testing.T) {
 	db, listeners := RegisterDBAndListeners()
 	entity := NewEntity()
 	db.RegisterEntity(entity)
 
 	entity.AddComponent(new(components.Visual))
-	db.Update()
 
 	// Check set up callback triggered
 	assert.Equal(t, entity, listeners[1].setUpEntities[0])
@@ -179,14 +176,13 @@ func Test_Update_TellsListenersToSetUpNewEntityOnNewComponents(t *testing.T) {
 	assert.Equal(t, entity, listeners[1].entitySet.Entities()[0])
 }
 
-func Test_Update_TellsListenersToTearDownEntityOnComponentRemoval(t *testing.T) {
+func Test_ComponentRemoved_TellsListenersToTearDownEntityOnComponentRemoval(t *testing.T) {
 	db, listeners := RegisterDBAndListeners()
 	entity := NewEntity()
 	entity.AddComponent(new(components.Visual))
 	db.RegisterEntity(entity)
 
 	entity.RemoveComponent(components.VISUAL)
-	db.Update()
 
 	// Check tear down callback triggered
 	assert.Equal(t, entity, listeners[1].tearDownEntities[0])
@@ -200,5 +196,23 @@ func Test_Update_TellsListenersToTearDownEntityOnComponentRemoval(t *testing.T) 
 	assert.Equal(t, 0, listeners[2].entitySet.Len())
 }
 
-func Test_Update_HandlesRemovedComponentsFirstBeforeAddingNew(t *testing.T) {
+func Test_Update_HandlesComponentReplacementProperly(t *testing.T) {
+	db, listeners := RegisterDBAndListeners()
+	entity := NewEntity()
+	oldVisual := new(components.Visual)
+	entity.AddComponent(oldVisual)
+	db.RegisterEntity(entity)
+
+	// Now replace the oldVisual with a new visual component
+	entity.RemoveComponent(components.VISUAL)
+	newVisual := new(components.Visual)
+	entity.AddComponent(newVisual)
+
+	assert.Equal(t, entity, listeners[1].tearDownEntities[0])
+	assert.Equal(t, entity, listeners[1].setUpEntities[0])
+
+	// Entity still stored
+	assert.True(t, listeners[1].entitySet.Contains(entity))
+	// Using the new visual component (move test elsewhere?)
+	assert.Equal(t, newVisual, components.GetVisual(entity))
 }
