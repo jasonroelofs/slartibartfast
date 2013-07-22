@@ -48,3 +48,15 @@ func (self *EntitySet) Delete(entity *Entity) {
 		self.entities = self.entities[:len(self.entities)-1]
 	}
 }
+
+// Contains returns true or false depending on if the given Entity
+// is present in this set
+func (self *EntitySet) Contains(entity *Entity) bool {
+	for _, inList := range self.entities {
+		if inList == entity {
+			return true
+		}
+	}
+
+	return false
+}

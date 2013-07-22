@@ -51,3 +51,16 @@ func Test_Delete_RemovesEntityFromList(t *testing.T) {
 
 	assert.Equal(t, []*Entity{entity1, entity3}, es.Entities())
 }
+
+func Test_Contains_ChecksForEntityInList(t *testing.T) {
+	es := EntitySet{}
+	entity1 := NewEntity()
+	entity2 := NewEntity()
+	entity3 := NewEntity()
+	es.Append(entity1)
+	es.Append(entity2)
+
+	assert.True(t, es.Contains(entity1))
+	assert.True(t, es.Contains(entity2))
+	assert.False(t, es.Contains(entity3))
+}

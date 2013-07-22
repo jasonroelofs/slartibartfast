@@ -34,8 +34,8 @@ func (self *EntityDB) RegisterEntity(entity *Entity) {
 
 	// Clear entity flags relating added and removed components
 	// so Update() doesn't re-apply the initial state of the Entity
-	entity.componentsAdded = false
-	// entity.removedComponents()
+	entity.finalizeComponentAddition()
+	entity.finalizeComponentRemoval()
 }
 
 // RegisterListener registers the given listener to receive events and notifications
@@ -53,6 +53,26 @@ func (self *EntityDB) RegisterListener(
 	return record.entitySet
 }
 
+// Update is called every frame and checks for dirty and/or delete-flagged Entities
+func (self *EntityDB) Update() {
+	for _, entity := range self.allEntities.Entities() {
+		if entity.destroyNextFrame {
+			self.notifyListenersOfDeletedEntity(entity)
+			self.allEntities.Delete(entity)
+		}
+
+		if entity.anyComponentsRemoved() {
+			self.notifyListenersOfChangedComponents(entity)
+			entity.finalizeComponentRemoval()
+		}
+
+		if entity.anyComponentsAdded() {
+			self.notifyListenersOfNewEntity(entity)
+			entity.finalizeComponentAddition()
+		}
+	}
+}
+
 func (self *EntityDB) notifyListenersOfNewEntity(entity *Entity) {
 	for _, listenerEntry := range self.listeners {
 		if self.listenerWantsEntity(listenerEntry, entity) {
@@ -62,28 +82,23 @@ func (self *EntityDB) notifyListenersOfNewEntity(entity *Entity) {
 	}
 }
 
-// Update is called every frame and checks for dirty and/or delete-flagged Entities
-func (self *EntityDB) Update() {
-	for _, entity := range self.allEntities.Entities() {
-		if entity.destroyNextFrame {
-			self.destroyEntity(entity)
-			self.allEntities.Delete(entity)
-		}
-
-		//		if entity.removedComponents() {
-		//		}
-
-		if entity.componentsAdded {
-			entity.componentsAdded = false
-			self.notifyListenersOfNewEntity(entity)
+func (self *EntityDB) notifyListenersOfDeletedEntity(entity *Entity) {
+	for _, listenerEntry := range self.listeners {
+		// Find only the listeners who manage components this Entity uses
+		if self.listenerWantsEntity(listenerEntry, entity) {
+			listenerEntry.entitySet.Delete(entity)
+			listenerEntry.listener.TearDownEntity(entity)
 		}
 	}
 }
 
-func (self *EntityDB) destroyEntity(entity *Entity) {
+func (self *EntityDB) notifyListenersOfChangedComponents(entity *Entity) {
 	for _, listenerEntry := range self.listeners {
-		// Find only the listeners who manage components this Entity uses
-		if self.listenerWantsEntity(listenerEntry, entity) {
+		// Find listeners who know about this Entity but no longer want this
+		// entity (because the component map no longer matches the requested map)
+		if listenerEntry.entitySet.Contains(entity) &&
+			!self.listenerWantsEntity(listenerEntry, entity) {
+
 			listenerEntry.entitySet.Delete(entity)
 			listenerEntry.listener.TearDownEntity(entity)
 		}

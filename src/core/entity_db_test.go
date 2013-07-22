@@ -172,6 +172,24 @@ func Test_Update_TellsListenersToSetUpNewEntityOnNewComponents(t *testing.T) {
 }
 
 func Test_Update_TellsListenersToTearDownEntityOnComponentRemoval(t *testing.T) {
+	db, listeners := RegisterDBAndListeners()
+	entity := NewEntity()
+	entity.AddComponent(new(components.Visual))
+	db.RegisterEntity(entity)
+
+	entity.RemoveComponent(components.VISUAL)
+	db.Update()
+
+	// Check tear down callback triggered
+	assert.Equal(t, entity, listeners[1].tearDownEntities[0])
+	// And removed from the listeners' entity set
+	assert.Equal(t, 0, listeners[1].entitySet.Len())
+
+	// Sanity, no other listener got the callback
+	assert.Equal(t, 0, len(listeners[0].tearDownEntities))
+	assert.Equal(t, 0, len(listeners[2].tearDownEntities))
+	assert.Equal(t, 1, listeners[0].entitySet.Len())
+	assert.Equal(t, 0, listeners[2].entitySet.Len())
 }
 
 func Test_Update_HandlesRemovedComponentsFirstBeforeAddingNew(t *testing.T) {
