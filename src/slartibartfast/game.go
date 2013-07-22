@@ -22,7 +22,7 @@ type Game struct {
 	renderer        render.Renderer
 	window          core.Window
 	Camera          *core.Camera
-	inputDispatcher *input.InputDispatcher
+	InputDispatcher *input.InputDispatcher
 
 	inputBehavior     *behaviors.Input
 	transformBehavior *behaviors.Transform
@@ -47,7 +47,7 @@ func (self *Game) Run() {
 
 	self.entityDB = new(core.EntityDB)
 	self.renderer = new(platform.OpenGLRenderer)
-	self.inputDispatcher = input.NewInputDispatcher()
+	self.InputDispatcher = input.NewInputDispatcher()
 
 	self.initializeBehaviors()
 	self.loadAllMaterials()
@@ -55,7 +55,7 @@ func (self *Game) Run() {
 	self.initializeScene()
 
 	running := true
-	self.inputDispatcher.On(events.Quit, func(e events.Event) {
+	self.InputDispatcher.On(events.Quit, func(e events.Event) {
 		running = false
 	})
 
@@ -85,7 +85,7 @@ func calcAndPrintFPS(frameCount *int64) {
 }
 
 func (self *Game) initializeBehaviors() {
-	self.inputBehavior = behaviors.NewInput(self.inputDispatcher, self.entityDB)
+	self.inputBehavior = behaviors.NewInput(self.InputDispatcher, self.entityDB)
 	self.transformBehavior = behaviors.NewTransform(self.entityDB)
 	self.graphicalBehavior = behaviors.NewGraphical(self.renderer, self.entityDB)
 }
@@ -185,8 +185,6 @@ func (self *Game) RegisterEntity(entity *core.Entity) {
 
 func (self *Game) Tick(deltaT float32) {
 	self.currentScene.Tick(deltaT)
-
-	self.entityDB.Update()
 
 	//	self.camera.SetPosition(math3d.Vector{
 	//		math3d.Cos(math3d.DegToRad(self.currentRotation)) * 20,
