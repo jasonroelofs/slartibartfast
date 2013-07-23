@@ -37,6 +37,7 @@ func NewGraphical(renderer render.Renderer, entityDB *core.EntityDB) *Graphical 
 // SetUpEntity :: EntityListener. Will load up the mesh hooked to the given entity's
 // Visual component if one was given directly instead of via MeshName
 func (self *Graphical) SetUpEntity(entity *core.Entity) {
+	log.Println("[Graphical] Setting up entity", entity)
 	visual := components.GetVisual(entity)
 
 	self.checkDefaultsOnVisual(visual)
@@ -49,6 +50,12 @@ func (self *Graphical) SetUpEntity(entity *core.Entity) {
 // TearDownEntity :: EntityListener. Cleans up any visual resources that are
 // directly linked to this Entity's Visual component.
 func (self *Graphical) TearDownEntity(entity *core.Entity) {
+	log.Println("[Graphical] Tearing down entity", entity)
+
+	visual := components.GetVisual(entity)
+	if visual.Mesh != nil {
+		self.renderer.UnloadMesh(visual.Mesh)
+	}
 }
 
 func (self *Graphical) checkDefaultsOnVisual(component *components.Visual) {
@@ -65,7 +72,7 @@ func (self *Graphical) checkDefaultsOnVisual(component *components.Visual) {
 // LoadMesh takes a given Mesh object and ensures it's contents are
 // loaded into the renderer for future use.
 func (self *Graphical) LoadMesh(mesh *render.Mesh) {
-	log.Println("Loading Mesh", mesh.Name)
+	log.Println("[Graphical] Loading Mesh", mesh.Name)
 
 	self.renderer.LoadMesh(mesh)
 

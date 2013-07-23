@@ -11,12 +11,17 @@ import (
 
 type TestRenderer struct {
 	loadedMesh     *render.Mesh
+	unloadedMesh   *render.Mesh
 	loadedMaterial *render.Material
 	queueRendered  *render.RenderQueue
 }
 
 func (self *TestRenderer) LoadMesh(mesh *render.Mesh) {
 	self.loadedMesh = mesh
+}
+
+func (self *TestRenderer) UnloadMesh(mesh *render.Mesh) {
+	self.unloadedMesh = mesh
 }
 
 func (self *TestRenderer) LoadMaterial(material *render.Material) {
@@ -75,6 +80,19 @@ func Test_SetUpEntity_TellsRendererToLoadNewMeshFromVisual(t *testing.T) {
 }
 
 func Test_SetUpEntity_TellsRendererToLoadNewMaterial(t *testing.T) {
+}
+
+func Test_TearDownEntity_TellsRendererToUnload(t *testing.T) {
+	_, renderer, entityDb := getTestGraphical()
+
+	mesh := &render.Mesh{}
+	entity := core.NewEntity()
+	entity.AddComponent(&components.Visual{Mesh: mesh})
+	entityDb.RegisterEntity(entity)
+
+	entity.Destroy()
+
+	assert.Equal(t, mesh, renderer.unloadedMesh)
 }
 
 func Test_Update_ConfiguresQueueWithViewData(t *testing.T) {

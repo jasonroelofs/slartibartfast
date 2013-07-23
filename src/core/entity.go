@@ -63,12 +63,14 @@ func (self *Entity) AddComponent(component components.Component) {
 // this Entity.
 func (self *Entity) RemoveComponent(componentType components.ComponentType) (removed components.Component) {
 	removed = self.components[componentType]
-	delete(self.components, componentType)
 
+	// Run callbacks before deletion because tear-down might need the component
+	// being cleared out
 	if self.entityDB != nil {
 		self.entityDB.ComponentRemoved(self, removed)
 	}
 
+	delete(self.components, componentType)
 	return
 }
 

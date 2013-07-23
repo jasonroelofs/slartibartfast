@@ -63,6 +63,35 @@ func (self *OpenGLRenderer) LoadMesh(mesh *render.Mesh) {
 	mesh.VertexBuffer = vertexBuffer
 }
 
+// UnloadMesh clears out all of the buffers and the VAO for the given mesh
+func (self *OpenGLRenderer) UnloadMesh(mesh *render.Mesh) {
+	if mesh.VertexArrayObj == nil {
+		log.Println("WARNING Stopping unload of mesh [", mesh.Name, "] which seems to be already unloaded")
+		return
+	}
+
+	self.deleteBuffer(mesh.VertexBuffer)
+	mesh.VertexBuffer = nil
+
+	self.deleteBuffer(mesh.ColorBuffer)
+	mesh.ColorBuffer = nil
+
+	self.deleteBuffer(mesh.UVBuffer)
+	mesh.UVBuffer = nil
+
+	self.deleteBuffer(mesh.IndexBuffer)
+	mesh.IndexBuffer = nil
+
+	mesh.VertexArrayObj.(gl.VertexArray).Delete()
+	mesh.VertexArrayObj = nil
+}
+
+func (self *OpenGLRenderer) deleteBuffer(buffer interface{}) {
+	if buffer != nil {
+		buffer.(gl.Buffer).Delete()
+	}
+}
+
 func (self *OpenGLRenderer) LoadMaterial(material *render.Material) {
 	material.Shader.Program = NewGLSLProgram(material.Shader.Vertex, material.Shader.Fragment)
 
@@ -127,6 +156,11 @@ func (self *OpenGLRenderer) BeginRender() {
 	gl.ClearColor(0, 0, 0, 0)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
+	//	gl.PolygonMode(gl.FRONT_AND_BACK, gl.LINE)
+	//
+	//	gl.Enable(gl.CULL_FACE)
+	//	gl.CullFace(gl.BACK)
+	//
 	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
 }
