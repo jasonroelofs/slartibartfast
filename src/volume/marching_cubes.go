@@ -1,7 +1,6 @@
 package volume
 
 import (
-	//	"log"
 	"math/rand"
 	"math3d"
 	"render"
@@ -10,6 +9,10 @@ import (
 func MarchingCubes(volume Volume, extents math3d.Vector, cubeSize float32) *render.Mesh {
 	var verticies []math3d.Vector
 	var x, y, z float32
+
+	if cubeSize <= 0 {
+		panic("Cube size was 0 or negative!")
+	}
 
 	// FIXME, seed at the start of the game
 	r := rand.New(rand.NewSource(100))

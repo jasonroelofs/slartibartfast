@@ -39,10 +39,10 @@ func (self *VolumeScene) Setup() {
 			self.marchingCubeSize -= 0.1
 
 			if self.marchingCubeSize <= 0 {
-				self.marchingCubeSize = 0
+				self.marchingCubeSize = 0.1
+			} else {
+				self.rebuildVolume()
 			}
-
-			self.rebuildVolume()
 		}
 	})
 

@@ -30,6 +30,22 @@ func Test_MarchingCubes_CreatesTriangles(t *testing.T) {
 	)
 }
 
+func Test_MarchingCubes_PanicsOnBadCubeSizes(t *testing.T) {
+	testVolume := &FunctionVolume{
+		func(x, y, z float32) float32 {
+			return 1
+		},
+	}
+
+	assert.Panics(t, func() {
+		MarchingCubes(testVolume, math3d.Vector{3, 3, 3}, 0)
+	}, "Should not have allowed a 0 step size")
+
+	assert.Panics(t, func() {
+		MarchingCubes(testVolume, math3d.Vector{3, 3, 3}, -1)
+	}, "Should not have allowed a negative step size")
+}
+
 /**
  * Benchmarks
  */
