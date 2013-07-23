@@ -4,9 +4,12 @@ import (
 	"math/rand"
 	"math3d"
 	"render"
+	"util"
 )
 
 func MarchingCubes(volume Volume, extents math3d.Vector, cubeSize float32) *render.Mesh {
+	defer util.EndTiming(util.StartTiming("MarchingCubes(%v, %v, %v)", volume, extents, cubeSize))
+
 	var verticies []math3d.Vector
 	var x, y, z float32
 

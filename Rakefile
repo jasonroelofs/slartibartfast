@@ -16,6 +16,7 @@ PACKAGES = %w(
   freeimage
   factories
   volume
+  util
 )
 
 LIBRARIES = %w(
