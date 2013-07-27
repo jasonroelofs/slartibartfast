@@ -17,12 +17,6 @@ type InputDispatcher struct {
 
 	// List of events received. Gets cleared when requested.
 	storedEvents EventList
-
-	// GLFW, when disabling the cursor, seems to end up triggering
-	// a mouse-move event that is the distance mouse moved to be the
-	// center of the window. This is making crazy swinging so I'm ignoring
-	// it until I find a better way to handle this.
-	firstMouseMoveIgnored bool
 }
 
 func NewInputDispatcher() *InputDispatcher {
@@ -45,15 +39,14 @@ func NewInputDispatcher() *InputDispatcher {
 	mapper.mapKeyToEvent(KeyW, events.TurnLeft)
 	mapper.mapKeyToEvent(KeyR, events.TurnRight)
 
+	glfw.Disable(glfw.MouseCursor)
+	mapper.resetMouse()
+
 	glfw.SetKeyCallback(mapper.keyCallback)
 
 	glfw.SetMousePosCallback(mapper.mouseCallback)
 	glfw.SetMouseWheelCallback(mapper.mouseWheelCallback)
 	glfw.SetMouseButtonCallback(mapper.mouseButtonCallback)
-
-	glfw.Disable(glfw.MouseCursor)
-
-	mapper.resetMouse()
 
 	return &mapper
 }
@@ -121,11 +114,6 @@ func (self *InputDispatcher) fireLocalCallback(event events.Event) {
 
 // Hook into GLFW for when the mouse is moved
 func (self *InputDispatcher) mouseCallback(x, y int) {
-	if !self.firstMouseMoveIgnored {
-		self.firstMouseMoveIgnored = true
-		return
-	}
-
 	event := events.Event{
 		EventType:  events.MouseMove,
 		MouseXDiff: x,
