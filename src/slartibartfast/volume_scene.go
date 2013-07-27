@@ -56,22 +56,30 @@ func (self *VolumeScene) Setup() {
 
 	self.cubeVolume = &volume.FunctionVolume{
 		// A cube inside a 3x3x3 volume
-		func(x, y, z float32) float32 {
-			if x > 2.5 && x < 8.5 && y > 2.5 && y < 8.5 && z > 2.5 && z < 8.5 {
-				return 1
-			} else {
-				return 0
-			}
-		},
-
-		// A sphere!... or not. Need more control than 0 / 1
 //		func(x, y, z float32) float32 {
-//			if x*x + y*y + z*z < 9 { // 3^2
+//			if x > 2.5 && x < 48.5 && y > 2.5 && y < 48.5 && z > 2.5 && z < 48.5 {
 //				return 1
 //			} else {
 //				return 0
 //			}
 //		},
+
+		// A sphere!... or not. Need more control than 0 / 1
+		func(x, y, z float32) float32 {
+			// Translate to treat middle of the volume as 0,0,0
+			// Basically I want 0,0,0 of the volume to act like -25, -25, -25, so that
+			// the center point of the sphere is at 25, 25, 25 in the volume,
+			// then check the equation against the radius of the sphere.
+			tX := x - 25
+			tY := y - 25
+			tZ := z - 25
+
+			if tX*tX + tY*tY + tZ*tZ < 20 {
+				return 1
+			} else {
+				return 0
+			}
+		},
 	}
 
 	self.volumeEntity = core.NewEntity()
@@ -81,7 +89,7 @@ func (self *VolumeScene) Setup() {
 
 	// Move the volume into view of the starting camera
 	transform := components.GetTransform(self.volumeEntity)
-	transform.Position = math3d.Vector{-5, -5, -5}
+	transform.Position = math3d.Vector{-25, -25, -40}
 
 	self.game.RegisterEntity(self.volumeEntity)
 }
@@ -93,7 +101,7 @@ func (self *VolumeScene) rebuildVolume() {
 	log.Println("Marching cube size:", self.marchingCubeSize)
 
 	volumeMesh := volume.MarchingCubes(
-		self.cubeVolume, math3d.Vector{10, 10, 10}, self.marchingCubeSize)
+		self.cubeVolume, math3d.Vector{50, 50, 50}, self.marchingCubeSize)
 	volumeMesh.Name = fmt.Sprintf("CubeVolumeMesh[%.1f]", self.marchingCubeSize)
 
 	self.volumeEntity.RemoveComponent(components.VISUAL)
