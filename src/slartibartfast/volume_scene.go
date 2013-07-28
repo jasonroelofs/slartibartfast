@@ -55,16 +55,16 @@ func (self *VolumeScene) Setup() {
 	})
 
 	self.cubeVolume = &volume.FunctionVolume{
-		// A cube inside a 3x3x3 volume
+		// A cube
 //		func(x, y, z float32) float32 {
-//			if x > 2.5 && x < 48.5 && y > 2.5 && y < 48.5 && z > 2.5 && z < 48.5 {
+//			if x > 20.5 && x < 38.5 && y > 20.5 && y < 38.5 && z > 20.5 && z < 38.5 {
 //				return 1
 //			} else {
-//				return 0
+//				return -1
 //			}
 //		},
 
-		// A sphere!... or not. Need more control than 0 / 1
+		// A sphere!
 		func(x, y, z float32) float32 {
 			// Translate to treat middle of the volume as 0,0,0
 			// Basically I want 0,0,0 of the volume to act like -25, -25, -25, so that
@@ -74,11 +74,7 @@ func (self *VolumeScene) Setup() {
 			tY := y - 25
 			tZ := z - 25
 
-			if tX*tX + tY*tY + tZ*tZ < 20 {
-				return 1
-			} else {
-				return 0
-			}
+			return -(tX*tX + tY*tY + tZ*tZ - 20)
 		},
 	}
 
@@ -102,7 +98,7 @@ func (self *VolumeScene) rebuildVolume() {
 
 	volumeMesh := volume.MarchingCubes(
 		self.cubeVolume, math3d.Vector{50, 50, 50}, self.marchingCubeSize)
-	volumeMesh.Name = fmt.Sprintf("CubeVolumeMesh[%.1f]", self.marchingCubeSize)
+	volumeMesh.Name = fmt.Sprintf("CubeVolumeMesh[%.2f]", self.marchingCubeSize)
 
 	self.volumeEntity.RemoveComponent(components.VISUAL)
 	self.volumeEntity.AddComponent(&components.Visual{

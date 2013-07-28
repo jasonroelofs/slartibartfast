@@ -4,6 +4,15 @@ Dependencies
 `go get` the dependency, add it to the appropriate array in the Rakefile, then `git submodule add [url] [dir]` to ensure
 the version is saved in git.
 
+Volumes
+-------
+
+Any Density function for a given volume must adhere to the following return values:
+
+    0 :: The value is right on the surface of the volume
+  < 0 :: The value is *outside* of the volume
+  > 0 :: The value is *inside* of the volume
+
 Shader Conventions
 ------------------
 

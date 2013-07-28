@@ -12,7 +12,7 @@ func Test_MarchingCubes_CreatesTriangles(t *testing.T) {
 			if x > 0.5 && x < 2.5 && y > 0.5 && y < 2.5 && z > 0.5 && z < 2.5 {
 				return 1
 			} else {
-				return 0
+				return -1
 			}
 		},
 	}

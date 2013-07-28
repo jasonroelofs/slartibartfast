@@ -65,7 +65,7 @@ func marchCube(volume Volume, x, y, z, cubeSize float32) (verticies []math3d.Vec
 		return
 	}
 
-	edgeVerticies := calculateLocationOfEdgeIntersections(cornerValues, edgeFlags, x, y, z, cubeSize)
+	edgeVerticies := calculateLocationOfEdgeIntersections(corners, cornerValues, edgeFlags, x, y, z, cubeSize)
 	verticies = buildTrianglesFromEdgesVerticies(edgeVerticies, edgeFlagMap)
 
 	return
@@ -102,7 +102,7 @@ func findWhichEdgesIntersectVolume(cornerValues [8]float32) (edgeFlagMap uint) {
 	var cornerValue float32
 
 	for edgeIndex, cornerValue = range cornerValues {
-		if cornerValue > 0 {
+		if cornerValue >= 0 {
 			edgeFlagMap = edgeFlagMap | (1 << uint(edgeIndex))
 		}
 	}
@@ -110,28 +110,17 @@ func findWhichEdgesIntersectVolume(cornerValues [8]float32) (edgeFlagMap uint) {
 	return
 }
 
-func calculateLocationOfEdgeIntersections(cornerValues [8]float32, edgeFlags int, x, y, z, cubeSize float32) (edgeVerticies [12]math3d.Vector) {
-	var vertexOffset float32
-	var newVertex math3d.Vector
+func calculateLocationOfEdgeIntersections(corners [8]math3d.Vector, cornerValues [8]float32, edgeFlags int, x, y, z, cubeSize float32) (edgeVerticies [12]math3d.Vector) {
 
-	// For each edge that is intersected find out where the vertex goes.
-	// TODO Right now a basic average of the values on the two verticies linked
-	// to the current edge. Will need to update to better interpolation like trilinear
-	// and the like.
 	for edge := 0; edge < 12; edge++ {
 		if edgeFlags&(1<<uint(edge)) > 0 {
 
-			vertexOffset = calculateSurfaceValueOffset(
+			edgeVerticies[edge] = calculateIntersectionLocation(
+				corners[edgeConnections[edge][0]],
+				corners[edgeConnections[edge][1]],
 				cornerValues[edgeConnections[edge][0]],
 				cornerValues[edgeConnections[edge][1]],
 			)
-
-			newVertex = math3d.Vector{
-				x + (vertexOffsets[edgeConnections[edge][0]][0]+vertexOffset*edgeDirections[edge][0])*cubeSize,
-				y + (vertexOffsets[edgeConnections[edge][0]][1]+vertexOffset*edgeDirections[edge][1])*cubeSize,
-				z + (vertexOffsets[edgeConnections[edge][0]][2]+vertexOffset*edgeDirections[edge][2])*cubeSize,
-			}
-			edgeVerticies[edge] = newVertex
 		}
 	}
 
@@ -154,13 +143,9 @@ func buildTrianglesFromEdgesVerticies(edgeVerticies [12]math3d.Vector, edgeFlagM
 	return
 }
 
-func calculateSurfaceValueOffset(value1, value2 float32) float32 {
-	diff := value2 - value1
-	if diff == 0 {
-		return 0.5
-	} else {
-		return math3d.Abs(diff / 2.0)
-	}
+func calculateIntersectionLocation(point1, point2 math3d.Vector, value1, value2 float32) math3d.Vector {
+	weighting := (-value1) / (value2 - value1)
+	return point1.Add(point2.Sub(point1).Scale(weighting))
 }
 
 /**
