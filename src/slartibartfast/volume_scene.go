@@ -100,6 +100,8 @@ func (self *VolumeScene) rebuildVolume() {
 		self.cubeVolume, math3d.Vector{50, 50, 50}, self.marchingCubeSize)
 	volumeMesh.Name = fmt.Sprintf("CubeVolumeMesh[%.2f]", self.marchingCubeSize)
 
+	log.Printf("[%s] has %d verticies\n", volumeMesh.Name, len(volumeMesh.VertexList))
+
 	self.volumeEntity.RemoveComponent(components.VISUAL)
 	self.volumeEntity.AddComponent(&components.Visual{
 		Mesh:         volumeMesh,
