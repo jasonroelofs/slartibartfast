@@ -98,9 +98,6 @@ func Test_StoresKeyEventsReceived(t *testing.T) {
 func Test_StoresMouseEventsReceived(t *testing.T) {
 	mapper := NewInputDispatcher()
 
-	// First mouse move is ignored
-	mapper.mouseCallback(100, 400)
-
 	mapper.mouseCallback(10, 20)
 	mapper.mouseCallback(-5, 13)
 
