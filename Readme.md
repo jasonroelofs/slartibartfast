@@ -1,4 +1,9 @@
+Project Slartibartfast
+======================
 
+My game development project, now in Go. Currently only runs on OSX.
+
+http://jasonroelofs.com/2013/07/01/third-times-a-charm/
 
 ### Installation
 
@@ -18,8 +23,8 @@
     # install   glew
     $ brew install  glew
 
-    # compile and build
-    $ rake build:all
+    # Run the tests
+    $ rake
 
-    # run the game
-    $ ./bin/slartibartfast
+    # Run the app
+    $ rake run
