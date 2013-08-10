@@ -25,6 +25,11 @@ type Transform struct {
 	// Can also use Euler values to rotate this transform
 	CurrentYaw, CurrentPitch, CurrentRoll float32
 
+	// Should this Transform rotate around a fixed Up axis, and
+	// what is that axis?
+	FixedUp          bool
+	FixedUpDirection math3d.Vector
+
 	// The direction this Entity is currently moving
 	moveDirection math3d.Vector
 
@@ -43,6 +48,10 @@ func NewTransform() Transform {
 		Speed:         math3d.Vector{1, 1, 1},
 		Rotation:      math3d.NewQuaternion(),
 		RotationSpeed: math3d.Vector{45, 45, 45},
+
+		// Default to +Y as the Up dir
+		FixedUp:          true,
+		FixedUpDirection: math3d.Vector{0, 1, 0},
 	}
 }
 
@@ -62,9 +71,9 @@ func (self *Transform) LookAt(lookAtPoint math3d.Vector) {
 		return
 	}
 
-	fixedUp := math3d.Vector{0, 1, 0}
+	// TODO Calculate the current Up if FixedUp is false
 
-	rotMatrix := math3d.LookAt(self.Position, lookAtPoint, fixedUp)
+	rotMatrix := math3d.LookAt(self.Position, lookAtPoint, self.FixedUpDirection)
 	self.Rotation = math3d.QuatFromRotationMatrix(rotMatrix)
 }
 

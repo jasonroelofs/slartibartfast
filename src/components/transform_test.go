@@ -12,6 +12,8 @@ func Test_NewTransform_InitializesGoodDefaults(t *testing.T) {
 	assert.Equal(t, math3d.Vector{1, 1, 1}, transform.Scale)
 	assert.Equal(t, math3d.Quaternion{1, 0, 0, 0}, transform.Rotation)
 	assert.Equal(t, math3d.Vector{45, 45, 45}, transform.RotationSpeed)
+	assert.True(t, transform.FixedUp)
+	assert.Equal(t, math3d.Vector{0, 1, 0}, transform.FixedUpDirection)
 }
 
 func Test_Transform_Type(t *testing.T) {
