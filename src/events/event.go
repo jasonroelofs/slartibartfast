@@ -20,4 +20,9 @@ const (
 	TurnLeft
 	TurnRight
 	MouseMove
+
+	PanUp
+	PanDown
+	PanLeft
+	PanRight
 )

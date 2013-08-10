@@ -29,7 +29,6 @@ type Game struct {
 	graphicalBehavior *behaviors.Graphical
 
 	currentScene Scene
-	//	currentRotation float32
 }
 
 type Scene interface {
@@ -174,7 +173,8 @@ func (self *Game) initializeScene() {
 
 //	self.currentScene = NewSpinningCubes(self)
 // self.currentScene = NewTexturedCube(self)
-	self.currentScene = NewVolumeScene(self)
+//	self.currentScene = NewVolumeScene(self)
+	self.currentScene = NewTopDownTestScene(self)
 
 	self.currentScene.Setup()
 }
@@ -186,15 +186,6 @@ func (self *Game) RegisterEntity(entity *core.Entity) {
 func (self *Game) Tick(deltaT float32) {
 	self.currentScene.Tick(deltaT)
 
-	//	self.camera.SetPosition(math3d.Vector{
-	//		math3d.Cos(math3d.DegToRad(self.currentRotation)) * 20,
-	//		self.camera.Position().Y,
-	//		math3d.Sin(math3d.DegToRad(self.currentRotation)) * 20,
-	//	})
-	//
-	//	self.currentRotation += 30 * deltaT
-
-	// Update all behaviors
 	self.inputBehavior.Update(deltaT)
 	self.transformBehavior.Update(deltaT)
 	self.graphicalBehavior.Update(self.Camera, deltaT)
