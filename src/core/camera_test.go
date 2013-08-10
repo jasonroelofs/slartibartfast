@@ -39,6 +39,24 @@ func Test_SetSpeed(t *testing.T) {
 	assert.Equal(t, math3d.Vector{1, 2, 3}, components.GetTransform(camera.Entity).Speed)
 }
 
+func Test_Camera_AddComponent(t *testing.T) {
+	camera := NewCamera()
+	input := new(components.Input)
+	camera.AddComponent(input)
+
+	assert.Equal(t, input, components.GetInput(camera.Entity))
+}
+
+func Test_Camera_RemoveComponent(t *testing.T) {
+	camera := NewCamera()
+	input := new(components.Input)
+	camera.AddComponent(input)
+
+	removed := camera.RemoveComponent(components.INPUT)
+
+	assert.Equal(t, removed, input)
+}
+
 func Test_Perspective_SetsPerspectiveMatrixAsProjection(t *testing.T) {
 	camera := NewCamera()
 	camera.Perspective(90.0, 1, 0.0, 1.0)

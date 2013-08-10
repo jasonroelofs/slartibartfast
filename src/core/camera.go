@@ -58,6 +58,10 @@ func (self *Camera) AddComponent(component components.Component) {
 	self.Entity.AddComponent(component)
 }
 
+func (self *Camera) RemoveComponent(componentType components.ComponentType) components.Component {
+	return self.Entity.RemoveComponent(componentType)
+}
+
 //
 // Projection and View Matrix methods
 //
