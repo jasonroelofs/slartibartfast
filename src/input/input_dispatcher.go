@@ -44,6 +44,9 @@ func NewInputDispatcher() *InputDispatcher {
 	mapper.mapKeyToEvent(KeyS, events.PanLeft)
 	mapper.mapKeyToEvent(KeyF, events.PanRight)
 
+	mapper.mapKeyToEvent(KeyI, events.ZoomIn)
+	mapper.mapKeyToEvent(KeyO, events.ZoomOut)
+
 	glfw.Disable(glfw.MouseCursor)
 	mapper.resetMouse()
 

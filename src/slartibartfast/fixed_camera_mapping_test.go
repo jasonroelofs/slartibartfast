@@ -17,6 +17,8 @@ var panningCardinalTests = []struct {
 	{events.PanDown, math3d.Vector{0, -1, 0}},
 	{events.PanLeft, math3d.Vector{-1, 0, 0}},
 	{events.PanRight, math3d.Vector{1, 0, 0}},
+	{events.ZoomOut, math3d.Vector{0, 0, 1}},
+	{events.ZoomIn, math3d.Vector{0, 0, -1}},
 }
 
 func Test_FixedCamera_CardinalMovement(t *testing.T) {

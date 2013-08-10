@@ -15,6 +15,8 @@ func init() {
 		events.PanDown:  panBackward,
 		events.PanLeft:  panLeft,
 		events.PanRight: panRight,
+		events.ZoomOut:  zoomOut,
+		events.ZoomIn:   zoomIn,
 	}
 }
 
@@ -55,5 +57,25 @@ func panRight(entity components.ComponentHolder, event events.Event) {
 		transform.Moving(math3d.Vector{1, 0, 0})
 	} else {
 		transform.Moving(math3d.Vector{-1, 0, 0})
+	}
+}
+
+func zoomIn(entity components.ComponentHolder, event events.Event) {
+	transform := components.GetTransform(entity)
+
+	if event.Pressed {
+		transform.Moving(math3d.Vector{0, 0, -1})
+	} else {
+		transform.Moving(math3d.Vector{0, 0, 1})
+	}
+}
+
+func zoomOut(entity components.ComponentHolder, event events.Event) {
+	transform := components.GetTransform(entity)
+
+	if event.Pressed {
+		transform.Moving(math3d.Vector{0, 0, 1})
+	} else {
+		transform.Moving(math3d.Vector{0, 0, -1})
 	}
 }

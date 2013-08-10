@@ -25,4 +25,7 @@ const (
 	PanDown
 	PanLeft
 	PanRight
+
+	ZoomIn
+	ZoomOut
 )
