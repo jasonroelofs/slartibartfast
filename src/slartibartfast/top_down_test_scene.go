@@ -31,7 +31,7 @@ func (self *TopDownTestScene) Setup() {
 
 	self.levelVolume = &volume.FunctionVolume{
 		func(x, y, z float32) float32 {
-			if z > 5 {
+			if y > 5 {
 				return -1
 			} else {
 				return 1
@@ -39,7 +39,7 @@ func (self *TopDownTestScene) Setup() {
 		},
 	}
 
-	volumeMesh := volume.MarchingCubes(self.levelVolume, math3d.Vector{50, 50, 10}, 0.5)
+	volumeMesh := volume.MarchingCubes(self.levelVolume, math3d.Vector{50, 10, 50}, 0.5)
 	volumeMesh.Name = "Level Mesh"
 
 	self.levelEntity = core.NewEntity()
@@ -51,8 +51,12 @@ func (self *TopDownTestScene) Setup() {
 
 	self.game.RegisterEntity(self.levelEntity)
 
-	self.game.Camera.SetPosition(math3d.Vector{25, 25, 10})
+	// Get the camera facing downwards
+	cameraTransform := components.GetTransform(self.game.Camera.Entity)
+	cameraTransform.Position = math3d.Vector{25, 10, 25}
+	cameraTransform.CurrentPitch = 90
 
+	// Replace input management to keep Camera in check
 	self.game.Camera.RemoveComponent(components.INPUT)
 	self.game.Camera.AddComponent(&components.Input{
 		Mapping: FixedCameraMapping,
