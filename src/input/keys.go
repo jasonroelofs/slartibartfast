@@ -121,3 +121,8 @@ const (
 	KeyMenu
 	KeyLast = KeyMenu
 )
+
+// Keys that simply have their own mapping
+const (
+	KeySpace = glfw.KeySpace
+)
