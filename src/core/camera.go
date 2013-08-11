@@ -68,6 +68,8 @@ func (self *Camera) RemoveComponent(componentType components.ComponentType) comp
 
 // LookAt changes the camera's orientation so that it is looking in
 // the direction of the requested point.
+// There seem to be edge cases that don't work here yet.
+// See components.Transform.LookAt
 func (self *Camera) LookAt(point math3d.Vector) {
 	self.transform.LookAt(point)
 }

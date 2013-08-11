@@ -64,7 +64,9 @@ func GetTransform(holder ComponentHolder) *Transform {
 }
 
 // LookAt changes this Transform's Rotation such that it's facing the point
-// For now, always assumes fixed Y-up axis
+// There's something not quite right with this function. I cannot get it to allow
+// looking at points below, or otherwise in negative directions from, the Transform.
+// If possible, use Euler angles to set initial rotations
 func (self *Transform) LookAt(lookAtPoint math3d.Vector) {
 	// Trying to look at ourselves makes for weird rotations
 	if lookAtPoint == self.Position {
