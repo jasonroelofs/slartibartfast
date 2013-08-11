@@ -31,7 +31,7 @@ func (self *TopDownTestScene) Setup() {
 
 	self.levelVolume = &volume.FunctionVolume{
 		func(x, y, z float32) float32 {
-			if y > 5 {
+			if y > 5 && (x > 3 && x < 47) && (z > 3 && z < 47) {
 				return -1
 			} else {
 				return 1
