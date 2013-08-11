@@ -6,6 +6,10 @@ import (
 	"testing"
 )
 
+func init() {
+	InputDispatcherTesting = true
+}
+
 func Test_NewInputDispatcher(t *testing.T) {
 	mapper := NewInputDispatcher()
 	assert.NotNil(t, mapper, "Mapper failed to initialize")
@@ -14,6 +18,7 @@ func Test_NewInputDispatcher(t *testing.T) {
 func Test_On_RegistersACallbackForAnEvent(t *testing.T) {
 	mapper := NewInputDispatcher()
 	quitCalled := false
+	mapper.mapKeyToEvent(KeyQ, events.Quit)
 
 	mapper.On(events.Quit, func(events.Event) {
 		quitCalled = true
@@ -40,6 +45,26 @@ func Test_OnKey_RegistersCallbackForRawKeyEvent(t *testing.T) {
 	assert.True(t, pKeyEvent.Pressed)
 }
 
+func Test_OnKey_CanMapMultipleCallbacksForASingleKey(t *testing.T) {
+	mapper := NewInputDispatcher()
+	callback1Hit := false
+	callback2Hit := false
+
+	mapper.OnKey(KeyP, func(event events.Event) {
+		callback1Hit = true
+	})
+
+	mapper.OnKey(KeyP, func(event events.Event) {
+		callback2Hit = true
+	})
+
+	mapper.keyCallback(KeyP, 1)
+
+	assert.True(t, callback1Hit, "Did not call the first callback")
+	assert.True(t, callback2Hit, "Did not call the second callback")
+}
+
+
 func Test_DoesNothingIfNoEventForKey(t *testing.T) {
 	mapper := NewInputDispatcher()
 
@@ -62,7 +87,7 @@ func Test_DoesNothingIfNoKeyMappedToEvent(t *testing.T) {
 	assert.False(t, jumpCalled, "Jump event called when it should not have")
 }
 
-func Test_CanMapMultipleKeysToOneEvent(t *testing.T) {
+func Test_On_CanMapMultipleKeysToOneEvent(t *testing.T) {
 	mapper := NewInputDispatcher()
 	mapper.mapKeyToEvent(KeyQ, events.Quit)
 	mapper.mapKeyToEvent(KeyEsc, events.Quit)
@@ -77,6 +102,28 @@ func Test_CanMapMultipleKeysToOneEvent(t *testing.T) {
 	mapper.keyCallback(KeyEsc, 1)
 
 	assert.Equal(t, 2, quitCallCount)
+}
+
+func Test_On_CanMapMultipleEventsToOneKey(t *testing.T) {
+	mapper := NewInputDispatcher()
+	mapper.mapKeyToEvent(KeyJ, events.MoveForward)
+	mapper.mapKeyToEvent(KeyJ, events.MoveBackward)
+
+	forwardCallCount := 0
+	backwardCallCount := 0
+
+	mapper.On(events.MoveForward, func(events.Event) {
+		forwardCallCount += 1
+	})
+
+	mapper.On(events.MoveBackward, func(events.Event) {
+		backwardCallCount += 1
+	})
+
+	mapper.keyCallback(KeyJ, 1)
+
+	assert.Equal(t, 1, forwardCallCount)
+	assert.Equal(t, 1, backwardCallCount)
 }
 
 func Test_StoresKeyEventsReceived(t *testing.T) {

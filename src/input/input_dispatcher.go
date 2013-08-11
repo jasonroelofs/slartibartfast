@@ -6,9 +6,17 @@ import (
 	"log"
 )
 
-type eventCallbackMap map[events.EventType]func(events.Event)
-type keyCallbackMap map[int]func(events.Event)
-type keyEventMap map[int]events.EventType
+type eventCallback func(events.Event)
+type eventCallbackList []eventCallback
+
+type eventCallbackMap map[events.EventType]eventCallbackList
+type keyCallbackMap map[int]eventCallbackList
+
+type keyEventMap map[int][]events.EventType
+
+// Testing tool, will remove once I have all key -> event mappings
+// coming in via a file instead of hard-coded.
+var InputDispatcherTesting bool
 
 type InputDispatcher struct {
 	callbacks    eventCallbackMap
@@ -26,26 +34,28 @@ func NewInputDispatcher() *InputDispatcher {
 		keyCallbacks: make(keyCallbackMap),
 	}
 
-	// Set up testing key mappings
-	mapper.mapKeyToEvent(KeyQ, events.Quit)
-	mapper.mapKeyToEvent(KeyEsc, events.Quit)
+	if !InputDispatcherTesting {
+		// Set up testing key mappings
+		mapper.mapKeyToEvent(KeyQ, events.Quit)
+		mapper.mapKeyToEvent(KeyEsc, events.Quit)
 
-	// MY FPS Movement mapping. Screw this WASD crap :P
-	// Will move this to be something read from the settings file
-	mapper.mapKeyToEvent(KeyE, events.MoveForward)
-	mapper.mapKeyToEvent(KeyD, events.MoveBackward)
-	mapper.mapKeyToEvent(KeyS, events.MoveLeft)
-	mapper.mapKeyToEvent(KeyF, events.MoveRight)
-	mapper.mapKeyToEvent(KeyW, events.TurnLeft)
-	mapper.mapKeyToEvent(KeyR, events.TurnRight)
+		// MY FPS Movement mapping. Screw this WASD crap :P
+		// Will move this to be something read from the settings file
+		mapper.mapKeyToEvent(KeyE, events.MoveForward)
+		mapper.mapKeyToEvent(KeyD, events.MoveBackward)
+		mapper.mapKeyToEvent(KeyS, events.MoveLeft)
+		mapper.mapKeyToEvent(KeyF, events.MoveRight)
+		mapper.mapKeyToEvent(KeyW, events.TurnLeft)
+		mapper.mapKeyToEvent(KeyR, events.TurnRight)
 
-	mapper.mapKeyToEvent(KeyE, events.PanUp)
-	mapper.mapKeyToEvent(KeyD, events.PanDown)
-	mapper.mapKeyToEvent(KeyS, events.PanLeft)
-	mapper.mapKeyToEvent(KeyF, events.PanRight)
+		mapper.mapKeyToEvent(KeyE, events.PanUp)
+		mapper.mapKeyToEvent(KeyD, events.PanDown)
+		mapper.mapKeyToEvent(KeyS, events.PanLeft)
+		mapper.mapKeyToEvent(KeyF, events.PanRight)
 
-	mapper.mapKeyToEvent(KeyI, events.ZoomIn)
-	mapper.mapKeyToEvent(KeyO, events.ZoomOut)
+		mapper.mapKeyToEvent(KeyI, events.ZoomIn)
+		mapper.mapKeyToEvent(KeyO, events.ZoomOut)
+	}
 
 	glfw.Disable(glfw.MouseCursor)
 	mapper.resetMouse()
@@ -64,14 +74,14 @@ func NewInputDispatcher() *InputDispatcher {
 // pressed or released
 // Use this method when you want input events outside of an Entity's Input component
 func (self *InputDispatcher) On(event events.EventType, callback func(events.Event)) {
-	self.callbacks[event] = callback
+	self.callbacks[event] = append(self.callbacks[event], callback)
 }
 
 // OnKey registers a callback for when a raw key event happens.
 // Use this when you don't want to deal with the events mapping system and just want
 // to watch for a key press. Should not be used with anything players will use.
 func (self *InputDispatcher) OnKey(key int, callback func(events.Event)) {
-	self.keyCallbacks[key] = callback
+	self.keyCallbacks[key] = append(self.keyCallbacks[key], callback)
 }
 
 // RecentEvents returns the list of events queued up since the last time
@@ -84,7 +94,7 @@ func (self *InputDispatcher) RecentEvents() EventList {
 }
 
 func (self *InputDispatcher) mapKeyToEvent(key int, eventType events.EventType) {
-	self.keyMappings[key] = eventType
+	self.keyMappings[key] = append(self.keyMappings[key], eventType)
 }
 
 // Hook into GLFW when a key is pressed
@@ -96,27 +106,31 @@ func (self *InputDispatcher) keyCallback(key, state int) {
 }
 
 func (self *InputDispatcher) processKeyCallback(key, state int) {
-	if callbackFromKey, ok := self.keyCallbacks[key]; ok {
-		callbackFromKey(events.Event{Pressed: state == 1})
+	if callbacksFromKey, ok := self.keyCallbacks[key]; ok {
+		for _, callback := range callbacksFromKey {
+			callback(events.Event{Pressed: state == 1})
+		}
 	}
 }
 
 func (self *InputDispatcher) processEventCallbacks(key, state int) {
-	if eventFromKey, ok := self.keyMappings[key]; ok {
-		event := events.Event{
-			Pressed:   state == 1,
-			EventType: eventFromKey,
-		}
+	if eventsFromKey, ok := self.keyMappings[key]; ok {
+		for _, eventFromKey := range eventsFromKey {
+			event := events.Event{
+				Pressed:   state == 1,
+				EventType: eventFromKey,
+			}
 
-		self.storedEvents = append(self.storedEvents, event)
-		self.fireLocalCallback(event)
+			self.storedEvents = append(self.storedEvents, event)
+			self.fireLocalCallback(event)
+		}
 	}
 }
 
 func (self *InputDispatcher) fireLocalCallback(event events.Event) {
-	eventToCallback := self.callbacks[event.EventType]
-	if eventToCallback != nil {
-		eventToCallback(event)
+	eventsToCallback := self.callbacks[event.EventType]
+	for _, eventCallback := range eventsToCallback {
+		eventCallback(event)
 	}
 }
 
