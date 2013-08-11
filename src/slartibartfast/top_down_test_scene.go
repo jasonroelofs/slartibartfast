@@ -17,6 +17,7 @@ type TopDownTestScene struct {
 
 	levelVolume volume.Volume
 	levelEntity *core.Entity
+	playerCube  *core.Entity
 }
 
 func NewTopDownTestScene(game *Game) *TopDownTestScene {
@@ -58,9 +59,20 @@ func (self *TopDownTestScene) Setup() {
 
 	// Replace input management to keep Camera in check
 	self.game.Camera.RemoveComponent(components.INPUT)
-	self.game.Camera.AddComponent(&components.Input{
-		Mapping: FixedCameraMapping,
+
+	// Our unit we'll control
+	self.playerCube = core.NewEntityAt(math3d.Vector{25, 6, 25})
+	self.playerCube.Name = "The Player"
+	self.playerCube.AddComponent(&components.Visual{})
+
+	playerTransform := components.GetTransform(self.playerCube)
+	playerTransform.Scale = math3d.Vector{0.25, 0.5, 0.25}
+
+	self.playerCube.AddComponent(&components.Input{
+		Mapping: FixedYMapping,
 	})
+
+	self.game.RegisterEntity(self.playerCube)
 }
 
 func (self *TopDownTestScene) Tick(deltaT float32) {

@@ -6,7 +6,8 @@ import (
 	"math3d"
 )
 
-// InputMapping for Fixed top-down camera controls
+// InputMapping for Fixed top-down camera controls.
+// Use FixedYMapping for adding this type of controls to an Entity
 var FixedCameraMapping components.InputEventMap
 
 func init() {
