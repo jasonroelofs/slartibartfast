@@ -4,9 +4,11 @@ import (
 	"components"
 	"core"
 	"factories"
-//	"log"
+	"log"
 	"math3d"
+	"input"
 	"volume"
+	"events"
 )
 
 // This scene is a top-down, fixed camera 2d esque movement test
@@ -18,6 +20,8 @@ type TopDownTestScene struct {
 	levelVolume volume.Volume
 	levelEntity *core.Entity
 	playerCube  *core.Entity
+
+	inputPlayer bool
 }
 
 func NewTopDownTestScene(game *Game) *TopDownTestScene {
@@ -57,9 +61,6 @@ func (self *TopDownTestScene) Setup() {
 	cameraTransform.Position = math3d.Vector{25, 10, 25}
 	cameraTransform.CurrentPitch = 90
 
-	// Replace input management to keep Camera in check
-	self.game.Camera.RemoveComponent(components.INPUT)
-
 	// Our unit we'll control
 	self.playerCube = core.NewEntityAt(math3d.Vector{25, 6, 25})
 	self.playerCube.Name = "The Player"
@@ -68,11 +69,36 @@ func (self *TopDownTestScene) Setup() {
 	playerTransform := components.GetTransform(self.playerCube)
 	playerTransform.Scale = math3d.Vector{0.25, 0.5, 0.25}
 
-	self.playerCube.AddComponent(&components.Input{
-		Mapping: FixedYMapping,
-	})
-
 	self.game.RegisterEntity(self.playerCube)
+
+	self.game.InputDispatcher.OnKey(input.KeySpace, func(event events.Event) { self.SwapInput(event) })
+
+	// Start by controlling the player unit
+	self.SwapInput(events.Event{Pressed: true})
+}
+
+func (self *TopDownTestScene) SwapInput(event events.Event) {
+	log.Println("Swap Input!")
+
+	if !event.Pressed {
+		return
+	}
+
+	if self.inputPlayer {
+		self.playerCube.RemoveComponent(components.INPUT)
+		self.game.Camera.AddComponent(&components.Input{
+			Mapping: FixedCameraMapping,
+		})
+		self.inputPlayer = false
+		log.Println("[Camera] Player now", self.playerCube)
+	} else {
+		self.game.Camera.RemoveComponent(components.INPUT)
+		self.playerCube.AddComponent(&components.Input{
+			Mapping: FixedYMapping,
+		})
+		self.inputPlayer = true
+		log.Println("[Player] Player now", self.playerCube)
+	}
 }
 
 func (self *TopDownTestScene) Tick(deltaT float32) {

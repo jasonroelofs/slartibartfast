@@ -164,7 +164,7 @@ func (self *Game) initializeScene() {
 
 	self.Camera.AddComponent(&input)
 
-	self.Camera.SetSpeed(math3d.Vector{5, 5, 5})
+//	self.Camera.SetSpeed(math3d.Vector{5, 5, 5})
 
 	// YUCK, must be a better way of doing this?
 	// Will probably move camera creation into Graphical so it
