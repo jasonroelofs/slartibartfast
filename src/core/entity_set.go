@@ -1,8 +1,8 @@
 package core
 
-// A set of entities, most often to be a subset of all entities
-// in the system. EntityDB.RegisterListener returns this object and will
-// keep the list of Entities up to date with Entity changes
+// EntitySet is a set of Entities.
+// This struct will rarely be used directly. See EntityDB.RegisterListener for how
+// instances of this struct will most often be created.
 type EntitySet struct {
 	entities map[int]*Entity
 }

@@ -10,10 +10,18 @@ type EntityDatabase interface {
 	EntityDestroyed(*Entity)
 }
 
-// EntityDB is as the name implies the database of entities in the system
+// EntityDB is as the name implies the database of entities in the system.
 // Entities can have any number of Components on them, and Behaviors interact
 // with Entities depending on their Components. EntityDB handles the routing
-// and management logic behind all this
+// and management logic behind all this.
+//
+// Logic is implemented on Entities through Listeners. Listeners must implement
+// the EntityListener interface. Register a new Listener via RegisterListener, then give
+// the Listener the resulting EntitySet. This EntitySet will be managed by the EntityDB and
+// will always contain exactly and only the set of Entities the Listener can work with
+// (according to the Component Map defined when calling RegisterListener).
+//
+// See the behaviors package for currently implemented Listeners.
 type EntityDB struct {
 	// Implements EntityDatabase
 
@@ -23,8 +31,8 @@ type EntityDB struct {
 	nextEntityId int
 }
 
-// Struct to keep track of a listener and the set of
-// components said Listener registered to receive notifications of
+// Struct to keep track of an entity listener, the component map it can work with,
+// and the set of Entities this listener should know about for processing.
 type listenerRecord struct {
 	listener     EntityListener
 	componentMap components.ComponentType
@@ -37,7 +45,7 @@ type EntityListener interface {
 	TearDownEntity(entity *Entity)
 }
 
-// NewEntityDB returns a new EntityDB
+// NewEntityDB returns a new, empty EntityDB
 func NewEntityDB() *EntityDB {
 	return &EntityDB{
 		allEntities:  NewEntitySet(),
@@ -60,7 +68,7 @@ func (self *EntityDB) RegisterListener(
 	return record.entitySet
 }
 
-// RegisterEntity saves and processes a given Entity for inclusion in the system.
+// RegisterEntity saves and processes a given Entity, including it into the system.
 func (self *EntityDB) RegisterEntity(entity *Entity) {
 	entity.Id = self.nextEntityId
 	entity.entityDB = self
@@ -102,7 +110,7 @@ func (self *EntityDB) notifyListenersOfNewEntity(entity *Entity) {
 
 func (self *EntityDB) notifyListenersOfDestroyedEntity(entity *Entity) {
 	for _, listenerEntry := range self.listeners {
-		if self.listenerWantsEntity(listenerEntry, entity) {
+		if listenerEntry.entitySet.Contains(entity) {
 			listenerEntry.entitySet.Delete(entity)
 			listenerEntry.listener.TearDownEntity(entity)
 		}
@@ -112,7 +120,7 @@ func (self *EntityDB) notifyListenersOfDestroyedEntity(entity *Entity) {
 func (self *EntityDB) notifyListenersOfRemovedComponent(entity *Entity, component components.Component) {
 	for _, listenerEntry := range self.listeners {
 		// Find listeners who know about this Entity but no longer want this
-		// entity (because the component map no longer matches the requested map)
+		// entity (because the entity's component map no longer matches the Listener's map)
 		if listenerEntry.entitySet.Contains(entity) &&
 			(listenerEntry.componentMap & component.Type()) > 0 {
 
