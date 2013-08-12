@@ -19,6 +19,8 @@ type EntityDB struct {
 
 	allEntities *EntitySet
 	listeners   []listenerRecord
+
+	nextEntityId int
 }
 
 // Struct to keep track of a listener and the set of
@@ -60,9 +62,12 @@ func (self *EntityDB) RegisterListener(
 
 // RegisterEntity saves and processes a given Entity for inclusion in the system.
 func (self *EntityDB) RegisterEntity(entity *Entity) {
+	entity.Id = self.nextEntityId
+	entity.entityDB = self
+	self.nextEntityId++
+
 	self.allEntities.Append(entity)
 	self.notifyListenersOfNewEntity(entity)
-	entity.entityDB = self
 }
 
 // ComponentAdded is called by Entities when they recieve a new Component

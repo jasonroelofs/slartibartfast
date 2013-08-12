@@ -59,6 +59,22 @@ func Test_EntityListenersCanRegisterWithDB(t *testing.T) {
 	assert.Equal(t, 1, len(db.listeners))
 }
 
+// Registering an Entity
+func Test_RegisterEntity_GivesEntityUniqueId(t *testing.T) {
+	db := NewEntityDB()
+	entity1 := NewEntity()
+	entity2 := NewEntity()
+	entity3 := NewEntity()
+
+	db.RegisterEntity(entity1)
+	db.RegisterEntity(entity2)
+	db.RegisterEntity(entity3)
+
+	assert.Equal(t, 1, entity1.Id)
+	assert.Equal(t, 2, entity2.Id)
+	assert.Equal(t, 3, entity3.Id)
+}
+
 // SetupEntity callback to listeners
 func Test_RegisterEntity_ListenerNotifiedOfNewEntityMatchingComponents(t *testing.T) {
 	db := NewEntityDB()

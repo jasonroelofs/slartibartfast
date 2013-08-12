@@ -11,6 +11,7 @@ type componentTypeMap map[components.ComponentType]components.Component
 type Entity struct {
 	// Implements components.ComponentHolder
 
+	Id   int
 	Name string
 
 	components       componentTypeMap
