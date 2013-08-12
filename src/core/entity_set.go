@@ -4,12 +4,28 @@ package core
 // in the system. EntityDB.RegisterListener returns this object and will
 // keep the list of Entities up to date with Entity changes
 type EntitySet struct {
-	entities []*Entity
+	entities map[int]*Entity
+}
+
+// NewEntitySet initializes and returns an empty EntitySet
+func NewEntitySet() *EntitySet {
+	return &EntitySet{
+		entities: make(map[int]*Entity),
+	}
 }
 
 // Append adds the given Entity to the set
-func (self *EntitySet) Append(entity *Entity) {
-	self.entities = append(self.entities, entity)
+// Does not allow duplicate Entity records in the set.
+// Returns whether the Entity was added to the set or not.
+func (self *EntitySet) Append(entity *Entity) (appended bool) {
+	if _, ok := self.entities[entity.Id]; !ok {
+		self.entities[entity.Id] = entity
+		appended = true
+	} else {
+		appended = false
+	}
+
+	return
 }
 
 // Len returns the number of entities in this set
@@ -17,46 +33,31 @@ func (self *EntitySet) Len() int {
 	return len(self.entities)
 }
 
-// Get returns the entity at the given Index.
-// Does not have any protections against out-of-bounds errors right now.
-func (self *EntitySet) Get(index int) *Entity {
-	return self.entities[index]
+// Get returns the entity of the given Id.
+// If no Entity of that Id is in this Set, returns nil
+func (self *EntitySet) Get(entityId int) *Entity {
+	return self.entities[entityId]
 }
 
 // Entities returns the array of entities in this set, mainly for iterating
 // over. Might turn this into more of a callback loop rather than giving
 // the calling code a raw array.
-func (self *EntitySet) Entities() []*Entity {
-	return self.entities
+// TODO Currently inefficient, creates a new array every time it's called
+func (self *EntitySet) Entities() (entityList []*Entity) {
+	for _, entity := range self.entities {
+		entityList = append(entityList, entity)
+	}
+	return
 }
 
 // Delete removes the given Entity from this set
 func (self *EntitySet) Delete(entity *Entity) {
-	var inList *Entity
-	var index int
-
-	for index, inList = range self.entities {
-		if inList == entity {
-			break
-		}
-	}
-
-	if inList != nil {
-		// From https://code.google.com/p/go-wiki/wiki/SliceTricks
-		copy(self.entities[index:], self.entities[index+1:])
-		self.entities[len(self.entities)-1] = nil
-		self.entities = self.entities[:len(self.entities)-1]
-	}
+	delete(self.entities, entity.Id)
 }
 
 // Contains returns true or false depending on if the given Entity
 // is present in this set
 func (self *EntitySet) Contains(entity *Entity) bool {
-	for _, inList := range self.entities {
-		if inList == entity {
-			return true
-		}
-	}
-
-	return false
+	_, ok := self.entities[entity.Id]
+	return ok
 }
