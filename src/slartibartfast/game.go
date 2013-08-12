@@ -44,7 +44,7 @@ func (self *Game) Run() {
 	self.window = platform.NewOpenGLWindow(self.config)
 	self.window.Open()
 
-	self.entityDB = new(core.EntityDB)
+	self.entityDB = core.NewEntityDB()
 	self.renderer = new(platform.OpenGLRenderer)
 	self.InputDispatcher = input.NewInputDispatcher()
 

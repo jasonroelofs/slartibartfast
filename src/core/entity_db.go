@@ -17,7 +17,7 @@ type EntityDatabase interface {
 type EntityDB struct {
 	// Implements EntityDatabase
 
-	allEntities EntitySet
+	allEntities *EntitySet
 	listeners   []listenerRecord
 }
 
@@ -35,12 +35,20 @@ type EntityListener interface {
 	TearDownEntity(entity *Entity)
 }
 
+// NewEntityDB returns a new EntityDB
+func NewEntityDB() *EntityDB {
+	return &EntityDB{
+		allEntities:  NewEntitySet(),
+		nextEntityId: 1,
+	}
+}
+
 // RegisterListener registers the given listener to receive events and notifications
 // when entities are processed through the system that contain the given set of components
 func (self *EntityDB) RegisterListener(
 	listener EntityListener, componentTypes ...components.ComponentType) *EntitySet {
 	record := listenerRecord{listener: listener}
-	record.entitySet = new(EntitySet)
+	record.entitySet = NewEntitySet()
 
 	for _, ct := range componentTypes {
 		record.componentMap |= ct

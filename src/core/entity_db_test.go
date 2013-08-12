@@ -8,13 +8,13 @@ import (
 
 // Construction
 func Test_StartsWithEmptyListOfEntities(t *testing.T) {
-	db := EntityDB{}
+	db := NewEntityDB()
 	assert.Equal(t, 0, db.allEntities.Len())
 }
 
 // Entity Management
 func Test_RegisterEntity_KeepsTrackOfEntitiesAndComponents(t *testing.T) {
-	db := EntityDB{}
+	db := NewEntityDB()
 	entity := NewEntity()
 	entity.AddComponent(new(components.Visual))
 
@@ -24,11 +24,11 @@ func Test_RegisterEntity_KeepsTrackOfEntitiesAndComponents(t *testing.T) {
 }
 
 func Test_RegisterEntity_GivesSelfPointerToEntity(t *testing.T) {
-	db := EntityDB{}
+	db := NewEntityDB()
 	entity := NewEntity()
 	db.RegisterEntity(entity)
 
-	assert.Equal(t, &db, entity.entityDB)
+	assert.Equal(t, db, entity.entityDB)
 }
 
 //
@@ -51,7 +51,7 @@ func (self *TestListener) TearDownEntity(entity *Entity) {
 
 // Registering a Listener
 func Test_EntityListenersCanRegisterWithDB(t *testing.T) {
-	db := EntityDB{}
+	db := NewEntityDB()
 	listener := new(TestListener)
 	entitySet := db.RegisterListener(listener, components.TRANSFORM, components.VISUAL)
 
@@ -61,7 +61,7 @@ func Test_EntityListenersCanRegisterWithDB(t *testing.T) {
 
 // SetupEntity callback to listeners
 func Test_RegisterEntity_ListenerNotifiedOfNewEntityMatchingComponents(t *testing.T) {
-	db := EntityDB{}
+	db := NewEntityDB()
 	listener := new(TestListener)
 	entity := NewEntity()
 
@@ -73,7 +73,7 @@ func Test_RegisterEntity_ListenerNotifiedOfNewEntityMatchingComponents(t *testin
 }
 
 func Test_RegisterEntity_ListenerNotNotifiedOfNewEntityIfComponentsDontMatch(t *testing.T) {
-	db := EntityDB{}
+	db := NewEntityDB()
 	listener := new(TestListener)
 	entity := Entity{}
 
@@ -84,7 +84,7 @@ func Test_RegisterEntity_ListenerNotNotifiedOfNewEntityIfComponentsDontMatch(t *
 }
 
 func Test_RegisterEntity_AddsEntityToListenerEntityListIfComponentsMatch(t *testing.T) {
-	db := EntityDB{}
+	db := NewEntityDB()
 	listener := new(TestListener)
 	entity := NewEntity()
 
@@ -92,11 +92,11 @@ func Test_RegisterEntity_AddsEntityToListenerEntityListIfComponentsMatch(t *test
 	db.RegisterEntity(entity)
 
 	assert.Equal(t, 1, entitySet.Len())
-	assert.Equal(t, entity, entitySet.Get(0))
+	assert.Equal(t, entity, entitySet.Get(entity.Id))
 }
 
 func Test_RegisterEntity_ProperlyWorksAgainstMultipleComponentTypes(t *testing.T) {
-	db := EntityDB{}
+	db := NewEntityDB()
 
 	listener1 := new(TestListener)
 	listener2 := new(TestListener)
@@ -112,8 +112,8 @@ func Test_RegisterEntity_ProperlyWorksAgainstMultipleComponentTypes(t *testing.T
 	db.RegisterEntity(entity)
 
 	// 1 and 3 match this entity
-	assert.Equal(t, entity, es1.Get(0))
-	assert.Equal(t, entity, es3.Get(0))
+	assert.Equal(t, entity, es1.Get(entity.Id))
+	assert.Equal(t, entity, es3.Get(entity.Id))
 
 	// But 2 does not
 	assert.Equal(t, 0, es2.Len())
@@ -124,7 +124,7 @@ func Test_RegisterEntity_ProperlyWorksAgainstMultipleComponentTypes(t *testing.T
 //
 
 func RegisterDBAndListeners() (*EntityDB, [3]*TestListener) {
-	db := new(EntityDB)
+	db := NewEntityDB()
 
 	listener1 := new(TestListener)
 	listener2 := new(TestListener)
@@ -196,7 +196,7 @@ func Test_ComponentRemoved_TellsListenersToTearDownEntityOnComponentRemoval(t *t
 	assert.Equal(t, 0, listeners[2].entitySet.Len())
 }
 
-func Test_Update_HandlesComponentReplacementProperly(t *testing.T) {
+func Test_ComponentAdded_HandlesComponentReplacementProperly(t *testing.T) {
 	db, listeners := RegisterDBAndListeners()
 	entity := NewEntity()
 	oldVisual := new(components.Visual)
