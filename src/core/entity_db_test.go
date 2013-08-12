@@ -232,3 +232,20 @@ func Test_ComponentAdded_HandlesComponentReplacementProperly(t *testing.T) {
 	// Using the new visual component (move test elsewhere?)
 	assert.Equal(t, newVisual, components.GetVisual(entity))
 }
+
+func Test_ComponentAdded_IgnoresListenersWhoHaveEntityAlreadySetUp(t *testing.T) {
+	db, listeners := RegisterDBAndListeners()
+	entity := NewEntity()
+	entity.AddComponent(new(components.Visual))
+
+	db.RegisterEntity(entity)
+
+	entity.RemoveComponent(components.VISUAL)
+	entity.AddComponent(new(components.Visual))
+
+	// Listener1 doesn't recieve the same entity again
+	assert.Equal(t, 1, len(listeners[0].entitySet.Entities()))
+	// Listener2 also should just have the entity once
+	assert.Equal(t, 1, len(listeners[1].entitySet.Entities()))
+}
+

@@ -91,8 +91,11 @@ func (self *EntityDB) EntityDestroyed(entity *Entity) {
 func (self *EntityDB) notifyListenersOfNewEntity(entity *Entity) {
 	for _, listenerEntry := range self.listeners {
 		if self.listenerWantsEntity(listenerEntry, entity) {
-			listenerEntry.entitySet.Append(entity)
-			listenerEntry.listener.SetUpEntity(entity)
+			// We don't want to re-set-up entities the Listener may already know about
+			// This will happen when adding / removing components from an existing entity.
+			if listenerEntry.entitySet.Append(entity) {
+				listenerEntry.listener.SetUpEntity(entity)
+			}
 		}
 	}
 }
