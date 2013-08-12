@@ -39,7 +39,7 @@ func (self *TestRenderer) FinishRender() {
 }
 
 func getTestGraphical() (*Graphical, *TestRenderer, *core.EntityDB) {
-	entityDB := new(core.EntityDB)
+	entityDB := core.NewEntityDB()
 	renderer := new(TestRenderer)
 
 	graphical := NewGraphical(renderer, entityDB)

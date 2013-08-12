@@ -9,7 +9,7 @@ import (
 )
 
 func getTestTransform() (*Transform, *core.EntityDB) {
-	entityDB := new(core.EntityDB)
+	entityDB := core.NewEntityDB()
 
 	behavior := NewTransform(entityDB)
 

@@ -18,7 +18,7 @@ func (self *TestInputQueue) RecentEvents() input.EventList {
 }
 
 func getTestInput() (*Input, *TestInputQueue, *core.EntityDB) {
-	entityDB := new(core.EntityDB)
+	entityDB := core.NewEntityDB()
 	queue := new(TestInputQueue)
 
 	input := NewInput(queue, entityDB)
