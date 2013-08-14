@@ -34,6 +34,7 @@ type Game struct {
 type Scene interface {
 	Setup()
 	Tick(deltaT float32)
+	BeforeRender()
 }
 
 func NewGame(config *configs.Config) *Game {
@@ -64,7 +65,7 @@ func (self *Game) Run() {
 	for running && self.window.IsOpen() {
 		self.Tick(self.window.TimeSinceLast())
 		self.window.SwapBuffers()
-		frameCount += 1
+		frameCount++
 	}
 }
 
@@ -188,6 +189,8 @@ func (self *Game) Tick(deltaT float32) {
 
 	self.inputBehavior.Update(deltaT)
 	self.transformBehavior.Update(deltaT)
+
+	self.currentScene.BeforeRender()
 	self.graphicalBehavior.Update(self.Camera, deltaT)
 }
 

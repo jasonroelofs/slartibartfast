@@ -3,12 +3,12 @@ package main
 import (
 	"components"
 	"core"
+	"events"
 	"factories"
+	"input"
 	"log"
 	"math3d"
-	"input"
 	"volume"
-	"events"
 )
 
 // This scene is a top-down, fixed camera 2d esque movement test
@@ -20,6 +20,8 @@ type TopDownTestScene struct {
 	levelVolume volume.Volume
 	levelEntity *core.Entity
 	playerCube  *core.Entity
+
+	topDownCamera *TopDownCamera
 
 	inputPlayer bool
 }
@@ -60,6 +62,7 @@ func (self *TopDownTestScene) Setup() {
 	cameraTransform := components.GetTransform(self.game.Camera.Entity)
 	cameraTransform.Position = math3d.Vector{25, 10, 25}
 	cameraTransform.CurrentPitch = 90
+	cameraTransform.Speed = math3d.Vector{3, 3, 3}
 
 	// Our unit we'll control
 	self.playerCube = core.NewEntityAt(math3d.Vector{25, 6, 25})
@@ -68,12 +71,17 @@ func (self *TopDownTestScene) Setup() {
 
 	playerTransform := components.GetTransform(self.playerCube)
 	playerTransform.Scale = math3d.Vector{0.25, 0.5, 0.25}
+	playerTransform.Speed = math3d.Vector{3, 3, 3}
+
+	self.topDownCamera = NewTopDownCamera(self.game.Camera)
+	self.topDownCamera.SetTrackingHeight(5)
+	self.topDownCamera.TrackEntity(self.playerCube)
 
 	self.game.RegisterEntity(self.playerCube)
 
 	self.game.InputDispatcher.OnKey(input.KeySpace, func(event events.Event) { self.SwapInput(event) })
 
-	// Start by controlling the player unit
+	// Start by controlling the player unit. Game defaults to controlling the camera
 	self.SwapInput(events.Event{Pressed: true})
 }
 
@@ -89,17 +97,27 @@ func (self *TopDownTestScene) SwapInput(event events.Event) {
 		self.game.Camera.AddComponent(&components.Input{
 			Mapping: FixedCameraMapping,
 		})
+
 		self.inputPlayer = false
+		self.topDownCamera.PauseTracking()
+
 		log.Println("[Camera] Player now", self.playerCube)
 	} else {
 		self.game.Camera.RemoveComponent(components.INPUT)
 		self.playerCube.AddComponent(&components.Input{
 			Mapping: FixedYMapping,
 		})
+
 		self.inputPlayer = true
+		self.topDownCamera.ResumeTracking()
+
 		log.Println("[Player] Player now", self.playerCube)
 	}
 }
 
 func (self *TopDownTestScene) Tick(deltaT float32) {
+}
+
+func (self *TopDownTestScene) BeforeRender() {
+	self.topDownCamera.UpdatePosition()
 }
