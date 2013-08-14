@@ -1,16 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"configs"
+	"log"
 )
 
 func main() {
-	fmt.Println("Welcome to Slartibartfast!")
+	log.Println("Welcome to Slartibartfast!")
 
 	config, err := configs.NewConfig("config/settings.json")
 	if err != nil {
-		panic(fmt.Sprintf("Unable to read settings.json: %v", err))
+		log.Panicf("Unable to read settings.json: %v", err)
 	}
 
 	game := NewGame(&config)
