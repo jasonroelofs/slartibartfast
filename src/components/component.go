@@ -16,6 +16,7 @@ const (
 	TRANSFORM ComponentType = 1 // ...00000001
 	VISUAL                  = 2 // ...00000010
 	INPUT                   = 4 // ...00000100
+	ANIMATION               = 8 // ...00001000
 )
 
 // ComponentHolders are, well, objects that can contain Components.
