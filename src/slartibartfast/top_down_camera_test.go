@@ -2,6 +2,7 @@ package main
 
 import (
 	"core"
+	"components"
 	"github.com/stretchrcom/testify/assert"
 	"math3d"
 	"testing"
@@ -44,7 +45,7 @@ func Test_TopDownCamera_UpdatePositionCanKeepAHeightFromTheEntity(t *testing.T) 
 	assert.Equal(t, math3d.Vector{10, 20, 10}, baseCam.Position())
 }
 
-func Test_TopDownCamera_CanPauseAndResumeTracking(t *testing.T) {
+func Test_TopDownCamera_CanPauseTracking(t *testing.T) {
 	baseCam := core.NewCamera()
 	camera := NewTopDownCamera(baseCam)
 	camera.TrackEntity(core.NewEntityAt(math3d.Vector{10, 10, 10}))
@@ -52,9 +53,15 @@ func Test_TopDownCamera_CanPauseAndResumeTracking(t *testing.T) {
 
 	camera.UpdatePosition()
 	assert.Equal(t, math3d.Vector{0, 0, 0}, baseCam.Position())
+}
+
+func Test_TopDownCamera_ResumesTrackingPositionOverTime(t *testing.T) {
+	baseCam := core.NewCamera()
+	camera := NewTopDownCamera(baseCam)
+	camera.TrackEntity(core.NewEntityAt(math3d.Vector{10, 10, 10}))
+	camera.SetTrackingHeight(10)
 
 	camera.ResumeTracking()
 
-	camera.UpdatePosition()
-	assert.Equal(t, math3d.Vector{10, 10, 10}, baseCam.Position())
+	assert.NotNil(t, baseCam.Entity.GetComponent(components.ANIMATION))
 }

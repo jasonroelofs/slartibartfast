@@ -27,6 +27,7 @@ type Game struct {
 	inputBehavior     *behaviors.Input
 	transformBehavior *behaviors.Transform
 	graphicalBehavior *behaviors.Graphical
+	animBehavior      *behaviors.Animation
 
 	currentScene Scene
 }
@@ -88,6 +89,7 @@ func (self *Game) initializeBehaviors() {
 	self.inputBehavior = behaviors.NewInput(self.InputDispatcher, self.entityDB)
 	self.transformBehavior = behaviors.NewTransform(self.entityDB)
 	self.graphicalBehavior = behaviors.NewGraphical(self.renderer, self.entityDB)
+	self.animBehavior = behaviors.NewAnimation(self.entityDB)
 }
 
 // TODO also read from data/ to pull in any mesh files there.
@@ -188,6 +190,7 @@ func (self *Game) Tick(deltaT float32) {
 	self.currentScene.Tick(deltaT)
 
 	self.inputBehavior.Update(deltaT)
+	self.animBehavior.Update(deltaT)
 	self.transformBehavior.Update(deltaT)
 
 	self.currentScene.BeforeRender()

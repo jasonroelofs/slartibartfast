@@ -44,7 +44,14 @@ func (self *TopDownCamera) PauseTracking() {
 // ResumeTracking moves the camera back to the Entity being tracked and resumes
 // camera position updates
 func (self *TopDownCamera) ResumeTracking() {
-	self.currentlyTracking = true
+	aboveEntity := components.GetTransform(self.trackingEntity).Position
+	aboveEntity.Y += self.trackingHeight
+
+	self.camera.AddComponent(
+		components.NewPositionAnimation(
+			aboveEntity, 0.5, func() { self.currentlyTracking = true },
+		),
+	)
 }
 
 // UpdatePosition calculates where this camera needs to be to stay tracking
