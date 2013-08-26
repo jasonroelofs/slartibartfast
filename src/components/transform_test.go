@@ -147,3 +147,21 @@ func Test_RotatingDir_ReturnsNormalizedDirection(t *testing.T) {
 
 	assert.True(t, (1 - transform.RotateDir().Length()) < 0.0001)
 }
+
+func Test_Halt_StopsAllMovement(t *testing.T) {
+	transform := Transform{}
+	transform.Moving(math3d.Vector{1, 0, 0})
+
+	transform.Halt()
+
+	assert.Equal(t, math3d.Vector{0, 0, 0}, transform.moveDirection)
+}
+
+func Test_Halt_StopsAllRotations(t *testing.T) {
+	transform := Transform{}
+	transform.Rotating(math3d.Vector{1, 0, 0})
+
+	transform.Halt()
+
+	assert.Equal(t, math3d.Vector{0, 0, 0}, transform.rotateDirection)
+}
