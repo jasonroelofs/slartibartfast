@@ -17,12 +17,12 @@ func Test_NewTransform_InitializesGoodDefaults(t *testing.T) {
 }
 
 func Test_Transform_Type(t *testing.T) {
-	transform := Transform{}
+	transform := NewTransform()
 	assert.Equal(t, TRANSFORM, transform.Type())
 }
 
 func Test_GetTransform(t *testing.T) {
-	transform := Transform{}
+	transform := NewTransform()
 	holder := &TestHolder{}
 	holder.AddComponent(&transform)
 
@@ -97,7 +97,7 @@ func Test_Transform_TransformMatrix_AppliesRotationTransformation(t *testing.T) 
 }
 
 func Test_Moving_SetsMoveDirection(t *testing.T) {
-	transform := Transform{}
+	transform := NewTransform()
 
 	transform.Moving(math3d.Vector{1, 0, 0})
 	assert.Equal(t, math3d.Vector{1, 0, 0}, transform.moveDirection)
@@ -113,7 +113,7 @@ func Test_Moving_SetsMoveDirection(t *testing.T) {
 }
 
 func Test_MoveDir_ReturnsNormalizedMoveDirection(t *testing.T) {
-	transform := Transform{}
+	transform := NewTransform()
 
 	transform.Moving(math3d.Vector{1, 0, 0})
 	transform.Moving(math3d.Vector{0, 0, 1})
@@ -123,7 +123,7 @@ func Test_MoveDir_ReturnsNormalizedMoveDirection(t *testing.T) {
 }
 
 func Test_Rotating_SetsRotateDirection(t *testing.T) {
-	transform := Transform{}
+	transform := NewTransform()
 
 	transform.Rotating(math3d.Vector{1, 0, 0})
 	assert.Equal(t, math3d.Vector{1, 0, 0}, transform.rotateDirection)
@@ -139,7 +139,7 @@ func Test_Rotating_SetsRotateDirection(t *testing.T) {
 }
 
 func Test_RotatingDir_ReturnsNormalizedDirection(t *testing.T) {
-	transform := Transform{}
+	transform := NewTransform()
 
 	transform.Rotating(math3d.Vector{1, 0, 0})
 	transform.Rotating(math3d.Vector{0, 0, 1})
@@ -149,7 +149,7 @@ func Test_RotatingDir_ReturnsNormalizedDirection(t *testing.T) {
 }
 
 func Test_Halt_StopsAllMovement(t *testing.T) {
-	transform := Transform{}
+	transform := NewTransform()
 	transform.Moving(math3d.Vector{1, 0, 0})
 
 	transform.Halt()
@@ -158,7 +158,7 @@ func Test_Halt_StopsAllMovement(t *testing.T) {
 }
 
 func Test_Halt_StopsAllRotations(t *testing.T) {
-	transform := Transform{}
+	transform := NewTransform()
 	transform.Rotating(math3d.Vector{1, 0, 0})
 
 	transform.Halt()

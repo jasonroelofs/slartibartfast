@@ -128,7 +128,7 @@ func (self *Transform) RecalculateCurrentRotation() {
 	self.Rotation = rollQuat.Times(pitchQuat).Times(yawQuat)
 }
 
-// Halt cancels all current move and rotation values
+// Halt cancels all current movement and rotation
 func (self *Transform) Halt() {
 	self.moveDirection = math3d.Vector{}
 	self.rotateDirection = math3d.Vector{}
