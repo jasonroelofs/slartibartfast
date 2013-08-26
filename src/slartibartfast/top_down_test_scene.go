@@ -62,7 +62,7 @@ func (self *TopDownTestScene) Setup() {
 	cameraTransform := components.GetTransform(self.game.Camera.Entity)
 	cameraTransform.Position = math3d.Vector{25, 10, 25}
 	cameraTransform.CurrentPitch = 90
-	cameraTransform.Speed = math3d.Vector{3, 3, 3}
+	cameraTransform.Speed = math3d.Vector{8, 8, 8}
 
 	// Our unit we'll control
 	self.playerCube = core.NewEntityAt(math3d.Vector{25, 6, 25})
@@ -94,6 +94,8 @@ func (self *TopDownTestScene) SwapInput(event events.Event) {
 
 	if self.inputPlayer {
 		self.playerCube.RemoveComponent(components.INPUT)
+		components.GetTransform(self.playerCube).Halt()
+
 		self.game.Camera.AddComponent(&components.Input{
 			Mapping: FixedCameraMapping,
 		})
@@ -104,6 +106,8 @@ func (self *TopDownTestScene) SwapInput(event events.Event) {
 		log.Println("[Camera] Player now", self.playerCube)
 	} else {
 		self.game.Camera.RemoveComponent(components.INPUT)
+		components.GetTransform(self.game.Camera.Entity).Halt()
+
 		self.playerCube.AddComponent(&components.Input{
 			Mapping: FixedYMapping,
 		})
