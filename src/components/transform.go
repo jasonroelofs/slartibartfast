@@ -97,8 +97,49 @@ func (self *Transform) Moving(dir math3d.Vector) {
 	self.moveDirection = self.moveDirection.Add(dir)
 }
 
+// MovingForward flags this Entity to move forward (-Z) according to its Speed
+// Argument is used to turn on/off the movement
+func (self *Transform) MovingForward(isMoving bool) {
+	if isMoving {
+		self.moveDirection.Z = -1
+	} else {
+		self.moveDirection.Z = 0
+	}
+}
+
+// MovingBackward flags this Entity to move backward (+Z) according to its Speed
+// Argument is used to turn on/off the movement
+func (self *Transform) MovingBackward(isMoving bool) {
+	if isMoving {
+		self.moveDirection.Z = 1
+	} else {
+		self.moveDirection.Z = 0
+	}
+}
+
+// MovingLeft flags this Entity to move left (-X) according to its Speed
+// Argument is used to turn on/off the movement
+func (self *Transform) MovingLeft(isMoving bool) {
+	if isMoving {
+		self.moveDirection.X = -1
+	} else {
+		self.moveDirection.X = 0
+	}
+}
+
+// MovingRight flags this Entity to move right (+X) according to its Speed
+// Argument is used to turn on/off the movement
+func (self *Transform) MovingRight(isMoving bool) {
+	if isMoving {
+		self.moveDirection.X = 1
+	} else {
+		self.moveDirection.X = 0
+	}
+}
+
 // MoveDir normalizes and returns the current direction in which this
 // transform is moving.
+// TODO Rename this?
 func (self *Transform) MoveDir() math3d.Vector {
 	return self.moveDirection.Normalize()
 }

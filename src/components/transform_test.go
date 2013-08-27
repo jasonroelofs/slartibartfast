@@ -112,6 +112,46 @@ func Test_Moving_SetsMoveDirection(t *testing.T) {
 	assert.Equal(t, math3d.Vector{0, 0, 0}, transform.moveDirection)
 }
 
+func Test_MovingForward_HandlesMinusZMoveDir(t *testing.T) {
+	transform := NewTransform()
+
+	transform.MovingForward(true)
+	assert.Equal(t, math3d.Vector{0, 0, -1}, transform.MoveDir())
+
+	transform.MovingForward(false)
+	assert.Equal(t, math3d.Vector{0, 0, 0}, transform.MoveDir())
+}
+
+func Test_MovingBackward_HandlesPlusZMoveDir(t *testing.T) {
+	transform := NewTransform()
+
+	transform.MovingBackward(true)
+	assert.Equal(t, math3d.Vector{0, 0, 1}, transform.MoveDir())
+
+	transform.MovingBackward(false)
+	assert.Equal(t, math3d.Vector{0, 0, 0}, transform.MoveDir())
+}
+
+func Test_MovingLeft_HandlesMinusXMoveDir(t *testing.T) {
+	transform := NewTransform()
+
+	transform.MovingLeft(true)
+	assert.Equal(t, math3d.Vector{-1, 0, 0}, transform.MoveDir())
+
+	transform.MovingLeft(false)
+	assert.Equal(t, math3d.Vector{0, 0, 0}, transform.MoveDir())
+}
+
+func Test_MovingRight_HandlesPlusXMoveDir(t *testing.T) {
+	transform := NewTransform()
+
+	transform.MovingRight(true)
+	assert.Equal(t, math3d.Vector{1, 0, 0}, transform.MoveDir())
+
+	transform.MovingRight(false)
+	assert.Equal(t, math3d.Vector{0, 0, 0}, transform.MoveDir())
+}
+
 func Test_MoveDir_ReturnsNormalizedMoveDirection(t *testing.T) {
 	transform := NewTransform()
 
