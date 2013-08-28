@@ -20,11 +20,23 @@ func NewInput(queue input.InputQueue, entityDB *core.EntityDB) *Input {
 }
 
 // SetUpEntity :: EntityListener
+// For input components that want event polling, tells the InputQueue to
+// create Events using Polling instead of just callbacks
 func (self *Input) SetUpEntity(entity *core.Entity) {
+	input := components.GetInput(entity)
+
+	if input.WantsPolling() {
+		self.inputQueue.PollEvents(input.Polling)
+	}
 }
 
 // TearDownEntity :: EntityListener
 func (self *Input) TearDownEntity(entity *core.Entity) {
+	input := components.GetInput(entity)
+
+	if input.WantsPolling() {
+		self.inputQueue.UnpollEvents(input.Polling)
+	}
 }
 
 func (self *Input) Update(deltaT float32) {

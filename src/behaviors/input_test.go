@@ -10,11 +10,21 @@ import (
 )
 
 type TestInputQueue struct {
-	Events input.EventList
+	Events          input.EventList
+	pollingEvents   []events.EventType
+	unpollingEvents []events.EventType
 }
 
 func (self *TestInputQueue) RecentEvents() input.EventList {
 	return self.Events
+}
+
+func (self *TestInputQueue) PollEvents(events []events.EventType) {
+	self.pollingEvents = events
+}
+
+func (self *TestInputQueue) UnpollEvents(events []events.EventType) {
+	self.unpollingEvents = events
 }
 
 func getTestInput() (*Input, *TestInputQueue, *core.EntityDB) {
@@ -31,6 +41,33 @@ func Test_NewInput(t *testing.T) {
 
 	assert.NotNil(t, input.entitySet)
 	assert.Equal(t, queue, input.inputQueue)
+}
+
+func Test_SetUpEntity_TellsQueueWhatEventsToPollFor(t *testing.T) {
+	_, queue, entityDb := getTestInput()
+
+	pollEvents := []events.EventType{events.Quit, events.TurnLeft}
+	entity := core.NewEntity()
+	entity.AddComponent(&components.Input{
+		Polling: pollEvents,
+	})
+	entityDb.RegisterEntity(entity)
+
+	assert.Equal(t, pollEvents, queue.pollingEvents)
+}
+
+func Test_TearDownEntity_TurnsOffPollingForRelatedEvents(t *testing.T) {
+	_, queue, entityDb := getTestInput()
+
+	pollEvents := []events.EventType{events.Quit, events.TurnLeft}
+	entity := core.NewEntity()
+	entity.AddComponent(&components.Input{
+		Polling: pollEvents,
+	})
+	entityDb.RegisterEntity(entity)
+	entityDb.EntityDestroyed(entity)
+
+	assert.Equal(t, pollEvents, queue.unpollingEvents)
 }
 
 func Test_Update_PassesInputEventsToComponentsWhoWantThem(t *testing.T) {

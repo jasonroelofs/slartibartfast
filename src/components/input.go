@@ -19,6 +19,17 @@ type Input struct {
 	// A mapping of Event => Callback on what events
 	// this input wants to receive
 	Mapping InputEventMap
+
+	// List of event types that should be polled for. Any events in Mapping that are
+	// not in this list only fire via GLFW callbacks.
+	// Polling will fire the callback defined in Mapping every frame that the associated
+	// key is pressed. Thus, it's important that these callbacks set events or state and
+	// are idempotent, e.g. not affected by frame time.
+	Polling []events.EventType
+}
+
+func (self Input) WantsPolling() bool {
+	return len(self.Polling) > 0
 }
 
 func (self Input) Type() ComponentType {
