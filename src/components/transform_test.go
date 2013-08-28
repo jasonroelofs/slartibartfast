@@ -152,6 +152,26 @@ func Test_MovingRight_HandlesPlusXMoveDir(t *testing.T) {
 	assert.Equal(t, math3d.Vector{0, 0, 0}, transform.MoveDir())
 }
 
+func Test_MovingUp_HandlesPlusYMoveDir(t *testing.T) {
+	transform := NewTransform()
+
+	transform.MovingUp(true)
+	assert.Equal(t, math3d.Vector{0, 1, 0}, transform.MoveDir())
+
+	transform.MovingUp(false)
+	assert.Equal(t, math3d.Vector{0, 0, 0}, transform.MoveDir())
+}
+
+func Test_MovingDown_HandlesMinusYMoveDir(t *testing.T) {
+	transform := NewTransform()
+
+	transform.MovingDown(true)
+	assert.Equal(t, math3d.Vector{0, -1, 0}, transform.MoveDir())
+
+	transform.MovingDown(false)
+	assert.Equal(t, math3d.Vector{0, 0, 0}, transform.MoveDir())
+}
+
 func Test_MoveDir_ReturnsNormalizedMoveDirection(t *testing.T) {
 	transform := NewTransform()
 

@@ -137,6 +137,26 @@ func (self *Transform) MovingRight(isMoving bool) {
 	}
 }
 
+// MovingUp flags this Entity to move up (+Y) according to its Speed
+// Argument is used to turn on/off the movement
+func (self *Transform) MovingUp(isMoving bool) {
+	if isMoving {
+		self.moveDirection.Y = 1
+	} else {
+		self.moveDirection.Y = 0
+	}
+}
+
+// MovingDown flags this Entity to move down (-Y) according to its Speed
+// Argument is used to turn on/off the movement
+func (self *Transform) MovingDown(isMoving bool) {
+	if isMoving {
+		self.moveDirection.Y = -1
+	} else {
+		self.moveDirection.Y = 0
+	}
+}
+
 // MoveDir normalizes and returns the current direction in which this
 // transform is moving.
 // TODO Rename this?
