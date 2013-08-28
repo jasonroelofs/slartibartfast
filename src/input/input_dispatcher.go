@@ -13,25 +13,41 @@ type eventCallbackMap map[events.EventType]eventCallbackList
 type keyCallbackMap map[int]eventCallbackList
 
 type keyEventMap map[int][]events.EventType
+type eventKeyMap map[events.EventType][]int
+type eventTypeSet map[events.EventType]bool
 
 // Testing tool, will remove once I have all key -> event mappings
 // coming in via a file instead of hard-coded.
 var InputDispatcherTesting bool
 
+// InputDispatcher hooks into GLFW and dispatches keyboard, mouse, and joystick events.
+// It works via callbacks mostly but supports polling as well.
+// Keys are mapped to Events, and Events are then used throughout the system.
+// TODO This struct feels very heavy, look into ways of splitting up some of the
+// responsibilities.
 type InputDispatcher struct {
 	callbacks    eventCallbackMap
-	keyMappings  keyEventMap
 	keyCallbacks keyCallbackMap
+
+	// Double mapping of how Key -> Event and Event -> Key
+	// for easy look-up of either direction
+	keyToEventMappings keyEventMap
+	eventToKeyMappings eventKeyMap
 
 	// List of events received. Gets cleared when requested.
 	storedEvents EventList
+
+	// Set of events that need to be polled
+	pollingEvents eventTypeSet
 }
 
 func NewInputDispatcher() *InputDispatcher {
 	mapper := InputDispatcher{
-		callbacks:    make(eventCallbackMap),
-		keyMappings:  make(keyEventMap),
-		keyCallbacks: make(keyCallbackMap),
+		callbacks:          make(eventCallbackMap),
+		keyCallbacks:       make(keyCallbackMap),
+		keyToEventMappings: make(keyEventMap),
+		eventToKeyMappings: make(eventKeyMap),
+		pollingEvents:      make(eventTypeSet),
 	}
 
 	if !InputDispatcherTesting {
@@ -62,7 +78,7 @@ func NewInputDispatcher() *InputDispatcher {
 
 	glfw.SetKeyCallback(mapper.keyCallback)
 
-	glfw.SetMousePosCallback(mapper.mouseCallback)
+	glfw.SetMousePosCallback(mapper.mouseMoveCallback)
 	glfw.SetMouseWheelCallback(mapper.mouseWheelCallback)
 	glfw.SetMouseButtonCallback(mapper.mouseButtonCallback)
 
@@ -87,14 +103,64 @@ func (self *InputDispatcher) OnKey(key int, callback func(events.Event)) {
 // RecentEvents returns the list of events queued up since the last time
 // this method was called. This method returns a copy of the events list
 // then clears out it's internal list for the next frame.
+// :: InputQueue
 func (self *InputDispatcher) RecentEvents() EventList {
 	eventsList := self.storedEvents
+	polledEvents := self.findPolledEvents()
+	eventsList = append(eventsList, polledEvents...)
+
 	self.storedEvents = EventList{}
 	return eventsList
 }
 
+// PollEvents adds the given events to the list of events this dispatcher
+// should be polling for every frame
+// :: InputQueue
+func (self *InputDispatcher) PollEvents(eventsAdding []events.EventType) {
+	for _, eventType := range eventsAdding {
+		self.pollingEvents[eventType] = true
+	}
+}
+
+// UnpollEvents removes the given events to the list of events this dispatcher
+// should be polling for every frame
+// :: InputQueue
+func (self *InputDispatcher) UnpollEvents(eventsRemoving []events.EventType) {
+	for _, toRemove := range eventsRemoving {
+		delete(self.pollingEvents, toRemove)
+	}
+}
+
+func (self *InputDispatcher) findPolledEvents() (polledEvents []events.Event) {
+	var eventType events.EventType
+	var eventKeys []int
+	var eventKey int
+	var ok bool
+
+	for eventType, _ = range self.pollingEvents {
+		eventKeys, ok = self.eventToKeyMappings[eventType]
+		if !ok {
+			continue
+		}
+
+		for _, eventKey = range eventKeys {
+			if glfw.Key(eventKey) == glfw.KeyPress {
+				polledEvents = append(polledEvents, events.Event{
+					EventType: eventType,
+					Pressed:   true,
+				})
+			}
+
+			break
+		}
+	}
+
+	return
+}
+
 func (self *InputDispatcher) mapKeyToEvent(key int, eventType events.EventType) {
-	self.keyMappings[key] = append(self.keyMappings[key], eventType)
+	self.eventToKeyMappings[eventType] = append(self.eventToKeyMappings[eventType], key)
+	self.keyToEventMappings[key] = append(self.keyToEventMappings[key], eventType)
 }
 
 // Hook into GLFW when a key is pressed
@@ -114,7 +180,7 @@ func (self *InputDispatcher) processKeyCallback(key, state int) {
 }
 
 func (self *InputDispatcher) processEventCallbacks(key, state int) {
-	if eventsFromKey, ok := self.keyMappings[key]; ok {
+	if eventsFromKey, ok := self.keyToEventMappings[key]; ok {
 		for _, eventFromKey := range eventsFromKey {
 			event := events.Event{
 				Pressed:   state == 1,
@@ -135,7 +201,7 @@ func (self *InputDispatcher) fireLocalCallback(event events.Event) {
 }
 
 // Hook into GLFW for when the mouse is moved
-func (self *InputDispatcher) mouseCallback(x, y int) {
+func (self *InputDispatcher) mouseMoveCallback(x, y int) {
 	event := events.Event{
 		EventType:  events.MouseMove,
 		MouseXDiff: x,

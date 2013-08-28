@@ -64,7 +64,6 @@ func Test_OnKey_CanMapMultipleCallbacksForASingleKey(t *testing.T) {
 	assert.True(t, callback2Hit, "Did not call the second callback")
 }
 
-
 func Test_DoesNothingIfNoEventForKey(t *testing.T) {
 	mapper := NewInputDispatcher()
 
@@ -145,8 +144,8 @@ func Test_StoresKeyEventsReceived(t *testing.T) {
 func Test_StoresMouseEventsReceived(t *testing.T) {
 	mapper := NewInputDispatcher()
 
-	mapper.mouseCallback(10, 20)
-	mapper.mouseCallback(-5, 13)
+	mapper.mouseMoveCallback(10, 20)
+	mapper.mouseMoveCallback(-5, 13)
 
 	assert.Equal(t, 2, len(mapper.storedEvents))
 	assert.Equal(t, events.MouseMove, mapper.storedEvents[0].EventType)
@@ -178,3 +177,51 @@ func Test_RecentEvents_ReturnsEmptyListOnNoEvents(t *testing.T) {
 
 	assert.Equal(t, 0, len(nextEvents))
 }
+
+// TODO: Merge these tests into how RecentEvents works so it's testing
+// behavior and not implementation.
+func Test_PollEvents_AddsToListOfEventsToPoll(t *testing.T) {
+	mapper := NewInputDispatcher()
+	eventList := []events.EventType{
+		events.Quit,
+		events.MoveForward,
+		events.MoveBackward,
+	}
+	mapper.PollEvents(eventList)
+
+	assert.True(t, mapper.pollingEvents[events.Quit])
+	assert.True(t, mapper.pollingEvents[events.MoveForward])
+	assert.True(t, mapper.pollingEvents[events.MoveBackward])
+}
+
+func Test_UnpollEvents(t *testing.T) {
+	mapper := NewInputDispatcher()
+	eventList := []events.EventType{
+		events.Quit,
+		events.MoveForward,
+		events.MoveBackward,
+	}
+	mapper.PollEvents(eventList)
+
+	mapper.UnpollEvents([]events.EventType{events.Quit})
+
+	assert.False(t, mapper.pollingEvents[events.Quit])
+	assert.True(t, mapper.pollingEvents[events.MoveForward])
+	assert.True(t, mapper.pollingEvents[events.MoveBackward])
+}
+
+// Not sure how to test this without abstracting glfw
+//func Test_RecentEvents_IncludesEventsPollingSaysAreFiring(t *testing.T) {
+//	mapper := NewInputDispatcher()
+//	eventList := []events.EventType{
+//		events.MoveForward,
+//	}
+//	mapper.PollEvents(eventList)
+//
+//	mapper.mapKeyToEvent(KeyQ, events.Quit)
+//	mapper.mapKeyToEvent(KeyD, events.MoveForward)
+//
+//	nextEvents := mapper.RecentEvents()
+//
+//	assert.Equal(t, 2, len(nextEvents))
+//}
