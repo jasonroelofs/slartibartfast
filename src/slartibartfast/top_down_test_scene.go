@@ -63,6 +63,7 @@ func (self *TopDownTestScene) Setup() {
 	cameraTransform.Position = math3d.Vector{25, 10, 25}
 	cameraTransform.CurrentPitch = 90
 	cameraTransform.Speed = math3d.Vector{8, 8, 8}
+	cameraTransform.MoveRelativeToRotation = false
 
 	// Our unit we'll control
 	self.playerCube = core.NewEntityAt(math3d.Vector{25, 6, 25})
@@ -96,9 +97,7 @@ func (self *TopDownTestScene) SwapInput(event events.Event) {
 		self.playerCube.RemoveComponent(components.INPUT)
 		components.GetTransform(self.playerCube).Halt()
 
-		self.game.Camera.AddComponent(&components.Input{
-			Mapping: FixedCameraMapping,
-		})
+		self.game.Camera.AddComponent(FixedCameraInput)
 
 		self.inputPlayer = false
 		self.topDownCamera.PauseTracking()
@@ -108,9 +107,7 @@ func (self *TopDownTestScene) SwapInput(event events.Event) {
 		self.game.Camera.RemoveComponent(components.INPUT)
 		components.GetTransform(self.game.Camera.Entity).Halt()
 
-		self.playerCube.AddComponent(&components.Input{
-			Mapping: FixedYMapping,
-		})
+		self.playerCube.AddComponent(FixedYInput)
 
 		self.inputPlayer = true
 		self.topDownCamera.ResumeTracking()

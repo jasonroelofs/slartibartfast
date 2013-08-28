@@ -3,12 +3,11 @@ package main
 import (
 	"components"
 	"events"
-	"math3d"
 )
 
-// This is similar to FixedCameraMapping but because we're looking down at an Entity
-// and expecting to move the Entity itself we have to change the axes in question.
+// Simple 2d-based movement when looking down at the player from above.
 var FixedYMapping components.InputEventMap
+var FixedYInput *components.Input
 
 func init() {
 	FixedYMapping = components.InputEventMap{
@@ -17,44 +16,27 @@ func init() {
 		events.MoveLeft:     fixedYMoveLeft,
 		events.MoveRight:    fixedYMoveRight,
 	}
+
+	FixedYInput = &components.Input{
+		Mapping: FixedYMapping,
+		Polling: []events.EventType{
+			events.MoveForward, events.MoveBackward, events.MoveLeft, events.MoveRight,
+		},
+	}
 }
 
 func fixedYMoveForward(entity components.ComponentHolder, event events.Event) {
-	transform := components.GetTransform(entity)
-
-	if event.Pressed {
-		transform.Moving(math3d.Vector{0, 0, -1})
-	} else {
-		transform.Moving(math3d.Vector{0, 0, 1})
-	}
+	components.GetTransform(entity).MovingForward(event.Pressed)
 }
 
 func fixedYMoveBackward(entity components.ComponentHolder, event events.Event) {
-	transform := components.GetTransform(entity)
-
-	if event.Pressed {
-		transform.Moving(math3d.Vector{0, 0, 1})
-	} else {
-		transform.Moving(math3d.Vector{0, 0, -1})
-	}
+	components.GetTransform(entity).MovingBackward(event.Pressed)
 }
 
 func fixedYMoveLeft(entity components.ComponentHolder, event events.Event) {
-	transform := components.GetTransform(entity)
-
-	if event.Pressed {
-		transform.Moving(math3d.Vector{-1, 0, 0})
-	} else {
-		transform.Moving(math3d.Vector{1, 0, 0})
-	}
+	components.GetTransform(entity).MovingLeft(event.Pressed)
 }
 
 func fixedYMoveRight(entity components.ComponentHolder, event events.Event) {
-	transform := components.GetTransform(entity)
-
-	if event.Pressed {
-		transform.Moving(math3d.Vector{1, 0, 0})
-	} else {
-		transform.Moving(math3d.Vector{-1, 0, 0})
-	}
+	components.GetTransform(entity).MovingRight(event.Pressed)
 }
