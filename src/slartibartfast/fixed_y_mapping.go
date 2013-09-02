@@ -3,6 +3,8 @@ package main
 import (
 	"components"
 	"events"
+	"log"
+	"math3d"
 )
 
 // Simple 2d-based movement when looking down at the player from above.
@@ -15,6 +17,7 @@ func init() {
 		events.MoveBackward: fixedYMoveBackward,
 		events.MoveLeft:     fixedYMoveLeft,
 		events.MoveRight:    fixedYMoveRight,
+		events.MouseMove:    fixedYMouseMoved,
 	}
 
 	FixedYInput = &components.Input{
@@ -22,6 +25,7 @@ func init() {
 		Polling: []events.EventType{
 			events.MoveForward, events.MoveBackward, events.MoveLeft, events.MoveRight,
 		},
+		//		ShowMouse: true,
 	}
 }
 
@@ -39,4 +43,16 @@ func fixedYMoveLeft(entity components.ComponentHolder, event events.Event) {
 
 func fixedYMoveRight(entity components.ComponentHolder, event events.Event) {
 	components.GetTransform(entity).MovingRight(event.Pressed)
+}
+
+// Make the entity always look towards the direction of the mouse cursor
+// Always rotate around +Y (yaw)
+func fixedYMouseMoved(entity components.ComponentHolder, event events.Event) {
+	transform := components.GetTransform(entity)
+
+	transform.CurrentYaw = math3d.RadToDeg(
+		math3d.Atan2(float32(event.MouseYDiff), float32(event.MouseXDiff)),
+	) * -1 + 90
+
+	log.Print(transform.CurrentYaw)
 }

@@ -34,8 +34,12 @@ func Clamp(value, min, max float32) float32 {
 
 var Pi float32 = float32(math.Pi)
 
-func DegToRad(x float32) float32 {
-	return (Pi * x) / 180.0
+func DegToRad(deg float32) float32 {
+	return (Pi * deg) / 180.0
+}
+
+func RadToDeg(rad float32) float32 {
+	return (rad * 180.0) / Pi
 }
 
 func Sqrt(x float32) float32 {
@@ -52,6 +56,14 @@ func Sin(x float32) float32 {
 
 func Tan(x float32) float32 {
 	return float32(math.Tan(float64(x)))
+}
+
+func Atan(x float32) float32 {
+	return float32(math.Atan(float64(x)))
+}
+
+func Atan2(y float32, x float32) float32 {
+	return float32(math.Atan2(float64(y), float64(x)))
 }
 
 func Abs(x float32) float32 {
