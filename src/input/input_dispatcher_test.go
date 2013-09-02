@@ -6,46 +6,68 @@ import (
 	"testing"
 )
 
-// TODO
-// Rewrite a bunch of this to focus on behavior now that input emission is
-// abstracted into an interface
-
 func init() {
+	// To not confuse tests with the current set of hard-coded key - event mappings
 	InputDispatcherTesting = true
 }
 
 type TestEmitter struct {
 	// Implements input.InputEmitter
+
+	keyCallback      func(int, KeyState)
+	mousePosCallback func(int, int)
+
+	keyStates map[int]KeyState
 }
 
-func (self TestEmitter) KeyCallback(cb func(int, KeyState)) {
+func (self *TestEmitter) KeyCallback(cb func(int, KeyState)) {
+	self.keyCallback = cb
 }
 
-func (self TestEmitter) MouseButtonCallback(cb func(int, KeyState)) {
+func (self *TestEmitter) fireKeyCallback(key int, state KeyState) {
+	self.keyCallback(key, state)
 }
 
-func (self TestEmitter) MousePositionCallback(cb func(int, int)) {
+func (self *TestEmitter) MouseButtonCallback(cb func(int, KeyState)) {
 }
 
-func (self TestEmitter) MouseWheelCallback(cb func(int)) {
+func (self *TestEmitter) MousePositionCallback(cb func(int, int)) {
+	self.mousePosCallback = cb
 }
 
-func (self TestEmitter) IsKeyPressed(key int) bool {
-	return false
+func (self *TestEmitter) moveMouse(x, y int) {
+	self.mousePosCallback(x, y)
 }
 
-func GetInputDispatcher() *InputDispatcher {
-	emitter := new(TestEmitter)
-	return NewInputDispatcher(emitter)
+func (self *TestEmitter) MouseWheelCallback(cb func(int)) {
+}
+
+func (self *TestEmitter) IsKeyPressed(key int) bool {
+	return self.keyStates[key] == KeyPressed
+}
+
+func (self *TestEmitter) setKeyState(key int, state KeyState) {
+	self.keyStates[key] = state
+}
+
+func NewTestEmitter() *TestEmitter {
+	return &TestEmitter{
+		keyStates: make(map[int]KeyState),
+	}
+}
+
+func GetInputDispatcher() (*InputDispatcher, *TestEmitter) {
+	emitter := NewTestEmitter()
+	return NewInputDispatcher(emitter), emitter
 }
 
 func Test_NewInputDispatcher(t *testing.T) {
-	mapper := GetInputDispatcher()
+	mapper, _ := GetInputDispatcher()
 	assert.NotNil(t, mapper, "Mapper failed to initialize")
 }
 
-func Test_On_RegistersACallbackForAnEvent(t *testing.T) {
-	mapper := GetInputDispatcher()
+func Test_On_RegistersACallbackForEventFiring(t *testing.T) {
+	mapper, emitter := GetInputDispatcher()
 	quitCalled := false
 	mapper.mapKeyToEvent(KeyQ, events.Quit)
 
@@ -53,13 +75,13 @@ func Test_On_RegistersACallbackForAnEvent(t *testing.T) {
 		quitCalled = true
 	})
 
-	mapper.keyCallback(KeyQ, 1)
+	emitter.fireKeyCallback(KeyQ, KeyPressed)
 
 	assert.True(t, quitCalled, "Quit callback was not called")
 }
 
 func Test_OnKey_RegistersCallbackForRawKeyEvent(t *testing.T) {
-	mapper := GetInputDispatcher()
+	mapper, emitter := GetInputDispatcher()
 	pKeyHit := false
 	var pKeyEvent events.Event
 
@@ -68,14 +90,14 @@ func Test_OnKey_RegistersCallbackForRawKeyEvent(t *testing.T) {
 		pKeyEvent = event
 	})
 
-	mapper.keyCallback(KeyP, 1)
+	emitter.fireKeyCallback(KeyP, KeyPressed)
 
 	assert.True(t, pKeyHit, "P key callback was not called")
 	assert.True(t, pKeyEvent.Pressed)
 }
 
 func Test_OnKey_CanMapMultipleCallbacksForASingleKey(t *testing.T) {
-	mapper := GetInputDispatcher()
+	mapper, emitter := GetInputDispatcher()
 	callback1Hit := false
 	callback2Hit := false
 
@@ -87,22 +109,19 @@ func Test_OnKey_CanMapMultipleCallbacksForASingleKey(t *testing.T) {
 		callback2Hit = true
 	})
 
-	mapper.keyCallback(KeyP, 1)
+	emitter.fireKeyCallback(KeyP, KeyPressed)
 
 	assert.True(t, callback1Hit, "Did not call the first callback")
 	assert.True(t, callback2Hit, "Did not call the second callback")
 }
 
-func Test_DoesNothingIfNoEventForKey(t *testing.T) {
-	mapper := GetInputDispatcher()
-
-	assert.NotPanics(t, func() {
-		mapper.keyCallback(KeyQ, 1)
-	}, "Mapper panic'd on unmapped key")
+func Test_IgnoresUnmappedKeyEvents(t *testing.T) {
+	_, emitter := GetInputDispatcher()
+	emitter.fireKeyCallback(KeyQ, KeyPressed)
 }
 
-func Test_DoesNothingIfNoKeyMappedToEvent(t *testing.T) {
-	mapper := GetInputDispatcher()
+func Test_DoesNothingIfNoKeyMappedToMappedEventCallback(t *testing.T) {
+	mapper, emitter := GetInputDispatcher()
 	jumpEvent := events.EventType(100)
 	jumpCalled := false
 
@@ -110,13 +129,13 @@ func Test_DoesNothingIfNoKeyMappedToEvent(t *testing.T) {
 		jumpCalled = true
 	})
 
-	mapper.keyCallback(KeyN, 1)
+	emitter.fireKeyCallback(KeyN, KeyPressed)
 
 	assert.False(t, jumpCalled, "Jump event called when it should not have")
 }
 
 func Test_On_CanMapMultipleKeysToOneEvent(t *testing.T) {
-	mapper := GetInputDispatcher()
+	mapper, emitter := GetInputDispatcher()
 	mapper.mapKeyToEvent(KeyQ, events.Quit)
 	mapper.mapKeyToEvent(KeyEsc, events.Quit)
 
@@ -126,14 +145,14 @@ func Test_On_CanMapMultipleKeysToOneEvent(t *testing.T) {
 		quitCallCount += 1
 	})
 
-	mapper.keyCallback(KeyQ, 1)
-	mapper.keyCallback(KeyEsc, 1)
+	emitter.fireKeyCallback(KeyQ, KeyPressed)
+	emitter.fireKeyCallback(KeyEsc, KeyPressed)
 
 	assert.Equal(t, 2, quitCallCount)
 }
 
 func Test_On_CanMapMultipleEventsToOneKey(t *testing.T) {
-	mapper := GetInputDispatcher()
+	mapper, emitter := GetInputDispatcher()
 	mapper.mapKeyToEvent(KeyJ, events.MoveForward)
 	mapper.mapKeyToEvent(KeyJ, events.MoveBackward)
 
@@ -148,110 +167,108 @@ func Test_On_CanMapMultipleEventsToOneKey(t *testing.T) {
 		backwardCallCount += 1
 	})
 
-	mapper.keyCallback(KeyJ, 1)
+	emitter.fireKeyCallback(KeyJ, KeyPressed)
 
 	assert.Equal(t, 1, forwardCallCount)
 	assert.Equal(t, 1, backwardCallCount)
 }
 
-func Test_StoresKeyEventsReceived(t *testing.T) {
-	mapper := GetInputDispatcher()
+func Test_RecentEvents_ReturnsLastSetOfReceivedKeyEvents(t *testing.T) {
+	mapper, emitter := GetInputDispatcher()
 	mapper.mapKeyToEvent(KeyQ, events.Quit)
 	mapper.mapKeyToEvent(KeyD, events.MoveForward)
 
-	mapper.keyCallback(KeyQ, 1)
-	mapper.keyCallback(KeyD, 0)
+	emitter.fireKeyCallback(KeyQ, KeyPressed)
+	emitter.fireKeyCallback(KeyD, KeyReleased)
 
-	assert.Equal(t, 2, len(mapper.storedEvents))
-	assert.Equal(t, events.Quit, mapper.storedEvents[0].EventType)
-	assert.True(t, mapper.storedEvents[0].Pressed)
+	recentEvents := mapper.RecentEvents()
 
-	assert.Equal(t, events.MoveForward, mapper.storedEvents[1].EventType)
-	assert.False(t, mapper.storedEvents[1].Pressed)
+	assert.Equal(t, 2, len(recentEvents))
+	assert.Equal(t, events.Quit, recentEvents[0].EventType)
+	assert.True(t, recentEvents[0].Pressed)
+
+	assert.Equal(t, events.MoveForward, recentEvents[1].EventType)
+	assert.False(t, recentEvents[1].Pressed)
 }
 
-func Test_StoresMouseEventsReceived(t *testing.T) {
-	mapper := GetInputDispatcher()
+func Test_RecentEvents_ReturnsLastSetOfReceivedMouseEvents(t *testing.T) {
+	mapper, emitter := GetInputDispatcher()
 
 	// Mouse coords are transformed from 0,0 top left to 0,0 center
-	mapper.mouseMoveCallback(10, 20)
-	mapper.mouseMoveCallback(-5, 13)
+	emitter.moveMouse(10, 20)
+	emitter.moveMouse(-5, 13)
 
-	assert.Equal(t, 2, len(mapper.storedEvents))
-	assert.Equal(t, events.MouseMove, mapper.storedEvents[0].EventType)
-	assert.Equal(t, 10, mapper.storedEvents[0].MouseXDiff)
-	assert.Equal(t, 20, mapper.storedEvents[0].MouseYDiff)
+	recentEvents := mapper.RecentEvents()
 
-	assert.Equal(t, events.MouseMove, mapper.storedEvents[1].EventType)
-	assert.Equal(t, -5, mapper.storedEvents[1].MouseXDiff)
-	assert.Equal(t, 13, mapper.storedEvents[1].MouseYDiff)
+	assert.Equal(t, 2, len(recentEvents))
+	assert.Equal(t, events.MouseMove, recentEvents[0].EventType)
+	assert.Equal(t, 10, recentEvents[0].MouseXDiff)
+	assert.Equal(t, 20, recentEvents[0].MouseYDiff)
+
+	assert.Equal(t, events.MouseMove, recentEvents[1].EventType)
+	assert.Equal(t, -5, recentEvents[1].MouseXDiff)
+	assert.Equal(t, 13, recentEvents[1].MouseYDiff)
 }
 
-func Test_RecentEvents_ReturnsStoredEventsAndClearsList(t *testing.T) {
-	mapper := GetInputDispatcher()
+func Test_RecentEvents_ClearsListForNextCall(t *testing.T) {
+	mapper, emitter := GetInputDispatcher()
 	mapper.mapKeyToEvent(KeyQ, events.Quit)
 	mapper.mapKeyToEvent(KeyD, events.MoveForward)
 
-	mapper.keyCallback(KeyQ, 1)
-	mapper.keyCallback(KeyD, 0)
+	emitter.fireKeyCallback(KeyQ, KeyPressed)
+	emitter.fireKeyCallback(KeyD, KeyReleased)
 
-	nextEvents := mapper.RecentEvents()
+	nextEvents1 := mapper.RecentEvents()
+	nextEvents2 := mapper.RecentEvents()
 
-	assert.Equal(t, 2, len(nextEvents))
-	assert.Equal(t, 0, len(mapper.storedEvents))
+	assert.Equal(t, 2, len(nextEvents1))
+	assert.Equal(t, 0, len(nextEvents2))
 }
 
-func Test_RecentEvents_ReturnsEmptyListOnNoEvents(t *testing.T) {
-	mapper := GetInputDispatcher()
-	nextEvents := mapper.RecentEvents()
-
-	assert.Equal(t, 0, len(nextEvents))
+func Test_PollEvents_IncludesEventsInRecentEventsIfKeyPressed(t *testing.T) {
 }
 
 // TODO: Merge these tests into how RecentEvents works so it's testing
 // behavior and not implementation.
 func Test_PollEvents_AddsToListOfEventsToPoll(t *testing.T) {
-	mapper := GetInputDispatcher()
+	mapper, emitter := GetInputDispatcher()
+	mapper.mapKeyToEvent(KeyQ, events.Quit)
+	mapper.mapKeyToEvent(KeyD, events.MoveForward)
+
 	eventList := []events.EventType{
 		events.Quit,
 		events.MoveForward,
-		events.MoveBackward,
 	}
 	mapper.PollEvents(eventList)
 
-	assert.True(t, mapper.pollingEvents[events.Quit])
-	assert.True(t, mapper.pollingEvents[events.MoveForward])
-	assert.True(t, mapper.pollingEvents[events.MoveBackward])
+	emitter.setKeyState(KeyQ, KeyPressed)
+	emitter.setKeyState(KeyD, KeyPressed)
+
+	nextEvents := mapper.RecentEvents()
+
+	assert.Equal(t, 2, len(nextEvents))
+	assert.Equal(t, events.Quit, nextEvents[0].EventType)
+	assert.Equal(t, events.MoveForward, nextEvents[1].EventType)
 }
 
-func Test_UnpollEvents(t *testing.T) {
-	mapper := GetInputDispatcher()
+func Test_UnpollEvents_RemovesKnownPollEventsFromPolling(t *testing.T) {
+	mapper, emitter := GetInputDispatcher()
+	mapper.mapKeyToEvent(KeyQ, events.Quit)
+	mapper.mapKeyToEvent(KeyD, events.MoveForward)
+
 	eventList := []events.EventType{
 		events.Quit,
 		events.MoveForward,
 		events.MoveBackward,
 	}
 	mapper.PollEvents(eventList)
-
 	mapper.UnpollEvents([]events.EventType{events.Quit})
 
-	assert.False(t, mapper.pollingEvents[events.Quit])
-	assert.True(t, mapper.pollingEvents[events.MoveForward])
-	assert.True(t, mapper.pollingEvents[events.MoveBackward])
-}
+	emitter.setKeyState(KeyQ, KeyPressed)
+	emitter.setKeyState(KeyD, KeyPressed)
 
-// Not sure how to test this without abstracting glfw
-//func Test_RecentEvents_IncludesEventsPollingSaysAreFiring(t *testing.T) {
-//	mapper := GetInputDispatcher()
-//	eventList := []events.EventType{
-//		events.MoveForward,
-//	}
-//	mapper.PollEvents(eventList)
-//
-//	mapper.mapKeyToEvent(KeyQ, events.Quit)
-//	mapper.mapKeyToEvent(KeyD, events.MoveForward)
-//
-//	nextEvents := mapper.RecentEvents()
-//
-//	assert.Equal(t, 2, len(nextEvents))
-//}
+	nextEvents := mapper.RecentEvents()
+
+	assert.Equal(t, 1, len(nextEvents))
+	assert.Equal(t, events.MoveForward, nextEvents[0].EventType)
+}

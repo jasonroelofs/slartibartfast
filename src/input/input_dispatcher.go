@@ -22,6 +22,10 @@ var InputDispatcherTesting bool
 // InputDispatcher hooks into an InputEmitter and dispatches keyboard, mouse, and joystick events.
 // It works via callbacks mostly but supports polling as well.
 // Keys are mapped to Events, and Events are then used throughout the system.
+//
+// Mouse movement callback receives X and Y, which are pixel distances from the center of the screen.
+// Positive right and up, Negative left and down.
+//
 // TODO This struct feels very heavy, look into ways of splitting up some of the
 // responsibilities.
 type InputDispatcher struct {
@@ -200,8 +204,6 @@ func (self *InputDispatcher) fireLocalCallback(event events.Event) {
 	}
 }
 
-// X and Y are pixel distances from the center of the screen.
-// Positive right and up, Negative left and down.
 func (self *InputDispatcher) mouseMoveCallback(x, y int) {
 	event := events.Event{
 		EventType:  events.MouseMove,
