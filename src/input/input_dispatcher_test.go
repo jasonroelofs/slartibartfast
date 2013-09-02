@@ -6,17 +6,46 @@ import (
 	"testing"
 )
 
+// TODO
+// Rewrite a bunch of this to focus on behavior now that input emission is
+// abstracted into an interface
+
 func init() {
 	InputDispatcherTesting = true
 }
 
+type TestEmitter struct {
+	// Implements input.InputEmitter
+}
+
+func (self TestEmitter) KeyCallback(cb func(int, KeyState)) {
+}
+
+func (self TestEmitter) MouseButtonCallback(cb func(int, KeyState)) {
+}
+
+func (self TestEmitter) MousePositionCallback(cb func(int, int)) {
+}
+
+func (self TestEmitter) MouseWheelCallback(cb func(int)) {
+}
+
+func (self TestEmitter) IsKeyPressed(key int) bool {
+	return false
+}
+
+func GetInputDispatcher() *InputDispatcher {
+	emitter := new(TestEmitter)
+	return NewInputDispatcher(emitter)
+}
+
 func Test_NewInputDispatcher(t *testing.T) {
-	mapper := NewInputDispatcher()
+	mapper := GetInputDispatcher()
 	assert.NotNil(t, mapper, "Mapper failed to initialize")
 }
 
 func Test_On_RegistersACallbackForAnEvent(t *testing.T) {
-	mapper := NewInputDispatcher()
+	mapper := GetInputDispatcher()
 	quitCalled := false
 	mapper.mapKeyToEvent(KeyQ, events.Quit)
 
@@ -30,7 +59,7 @@ func Test_On_RegistersACallbackForAnEvent(t *testing.T) {
 }
 
 func Test_OnKey_RegistersCallbackForRawKeyEvent(t *testing.T) {
-	mapper := NewInputDispatcher()
+	mapper := GetInputDispatcher()
 	pKeyHit := false
 	var pKeyEvent events.Event
 
@@ -46,7 +75,7 @@ func Test_OnKey_RegistersCallbackForRawKeyEvent(t *testing.T) {
 }
 
 func Test_OnKey_CanMapMultipleCallbacksForASingleKey(t *testing.T) {
-	mapper := NewInputDispatcher()
+	mapper := GetInputDispatcher()
 	callback1Hit := false
 	callback2Hit := false
 
@@ -65,7 +94,7 @@ func Test_OnKey_CanMapMultipleCallbacksForASingleKey(t *testing.T) {
 }
 
 func Test_DoesNothingIfNoEventForKey(t *testing.T) {
-	mapper := NewInputDispatcher()
+	mapper := GetInputDispatcher()
 
 	assert.NotPanics(t, func() {
 		mapper.keyCallback(KeyQ, 1)
@@ -73,7 +102,7 @@ func Test_DoesNothingIfNoEventForKey(t *testing.T) {
 }
 
 func Test_DoesNothingIfNoKeyMappedToEvent(t *testing.T) {
-	mapper := NewInputDispatcher()
+	mapper := GetInputDispatcher()
 	jumpEvent := events.EventType(100)
 	jumpCalled := false
 
@@ -87,7 +116,7 @@ func Test_DoesNothingIfNoKeyMappedToEvent(t *testing.T) {
 }
 
 func Test_On_CanMapMultipleKeysToOneEvent(t *testing.T) {
-	mapper := NewInputDispatcher()
+	mapper := GetInputDispatcher()
 	mapper.mapKeyToEvent(KeyQ, events.Quit)
 	mapper.mapKeyToEvent(KeyEsc, events.Quit)
 
@@ -104,7 +133,7 @@ func Test_On_CanMapMultipleKeysToOneEvent(t *testing.T) {
 }
 
 func Test_On_CanMapMultipleEventsToOneKey(t *testing.T) {
-	mapper := NewInputDispatcher()
+	mapper := GetInputDispatcher()
 	mapper.mapKeyToEvent(KeyJ, events.MoveForward)
 	mapper.mapKeyToEvent(KeyJ, events.MoveBackward)
 
@@ -126,7 +155,7 @@ func Test_On_CanMapMultipleEventsToOneKey(t *testing.T) {
 }
 
 func Test_StoresKeyEventsReceived(t *testing.T) {
-	mapper := NewInputDispatcher()
+	mapper := GetInputDispatcher()
 	mapper.mapKeyToEvent(KeyQ, events.Quit)
 	mapper.mapKeyToEvent(KeyD, events.MoveForward)
 
@@ -142,8 +171,9 @@ func Test_StoresKeyEventsReceived(t *testing.T) {
 }
 
 func Test_StoresMouseEventsReceived(t *testing.T) {
-	mapper := NewInputDispatcher()
+	mapper := GetInputDispatcher()
 
+	// Mouse coords are transformed from 0,0 top left to 0,0 center
 	mapper.mouseMoveCallback(10, 20)
 	mapper.mouseMoveCallback(-5, 13)
 
@@ -158,7 +188,7 @@ func Test_StoresMouseEventsReceived(t *testing.T) {
 }
 
 func Test_RecentEvents_ReturnsStoredEventsAndClearsList(t *testing.T) {
-	mapper := NewInputDispatcher()
+	mapper := GetInputDispatcher()
 	mapper.mapKeyToEvent(KeyQ, events.Quit)
 	mapper.mapKeyToEvent(KeyD, events.MoveForward)
 
@@ -172,7 +202,7 @@ func Test_RecentEvents_ReturnsStoredEventsAndClearsList(t *testing.T) {
 }
 
 func Test_RecentEvents_ReturnsEmptyListOnNoEvents(t *testing.T) {
-	mapper := NewInputDispatcher()
+	mapper := GetInputDispatcher()
 	nextEvents := mapper.RecentEvents()
 
 	assert.Equal(t, 0, len(nextEvents))
@@ -181,7 +211,7 @@ func Test_RecentEvents_ReturnsEmptyListOnNoEvents(t *testing.T) {
 // TODO: Merge these tests into how RecentEvents works so it's testing
 // behavior and not implementation.
 func Test_PollEvents_AddsToListOfEventsToPoll(t *testing.T) {
-	mapper := NewInputDispatcher()
+	mapper := GetInputDispatcher()
 	eventList := []events.EventType{
 		events.Quit,
 		events.MoveForward,
@@ -195,7 +225,7 @@ func Test_PollEvents_AddsToListOfEventsToPoll(t *testing.T) {
 }
 
 func Test_UnpollEvents(t *testing.T) {
-	mapper := NewInputDispatcher()
+	mapper := GetInputDispatcher()
 	eventList := []events.EventType{
 		events.Quit,
 		events.MoveForward,
@@ -212,7 +242,7 @@ func Test_UnpollEvents(t *testing.T) {
 
 // Not sure how to test this without abstracting glfw
 //func Test_RecentEvents_IncludesEventsPollingSaysAreFiring(t *testing.T) {
-//	mapper := NewInputDispatcher()
+//	mapper := GetInputDispatcher()
 //	eventList := []events.EventType{
 //		events.MoveForward,
 //	}

@@ -2,7 +2,6 @@ package input
 
 import (
 	"events"
-	"github.com/go-gl/glfw"
 	"log"
 )
 
@@ -20,12 +19,16 @@ type eventTypeSet map[events.EventType]bool
 // coming in via a file instead of hard-coded.
 var InputDispatcherTesting bool
 
-// InputDispatcher hooks into GLFW and dispatches keyboard, mouse, and joystick events.
+// InputDispatcher hooks into an InputEmitter and dispatches keyboard, mouse, and joystick events.
 // It works via callbacks mostly but supports polling as well.
 // Keys are mapped to Events, and Events are then used throughout the system.
 // TODO This struct feels very heavy, look into ways of splitting up some of the
 // responsibilities.
 type InputDispatcher struct {
+	emitter InputEmitter
+
+	// User-specified callbacks according to an Event
+	// or a specific raw Key event
 	callbacks    eventCallbackMap
 	keyCallbacks keyCallbackMap
 
@@ -41,8 +44,9 @@ type InputDispatcher struct {
 	pollingEvents eventTypeSet
 }
 
-func NewInputDispatcher() *InputDispatcher {
+func NewInputDispatcher(emitter InputEmitter) *InputDispatcher {
 	mapper := InputDispatcher{
+		emitter:            emitter,
 		callbacks:          make(eventCallbackMap),
 		keyCallbacks:       make(keyCallbackMap),
 		keyToEventMappings: make(keyEventMap),
@@ -73,14 +77,11 @@ func NewInputDispatcher() *InputDispatcher {
 		mapper.mapKeyToEvent(KeyO, events.ZoomOut)
 	}
 
-	glfw.Disable(glfw.MouseCursor)
-	mapper.resetMouse()
+	emitter.KeyCallback(mapper.keyCallback)
 
-	glfw.SetKeyCallback(mapper.keyCallback)
-
-	glfw.SetMousePosCallback(mapper.mouseMoveCallback)
-	glfw.SetMouseWheelCallback(mapper.mouseWheelCallback)
-	glfw.SetMouseButtonCallback(mapper.mouseButtonCallback)
+	emitter.MousePositionCallback(mapper.mouseMoveCallback)
+	emitter.MouseWheelCallback(mapper.mouseWheelCallback)
+	emitter.MouseButtonCallback(mapper.mouseButtonCallback)
 
 	return &mapper
 }
@@ -144,7 +145,7 @@ func (self *InputDispatcher) findPolledEvents() (polledEvents []events.Event) {
 		}
 
 		for _, eventKey = range eventKeys {
-			if glfw.Key(eventKey) == glfw.KeyPress {
+			if self.emitter.IsKeyPressed(eventKey) {
 				polledEvents = append(polledEvents, events.Event{
 					EventType: eventType,
 					Pressed:   true,
@@ -163,15 +164,14 @@ func (self *InputDispatcher) mapKeyToEvent(key int, eventType events.EventType) 
 	self.keyToEventMappings[key] = append(self.keyToEventMappings[key], eventType)
 }
 
-// Hook into GLFW when a key is pressed
-func (self *InputDispatcher) keyCallback(key, state int) {
+func (self *InputDispatcher) keyCallback(key int, state KeyState) {
 	log.Println("Key pressed! ", key, state, string(key))
 
 	self.processKeyCallback(key, state)
 	self.processEventCallbacks(key, state)
 }
 
-func (self *InputDispatcher) processKeyCallback(key, state int) {
+func (self *InputDispatcher) processKeyCallback(key int, state KeyState) {
 	if callbacksFromKey, ok := self.keyCallbacks[key]; ok {
 		for _, callback := range callbacksFromKey {
 			callback(events.Event{Pressed: state == 1})
@@ -179,7 +179,7 @@ func (self *InputDispatcher) processKeyCallback(key, state int) {
 	}
 }
 
-func (self *InputDispatcher) processEventCallbacks(key, state int) {
+func (self *InputDispatcher) processEventCallbacks(key int, state KeyState) {
 	if eventsFromKey, ok := self.keyToEventMappings[key]; ok {
 		for _, eventFromKey := range eventsFromKey {
 			event := events.Event{
@@ -200,7 +200,8 @@ func (self *InputDispatcher) fireLocalCallback(event events.Event) {
 	}
 }
 
-// Hook into GLFW for when the mouse is moved
+// X and Y are pixel distances from the center of the screen.
+// Positive right and up, Negative left and down.
 func (self *InputDispatcher) mouseMoveCallback(x, y int) {
 	event := events.Event{
 		EventType:  events.MouseMove,
@@ -211,19 +212,12 @@ func (self *InputDispatcher) mouseMoveCallback(x, y int) {
 	log.Println("Mouse Moved", event)
 
 	self.storedEvents = append(self.storedEvents, event)
-	self.resetMouse()
 }
 
-func (self *InputDispatcher) resetMouse() {
-	glfw.SetMousePos(0, 0)
-}
-
-// Hook into GLFW for when a mouse button event is triggered
-func (self *InputDispatcher) mouseButtonCallback(button, state int) {
+func (self *InputDispatcher) mouseButtonCallback(button int, state KeyState) {
 	log.Println("Mouse Button pressed", button, state)
 }
 
-// Hook into GLFW for when the mouse wheel moves
 func (self *InputDispatcher) mouseWheelCallback(position int) {
 	log.Println("Mouse wheel", position)
 }
