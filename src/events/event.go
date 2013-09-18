@@ -11,50 +11,36 @@ type Event struct {
 	MouseYDiff int
 }
 
-const (
-	NilEvent EventType = iota
-	Quit
-	MoveForward
-	MoveBackward
-	MoveLeft
-	MoveRight
-	TurnLeft
-	TurnRight
-	MouseMove
+var (
+	NilEvent     = defineEvent(0, "")
+	Quit         = defineEvent(1, "Quit")
+	MoveForward  = defineEvent(2, "MoveForward")
+	MoveBackward = defineEvent(3, "MoveBackward")
+	MoveLeft     = defineEvent(4, "MoveLeft")
+	MoveRight    = defineEvent(5, "MoveRight")
+	TurnLeft     = defineEvent(6, "TurnLeft")
+	TurnRight    = defineEvent(7, "TurnRight")
+	MouseMove    = defineEvent(8, "MouseMove")
 
-	PanUp
-	PanDown
-	PanLeft
-	PanRight
+	PanUp    = defineEvent(9, "PanUp")
+	PanDown  = defineEvent(10, "PanDown")
+	PanLeft  = defineEvent(11, "PanLeft")
+	PanRight = defineEvent(12, "PanRight")
 
-	ZoomIn
-	ZoomOut
+	ZoomIn  = defineEvent(13, "ZoomIn")
+	ZoomOut = defineEvent(14, "ZoomOut")
+
+	// This map will keep track of the reverse Name -> EventType for
+	// easy lookup when building mappings from the settings file
+	eventsByName = make(map[string]EventType)
 )
-
-type eventNameMap map[string]EventType
-
-var eventsByName eventNameMap
 
 // EventFromName takes a string and returns the EventType of the same name
 func EventFromName(name string) EventType {
 	return eventsByName[name]
 }
 
-func init() {
-	eventsByName = eventNameMap{
-		"Quit":         Quit,
-		"MoveForward":  MoveForward,
-		"MoveBackward": MoveBackward,
-		"MoveLeft":     MoveLeft,
-		"MoveRight":    MoveRight,
-		"TurnLeft":     TurnLeft,
-		"TurnRight":    TurnRight,
-		"MouseMove":    MouseMove,
-		"PanUp":        PanUp,
-		"PanDown":      PanDown,
-		"PanLeft":      PanLeft,
-		"PanRight":     PanRight,
-		"ZoomIn":       ZoomIn,
-		"ZoomOut":      ZoomOut,
-	}
+func defineEvent(code int, name string) EventType {
+	eventsByName[name] = EventType(code)
+	return EventType(code)
 }
