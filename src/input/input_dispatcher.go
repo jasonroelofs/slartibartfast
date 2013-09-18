@@ -223,7 +223,7 @@ func (self *InputDispatcher) mouseMoveCallback(x, y int) {
 	self.storedEvents = append(self.storedEvents, event)
 }
 
-func (self *InputDispatcher) mouseButtonCallback(button int, state KeyState) {
+func (self *InputDispatcher) mouseButtonCallback(button KeyCode, state KeyState) {
 	log.Println("Mouse Button pressed", button, state)
 }
 

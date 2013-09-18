@@ -28,7 +28,7 @@ func (self *TestEmitter) fireKeyCallback(key KeyCode, state KeyState) {
 	self.keyCallback(key, state)
 }
 
-func (self *TestEmitter) MouseButtonCallback(cb func(int, KeyState)) {
+func (self *TestEmitter) MouseButtonCallback(cb func(KeyCode, KeyState)) {
 }
 
 func (self *TestEmitter) MousePositionCallback(cb func(int, int)) {

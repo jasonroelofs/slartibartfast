@@ -16,9 +16,9 @@ func (self *GLFWInputEmitter) KeyCallback(callback func(input.KeyCode, input.Key
 	})
 }
 
-func (self *GLFWInputEmitter) MouseButtonCallback(callback func(int, input.KeyState)) {
+func (self *GLFWInputEmitter) MouseButtonCallback(callback func(input.KeyCode, input.KeyState)) {
 	glfw.SetMouseButtonCallback(func(key, state int) {
-		callback(key, input.KeyState(state))
+		callback(input.KeyCode(key), input.KeyState(state))
 	})
 }
 
