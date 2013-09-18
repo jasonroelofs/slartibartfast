@@ -21,7 +21,9 @@ type Config struct {
 
 // NewConfig returns a new Config object loaded with the contents
 // of the requested file.
-func NewConfig(filename string) (newConfig Config, err error) {
+func NewConfig(filename string) (newConfig *Config, err error) {
+	newConfig = new(Config)
+
 	fileContents, err := ioutil.ReadFile(filename)
 	if err == nil {
 		newConfig.jsonContents = string(fileContents)

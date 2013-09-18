@@ -13,7 +13,7 @@ func main() {
 		log.Panicf("Unable to read settings.json: %v", err)
 	}
 
-	game := NewGame(&config)
+	game := NewGame(config)
 	game.Run()
 	defer game.Shutdown()
 }
