@@ -73,6 +73,7 @@ func (self *TopDownTestScene) Setup() {
 	playerTransform := components.GetTransform(self.playerCube)
 	playerTransform.Scale = math3d.Vector{0.25, 0.5, 0.25}
 	playerTransform.Speed = math3d.Vector{3, 3, 3}
+	playerTransform.MoveRelativeToRotation = false
 
 	self.topDownCamera = NewTopDownCamera(self.game.Camera)
 	self.topDownCamera.SetTrackingHeight(5)
