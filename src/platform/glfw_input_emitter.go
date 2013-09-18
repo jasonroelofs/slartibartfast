@@ -10,9 +10,9 @@ type GLFWInputEmitter struct {
 	// Implements input.InputEmitter
 }
 
-func (self *GLFWInputEmitter) KeyCallback(callback func(int, input.KeyState)) {
+func (self *GLFWInputEmitter) KeyCallback(callback func(input.KeyCode, input.KeyState)) {
 	glfw.SetKeyCallback(func(key, state int) {
-		callback(key, input.KeyState(state))
+		callback(input.KeyCode(key), input.KeyState(state))
 	})
 }
 
@@ -37,6 +37,6 @@ func (self *GLFWInputEmitter) MouseWheelCallback(callback func(int)) {
 	glfw.SetMouseWheelCallback(callback)
 }
 
-func (self *GLFWInputEmitter) IsKeyPressed(key int) bool {
-	return glfw.Key(key) == glfw.KeyPress
+func (self *GLFWInputEmitter) IsKeyPressed(key input.KeyCode) bool {
+	return glfw.Key(int(key)) == glfw.KeyPress
 }

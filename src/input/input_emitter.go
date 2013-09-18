@@ -7,7 +7,7 @@ type InputEmitter interface {
 	// The callback is passed two parameters: key and state
 	// key is the Key pressed (see keys.go)
 	// state is one of the KeyState constants
-	KeyCallback(func(int, KeyState))
+	KeyCallback(func(KeyCode, KeyState))
 
 	// MouseButtonCallback works like KeyCallback but for Mouse buttons
 	MouseButtonCallback(func(int, KeyState))
@@ -21,5 +21,5 @@ type InputEmitter interface {
 	MouseWheelCallback(func(int))
 
 	// IsKeyPressed returns true or false depending on if the given Key is currently depressed
-	IsKeyPressed(int) bool
+	IsKeyPressed(KeyCode) bool
 }

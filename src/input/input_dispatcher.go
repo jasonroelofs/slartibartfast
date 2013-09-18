@@ -9,10 +9,10 @@ type eventCallback func(events.Event)
 type eventCallbackList []eventCallback
 
 type eventCallbackMap map[events.EventType]eventCallbackList
-type keyCallbackMap map[int]eventCallbackList
+type keyCallbackMap map[KeyCode]eventCallbackList
 
-type keyEventMap map[int][]events.EventType
-type eventKeyMap map[events.EventType][]int
+type keyEventMap map[KeyCode][]events.EventType
+type eventKeyMap map[events.EventType][]KeyCode
 type eventTypeSet map[events.EventType]bool
 
 // Testing tool, will remove once I have all key -> event mappings
@@ -108,7 +108,7 @@ func (self *InputDispatcher) On(event events.EventType, callback func(events.Eve
 // OnKey registers a callback for when a raw key event happens.
 // Use this when you don't want to deal with the events mapping system and just want
 // to watch for a key press. Should not be used with anything players will use.
-func (self *InputDispatcher) OnKey(key int, callback func(events.Event)) {
+func (self *InputDispatcher) OnKey(key KeyCode, callback func(events.Event)) {
 	self.keyCallbacks[key] = append(self.keyCallbacks[key], callback)
 }
 
@@ -145,8 +145,8 @@ func (self *InputDispatcher) UnpollEvents(eventsRemoving []events.EventType) {
 
 func (self *InputDispatcher) findPolledEvents() (polledEvents []events.Event) {
 	var eventType events.EventType
-	var eventKeys []int
-	var eventKey int
+	var eventKeys []KeyCode
+	var eventKey KeyCode
 	var ok bool
 
 	for eventType, _ = range self.pollingEvents {
@@ -170,19 +170,19 @@ func (self *InputDispatcher) findPolledEvents() (polledEvents []events.Event) {
 	return
 }
 
-func (self *InputDispatcher) mapKeyToEvent(key int, eventType events.EventType) {
+func (self *InputDispatcher) mapKeyToEvent(key KeyCode, eventType events.EventType) {
 	self.eventToKeyMappings[eventType] = append(self.eventToKeyMappings[eventType], key)
 	self.keyToEventMappings[key] = append(self.keyToEventMappings[key], eventType)
 }
 
-func (self *InputDispatcher) keyCallback(key int, state KeyState) {
+func (self *InputDispatcher) keyCallback(key KeyCode, state KeyState) {
 	log.Println("Key pressed! ", key, state, string(key))
 
 	self.processKeyCallback(key, state)
 	self.processEventCallbacks(key, state)
 }
 
-func (self *InputDispatcher) processKeyCallback(key int, state KeyState) {
+func (self *InputDispatcher) processKeyCallback(key KeyCode, state KeyState) {
 	if callbacksFromKey, ok := self.keyCallbacks[key]; ok {
 		for _, callback := range callbacksFromKey {
 			callback(events.Event{Pressed: state == 1})
@@ -190,7 +190,7 @@ func (self *InputDispatcher) processKeyCallback(key int, state KeyState) {
 	}
 }
 
-func (self *InputDispatcher) processEventCallbacks(key int, state KeyState) {
+func (self *InputDispatcher) processEventCallbacks(key KeyCode, state KeyState) {
 	if eventsFromKey, ok := self.keyToEventMappings[key]; ok {
 		for _, eventFromKey := range eventsFromKey {
 			event := events.Event{

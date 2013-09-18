@@ -14,17 +14,17 @@ func init() {
 type TestEmitter struct {
 	// Implements input.InputEmitter
 
-	keyCallback      func(int, KeyState)
+	keyCallback      func(KeyCode, KeyState)
 	mousePosCallback func(int, int)
 
-	keyStates map[int]KeyState
+	keyStates map[KeyCode]KeyState
 }
 
-func (self *TestEmitter) KeyCallback(cb func(int, KeyState)) {
+func (self *TestEmitter) KeyCallback(cb func(KeyCode, KeyState)) {
 	self.keyCallback = cb
 }
 
-func (self *TestEmitter) fireKeyCallback(key int, state KeyState) {
+func (self *TestEmitter) fireKeyCallback(key KeyCode, state KeyState) {
 	self.keyCallback(key, state)
 }
 
@@ -42,23 +42,24 @@ func (self *TestEmitter) moveMouse(x, y int) {
 func (self *TestEmitter) MouseWheelCallback(cb func(int)) {
 }
 
-func (self *TestEmitter) IsKeyPressed(key int) bool {
+func (self *TestEmitter) IsKeyPressed(key KeyCode) bool {
 	return self.keyStates[key] == KeyPressed
 }
 
-func (self *TestEmitter) setKeyState(key int, state KeyState) {
+func (self *TestEmitter) setKeyState(key KeyCode, state KeyState) {
 	self.keyStates[key] = state
 }
 
 func NewTestEmitter() *TestEmitter {
 	return &TestEmitter{
-		keyStates: make(map[int]KeyState),
+		keyStates: make(map[KeyCode]KeyState),
 	}
 }
 
 func GetInputDispatcher() (*InputDispatcher, *TestEmitter) {
+	config, _ := configs.NewConfig("testdata/blank.json")
 	emitter := NewTestEmitter()
-	return NewInputDispatcher(emitter), emitter
+	return NewInputDispatcher(config, emitter), emitter
 }
 
 func Test_NewInputDispatcher(t *testing.T) {
