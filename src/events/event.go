@@ -12,7 +12,8 @@ type Event struct {
 }
 
 const (
-	Quit EventType = iota
+	NilEvent EventType = iota
+	Quit
 	MoveForward
 	MoveBackward
 	MoveLeft
@@ -29,3 +30,31 @@ const (
 	ZoomIn
 	ZoomOut
 )
+
+type eventNameMap map[string]EventType
+
+var eventsByName eventNameMap
+
+// EventFromName takes a string and returns the EventType of the same name
+func EventFromName(name string) EventType {
+	return eventsByName[name]
+}
+
+func init() {
+	eventsByName = eventNameMap{
+		"Quit":         Quit,
+		"MoveForward":  MoveForward,
+		"MoveBackward": MoveBackward,
+		"MoveLeft":     MoveLeft,
+		"MoveRight":    MoveRight,
+		"TurnLeft":     TurnLeft,
+		"TurnRight":    TurnRight,
+		"MouseMove":    MouseMove,
+		"PanUp":        PanUp,
+		"PanDown":      PanDown,
+		"PanLeft":      PanLeft,
+		"PanRight":     PanRight,
+		"ZoomIn":       ZoomIn,
+		"ZoomOut":      ZoomOut,
+	}
+}
