@@ -55,6 +55,10 @@ func (self *Game) Run() {
 	self.loadAllMeshes()
 	self.initializeScene()
 
+	self.run()
+}
+
+func (self *Game) run() {
 	running := true
 	self.InputDispatcher.On(events.Quit, func(e events.Event) {
 		running = false
@@ -149,7 +153,7 @@ func (self *Game) loadAllMaterials() {
 	})
 
 	self.graphicalBehavior.LoadMaterial(render.MaterialDef{
-		Name: "only_color",
+		Name:    "only_color",
 		Shaders: "color_unlit",
 	})
 

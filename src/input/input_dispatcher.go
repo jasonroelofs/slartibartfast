@@ -58,36 +58,43 @@ func NewInputDispatcher(emitter InputEmitter) *InputDispatcher {
 		pollingEvents:      make(eventTypeSet),
 	}
 
+	mapper.initializeKeyBindings()
+	mapper.initializeCallbacks()
+
+	return &mapper
+}
+
+func (self *InputDispatcher) initializeKeyBindings() {
 	if !InputDispatcherTesting {
 		// Set up testing key mappings
-		mapper.mapKeyToEvent(KeyQ, events.Quit)
-		mapper.mapKeyToEvent(KeyEsc, events.Quit)
+		self.mapKeyToEvent(KeyQ, events.Quit)
+		self.mapKeyToEvent(KeyEsc, events.Quit)
 
 		// MY FPS Movement mapping. Screw this WASD crap :P
 		// Will move this to be something read from the settings file
-		mapper.mapKeyToEvent(KeyE, events.MoveForward)
-		mapper.mapKeyToEvent(KeyD, events.MoveBackward)
-		mapper.mapKeyToEvent(KeyS, events.MoveLeft)
-		mapper.mapKeyToEvent(KeyF, events.MoveRight)
-		mapper.mapKeyToEvent(KeyW, events.TurnLeft)
-		mapper.mapKeyToEvent(KeyR, events.TurnRight)
+		self.mapKeyToEvent(KeyE, events.MoveForward)
+		self.mapKeyToEvent(KeyD, events.MoveBackward)
+		self.mapKeyToEvent(KeyS, events.MoveLeft)
+		self.mapKeyToEvent(KeyF, events.MoveRight)
+		self.mapKeyToEvent(KeyW, events.TurnLeft)
+		self.mapKeyToEvent(KeyR, events.TurnRight)
 
-		mapper.mapKeyToEvent(KeyE, events.PanUp)
-		mapper.mapKeyToEvent(KeyD, events.PanDown)
-		mapper.mapKeyToEvent(KeyS, events.PanLeft)
-		mapper.mapKeyToEvent(KeyF, events.PanRight)
+		self.mapKeyToEvent(KeyE, events.PanUp)
+		self.mapKeyToEvent(KeyD, events.PanDown)
+		self.mapKeyToEvent(KeyS, events.PanLeft)
+		self.mapKeyToEvent(KeyF, events.PanRight)
 
-		mapper.mapKeyToEvent(KeyI, events.ZoomIn)
-		mapper.mapKeyToEvent(KeyO, events.ZoomOut)
+		self.mapKeyToEvent(KeyI, events.ZoomIn)
+		self.mapKeyToEvent(KeyO, events.ZoomOut)
 	}
+}
 
-	emitter.KeyCallback(mapper.keyCallback)
+func (self *InputDispatcher) initializeCallbacks() {
+	self.emitter.KeyCallback(self.keyCallback)
 
-	emitter.MousePositionCallback(mapper.mouseMoveCallback)
-	emitter.MouseWheelCallback(mapper.mouseWheelCallback)
-	emitter.MouseButtonCallback(mapper.mouseButtonCallback)
-
-	return &mapper
+	self.emitter.MousePositionCallback(self.mouseMoveCallback)
+	self.emitter.MouseWheelCallback(self.mouseWheelCallback)
+	self.emitter.MouseButtonCallback(self.mouseButtonCallback)
 }
 
 // On registers a callback to be called in the occurance of an event of type EventType.
