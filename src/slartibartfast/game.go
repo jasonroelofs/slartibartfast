@@ -48,7 +48,10 @@ func (self *Game) Run() {
 
 	self.entityDB = core.NewEntityDB()
 	self.renderer = new(platform.OpenGLRenderer)
-	self.InputDispatcher = input.NewInputDispatcher(new(platform.GLFWInputEmitter))
+	self.InputDispatcher = input.NewInputDispatcher(
+		self.config,
+		new(platform.GLFWInputEmitter),
+	)
 
 	self.initializeBehaviors()
 	self.loadAllMaterials()

@@ -1,6 +1,7 @@
 package input
 
 import (
+	"configs"
 	"events"
 	"log"
 )
@@ -15,10 +16,6 @@ type keyEventMap map[KeyCode][]events.EventType
 type eventKeyMap map[events.EventType][]KeyCode
 type eventTypeSet map[events.EventType]bool
 
-// Testing tool, will remove once I have all key -> event mappings
-// coming in via a file instead of hard-coded.
-var InputDispatcherTesting bool
-
 // InputDispatcher hooks into an InputEmitter and dispatches keyboard, mouse, and joystick events.
 // It works via callbacks mostly but supports polling as well.
 // Keys are mapped to Events, and Events are then used throughout the system.
@@ -29,6 +26,7 @@ var InputDispatcherTesting bool
 // TODO This struct feels very heavy, look into ways of splitting up some of the
 // responsibilities.
 type InputDispatcher struct {
+	config  *configs.Config
 	emitter InputEmitter
 
 	// User-specified callbacks according to an Event
@@ -48,8 +46,9 @@ type InputDispatcher struct {
 	pollingEvents eventTypeSet
 }
 
-func NewInputDispatcher(emitter InputEmitter) *InputDispatcher {
+func NewInputDispatcher(config *configs.Config, emitter InputEmitter) *InputDispatcher {
 	mapper := InputDispatcher{
+		config:             config,
 		emitter:            emitter,
 		callbacks:          make(eventCallbackMap),
 		keyCallbacks:       make(keyCallbackMap),
@@ -65,27 +64,13 @@ func NewInputDispatcher(emitter InputEmitter) *InputDispatcher {
 }
 
 func (self *InputDispatcher) initializeKeyBindings() {
-	if !InputDispatcherTesting {
-		// Set up testing key mappings
-		self.mapKeyToEvent(KeyQ, events.Quit)
-		self.mapKeyToEvent(KeyEsc, events.Quit)
+	keyBindings := make(map[string][]string)
+	self.config.Get("keybindings", &keyBindings)
 
-		// MY FPS Movement mapping. Screw this WASD crap :P
-		// Will move this to be something read from the settings file
-		self.mapKeyToEvent(KeyE, events.MoveForward)
-		self.mapKeyToEvent(KeyD, events.MoveBackward)
-		self.mapKeyToEvent(KeyS, events.MoveLeft)
-		self.mapKeyToEvent(KeyF, events.MoveRight)
-		self.mapKeyToEvent(KeyW, events.TurnLeft)
-		self.mapKeyToEvent(KeyR, events.TurnRight)
-
-		self.mapKeyToEvent(KeyE, events.PanUp)
-		self.mapKeyToEvent(KeyD, events.PanDown)
-		self.mapKeyToEvent(KeyS, events.PanLeft)
-		self.mapKeyToEvent(KeyF, events.PanRight)
-
-		self.mapKeyToEvent(KeyI, events.ZoomIn)
-		self.mapKeyToEvent(KeyO, events.ZoomOut)
+	for eventName, keyList := range keyBindings {
+		for _, keyName := range keyList {
+			self.mapKeyToEvent(KeyFromName(keyName), events.EventFromName(eventName))
+		}
 	}
 }
 

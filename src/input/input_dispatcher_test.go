@@ -1,15 +1,11 @@
 package input
 
 import (
+	"configs"
 	"events"
 	"github.com/stretchrcom/testify/assert"
 	"testing"
 )
-
-func init() {
-	// To not confuse tests with the current set of hard-coded key - event mappings
-	InputDispatcherTesting = true
-}
 
 type TestEmitter struct {
 	// Implements input.InputEmitter
@@ -65,6 +61,34 @@ func GetInputDispatcher() (*InputDispatcher, *TestEmitter) {
 func Test_NewInputDispatcher(t *testing.T) {
 	mapper, _ := GetInputDispatcher()
 	assert.NotNil(t, mapper, "Mapper failed to initialize")
+}
+
+func Test_NewInputDispatcher_ReadsKeybindingsFromConfig(t *testing.T) {
+	config, _ := configs.NewConfig("testdata/keybindings.json")
+	emitter := NewTestEmitter()
+	dispatcher := NewInputDispatcher(config, emitter)
+
+	quitFired := 0
+	dispatcher.On(events.Quit, func(events.Event) {
+		quitFired += 1
+	})
+
+	zoomFired := 0
+	dispatcher.On(events.ZoomIn, func(events.Event) {
+		zoomFired += 1
+	})
+
+	// See the test file keybindings.json
+	// 3 Quit keys
+	emitter.fireKeyCallback(KeyQ, KeyPressed)
+	emitter.fireKeyCallback(KeyEsc, KeyPressed)
+	emitter.fireKeyCallback(KeyX, KeyPressed)
+
+	// One ZoomIn key
+	emitter.fireKeyCallback(KeyZ, KeyPressed)
+
+	assert.Equal(t, 3, quitFired)
+	assert.Equal(t, 1, zoomFired)
 }
 
 func Test_On_RegistersACallbackForEventFiring(t *testing.T) {
