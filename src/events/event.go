@@ -12,23 +12,21 @@ type Event struct {
 }
 
 var (
-	NilEvent     = defineEvent(0, "")
-	Quit         = defineEvent(1, "Quit")
-	MoveForward  = defineEvent(2, "MoveForward")
-	MoveBackward = defineEvent(3, "MoveBackward")
-	MoveLeft     = defineEvent(4, "MoveLeft")
-	MoveRight    = defineEvent(5, "MoveRight")
-	TurnLeft     = defineEvent(6, "TurnLeft")
-	TurnRight    = defineEvent(7, "TurnRight")
-	MouseMove    = defineEvent(8, "MouseMove")
-
-	PanUp    = defineEvent(9, "PanUp")
-	PanDown  = defineEvent(10, "PanDown")
-	PanLeft  = defineEvent(11, "PanLeft")
-	PanRight = defineEvent(12, "PanRight")
-
-	ZoomIn  = defineEvent(13, "ZoomIn")
-	ZoomOut = defineEvent(14, "ZoomOut")
+	NilEvent     = defineEvent("")
+	Quit         = defineEvent("Quit")
+	MoveForward  = defineEvent("MoveForward")
+	MoveBackward = defineEvent("MoveBackward")
+	MoveLeft     = defineEvent("MoveLeft")
+	MoveRight    = defineEvent("MoveRight")
+	TurnLeft     = defineEvent("TurnLeft")
+	TurnRight    = defineEvent("TurnRight")
+	MouseMove    = defineEvent("MouseMove")
+	PanUp        = defineEvent("PanUp")
+	PanDown      = defineEvent("PanDown")
+	PanLeft      = defineEvent("PanLeft")
+	PanRight     = defineEvent("PanRight")
+	ZoomIn       = defineEvent("ZoomIn")
+	ZoomOut      = defineEvent("ZoomOut")
 
 	// This map will keep track of the reverse Name -> EventType for
 	// easy lookup when building mappings from the settings file
@@ -40,7 +38,9 @@ func EventFromName(name string) EventType {
 	return eventsByName[name]
 }
 
-func defineEvent(code int, name string) EventType {
-	eventsByName[name] = EventType(code)
-	return EventType(code)
+func defineEvent(name string) EventType {
+	count := len(eventsByName)
+	code := EventType(count + 1)
+	eventsByName[name] = code
+	return code
 }
