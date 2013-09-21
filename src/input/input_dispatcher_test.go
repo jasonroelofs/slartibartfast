@@ -13,6 +13,11 @@ type TestEmitter struct {
 	keyCallback      func(KeyCode, KeyState)
 	mousePosCallback func(int, int)
 
+	MouseX int
+	MouseY int
+
+	HidingCursor bool
+
 	keyStates map[KeyCode]KeyState
 }
 
@@ -31,7 +36,23 @@ func (self *TestEmitter) MousePositionCallback(cb func(int, int)) {
 	self.mousePosCallback = cb
 }
 
+func (self *TestEmitter) ShowCursor() {
+	self.HidingCursor = false
+}
+
+func (self *TestEmitter) HideCursor() {
+	self.HidingCursor = true
+}
+
+func (self *TestEmitter) ResetCursor() {
+	self.MouseX = 0
+	self.MouseY = 0
+}
+
 func (self *TestEmitter) moveMouse(x, y int) {
+	self.MouseX = x
+	self.MouseY = y
+
 	self.mousePosCallback(x, y)
 }
 
@@ -219,7 +240,6 @@ func Test_RecentEvents_ReturnsLastSetOfReceivedKeyEvents(t *testing.T) {
 func Test_RecentEvents_ReturnsLastSetOfReceivedMouseEvents(t *testing.T) {
 	mapper, emitter := GetInputDispatcher()
 
-	// Mouse coords are transformed from 0,0 top left to 0,0 center
 	emitter.moveMouse(10, 20)
 	emitter.moveMouse(-5, 13)
 
@@ -233,6 +253,31 @@ func Test_RecentEvents_ReturnsLastSetOfReceivedMouseEvents(t *testing.T) {
 	assert.Equal(t, events.MouseMove, recentEvents[1].EventType)
 	assert.Equal(t, -5, recentEvents[1].MouseXDiff)
 	assert.Equal(t, 13, recentEvents[1].MouseYDiff)
+}
+
+func Test_HideCursor_HidesCursorAndFlagsMouseToResetToCenterAfterMove(t *testing.T) {
+	mapper, emitter := GetInputDispatcher()
+	mapper.HideCursor()
+
+	assert.True(t, emitter.HidingCursor)
+
+	emitter.moveMouse(10, 20)
+
+	assert.Equal(t, 0, emitter.MouseX)
+	assert.Equal(t, 0, emitter.MouseY)
+}
+
+func Test_ShowCursor_ShowsCursorAndStopsResettingCursorAfterMove(t *testing.T) {
+	mapper, emitter := GetInputDispatcher()
+	mapper.HideCursor()
+	mapper.ShowCursor()
+
+	assert.False(t, emitter.HidingCursor)
+
+	emitter.moveMouse(10, 20)
+
+	assert.Equal(t, 10, emitter.MouseX)
+	assert.Equal(t, 20, emitter.MouseY)
 }
 
 func Test_RecentEvents_ClearsListForNextCall(t *testing.T) {
@@ -250,12 +295,7 @@ func Test_RecentEvents_ClearsListForNextCall(t *testing.T) {
 	assert.Equal(t, 0, len(nextEvents2))
 }
 
-func Test_PollEvents_IncludesEventsInRecentEventsIfKeyPressed(t *testing.T) {
-}
-
-// TODO: Merge these tests into how RecentEvents works so it's testing
-// behavior and not implementation.
-func Test_PollEvents_AddsToListOfEventsToPoll(t *testing.T) {
+func Test_PollEvents_AddsToListOfEventsToPollToRecentEvents(t *testing.T) {
 	mapper, emitter := GetInputDispatcher()
 	mapper.mapKeyToEvent(KeyQ, events.Quit)
 	mapper.mapKeyToEvent(KeyD, events.MoveForward)

@@ -14,11 +14,21 @@ type InputEmitter interface {
 
 	// MousePositionCallback sets a callback that fires when the mouse is moved
 	// The callback is passed the X and Y pixel position of the mouse cursor's new position
+	// relative to the center of the screen.
 	MousePositionCallback(func(int, int))
 
 	// MouseWheelCallback sets a callback that fires when the mouse wheel is scrolled
 	// The callback is passed the distance the scroll wheel moved
 	MouseWheelCallback(func(int))
+
+	// ShowCursor flags the system to show the mouse cursor
+	ShowCursor()
+
+	// HideCursor flags the system to hide the mouse cursor
+	HideCursor()
+
+	// ResetCursor tells the system to reset the cursor back to its origin point
+	ResetCursor()
 
 	// IsKeyPressed returns true or false depending on if the given Key is currently depressed
 	IsKeyPressed(KeyCode) bool
