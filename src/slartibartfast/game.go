@@ -2,7 +2,6 @@ package main
 
 import (
 	"behaviors"
-	"components"
 	"configs"
 	"core"
 	"events"
@@ -168,23 +167,15 @@ func (self *Game) initializeScene() {
 	self.Camera.SetPosition(math3d.Vector{0, 0, 0})
 	self.Camera.LookAt(math3d.Vector{0, 0, -5})
 
-	input := components.Input{
-		Mapping: FPSMapping,
-	}
-
-	self.Camera.AddComponent(&input)
-
-//	self.Camera.SetSpeed(math3d.Vector{5, 5, 5})
-
 	// YUCK, must be a better way of doing this?
 	// Will probably move camera creation into Graphical so it
 	// can take care of situations like this.
 	self.RegisterEntity(self.Camera.Entity)
 
-//	self.currentScene = NewSpinningCubes(self)
-// self.currentScene = NewTexturedCube(self)
-//	self.currentScene = NewVolumeScene(self)
-	self.currentScene = NewTopDownTestScene(self)
+	//	self.currentScene = NewSpinningCubes(self)
+	// self.currentScene = NewTexturedCube(self)
+	self.currentScene = NewVolumeScene(self)
+	//	self.currentScene = NewTopDownTestScene(self)
 
 	self.currentScene.Setup()
 }

@@ -18,6 +18,7 @@ func init() {
 		events.MoveLeft:     fixedYMoveLeft,
 		events.MoveRight:    fixedYMoveRight,
 		events.MouseMove:    fixedYMouseMoved,
+//		events.Fire:         fire,
 	}
 
 	FixedYInput = &components.Input{
@@ -25,7 +26,6 @@ func init() {
 		Polling: []events.EventType{
 			events.MoveForward, events.MoveBackward, events.MoveLeft, events.MoveRight,
 		},
-		//		ShowMouse: true,
 	}
 }
 

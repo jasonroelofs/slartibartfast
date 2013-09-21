@@ -58,6 +58,10 @@ func (self *TopDownTestScene) Setup() {
 
 	self.game.RegisterEntity(self.levelEntity)
 
+	self.game.Camera.AddComponent(&components.Input{
+		Mapping: FPSMapping,
+	})
+
 	// Get the camera facing downwards
 	cameraTransform := components.GetTransform(self.game.Camera.Entity)
 	cameraTransform.Position = math3d.Vector{25, 10, 25}

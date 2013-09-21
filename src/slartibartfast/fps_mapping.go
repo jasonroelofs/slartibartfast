@@ -23,67 +23,31 @@ func init() {
 
 // Move the given entity in the -Z direction
 func moveForward(entity components.ComponentHolder, event events.Event) {
-	transform := components.GetTransform(entity)
-
-	if event.Pressed {
-		transform.Moving(math3d.Vector{0, 0, -1})
-	} else {
-		transform.Moving(math3d.Vector{0, 0, 1})
-	}
+	components.GetTransform(entity).MovingForward(event.Pressed)
 }
 
 // Move the given entity in the +Z direction
 func moveBackward(entity components.ComponentHolder, event events.Event) {
-	transform := components.GetTransform(entity)
-
-	if event.Pressed {
-		transform.Moving(math3d.Vector{0, 0, 1})
-	} else {
-		transform.Moving(math3d.Vector{0, 0, -1})
-	}
+	components.GetTransform(entity).MovingBackward(event.Pressed)
 }
 
 // Move the given entity in the -X direction
 func moveLeft(entity components.ComponentHolder, event events.Event) {
-	transform := components.GetTransform(entity)
-
-	if event.Pressed {
-		transform.Moving(math3d.Vector{-1, 0, 0})
-	} else {
-		transform.Moving(math3d.Vector{1, 0, 0})
-	}
+	components.GetTransform(entity).MovingLeft(event.Pressed)
 }
 
 // Move the given entity in the +X direction
 func moveRight(entity components.ComponentHolder, event events.Event) {
-	transform := components.GetTransform(entity)
-
-	if event.Pressed {
-		transform.Moving(math3d.Vector{1, 0, 0})
-	} else {
-		transform.Moving(math3d.Vector{-1, 0, 0})
-	}
+	components.GetTransform(entity).MovingRight(event.Pressed)
 }
 
 // Rotate entity around its Y axis
 func turnLeft(entity components.ComponentHolder, event events.Event) {
-	transform := components.GetTransform(entity)
-
-	if event.Pressed {
-		transform.Rotating(math3d.Vector{0, -1, 0})
-	} else {
-		transform.Rotating(math3d.Vector{0, 1, 0})
-	}
+	components.GetTransform(entity).TurningLeft(event.Pressed)
 }
 
 func turnRight(entity components.ComponentHolder, event events.Event) {
-	transform := components.GetTransform(entity)
-
-	if event.Pressed {
-		transform.Rotating(math3d.Vector{0, 1, 0})
-	} else {
-		transform.Rotating(math3d.Vector{0, -1, 0})
-	}
+	components.GetTransform(entity).TurningRight(event.Pressed)
 }
 
 // Mouse movement handler. Turn the object in FPS fashion

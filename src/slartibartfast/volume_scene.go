@@ -34,6 +34,14 @@ func (self *VolumeScene) Setup() {
 	skybox := factories.SkyBox("stevecube", self.game.Camera)
 	self.game.RegisterEntity(skybox)
 
+	self.game.Camera.AddComponent(&components.Input{
+		Mapping: FPSMapping,
+	})
+
+	self.game.Camera.SetSpeed(math3d.Vector{5, 5, 5})
+
+	self.game.InputDispatcher.HideCursor()
+
 	self.game.InputDispatcher.OnKey(input.KeyJ, func(e events.Event) {
 		if e.Pressed {
 			self.marchingCubeSize -= 0.1
@@ -55,15 +63,6 @@ func (self *VolumeScene) Setup() {
 	})
 
 	self.cubeVolume = &volume.FunctionVolume{
-		// A cube
-//		func(x, y, z float32) float32 {
-//			if x > 20.5 && x < 38.5 && y > 20.5 && y < 38.5 && z > 20.5 && z < 38.5 {
-//				return 1
-//			} else {
-//				return -1
-//			}
-//		},
-
 		// A sphere!
 		func(x, y, z float32) float32 {
 			// Translate to treat middle of the volume as 0,0,0
@@ -107,4 +106,7 @@ func (self *VolumeScene) rebuildVolume() {
 		Mesh:         volumeMesh,
 		MaterialName: "only_color",
 	})
+}
+
+func (self *VolumeScene) BeforeRender() {
 }
