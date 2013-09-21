@@ -174,6 +174,26 @@ func (self *Transform) Rotating(dir math3d.Vector) {
 	self.rotateDirection = self.rotateDirection.Add(dir)
 }
 
+// TurningLeft flags this Entity to start rotating around it's Y axis according
+// to its RotationSpeed
+func (self *Transform) TurningLeft(isTurning bool) {
+	if isTurning {
+		self.rotateDirection.Y = -1
+	} else {
+		self.rotateDirection.Y = 0
+	}
+}
+
+// TurningRight flags this Entity to start rotating around it's Y axis according
+// to its RotationSpeed
+func (self *Transform) TurningRight(isTurning bool) {
+	if isTurning {
+		self.rotateDirection.Y = 1
+	} else {
+		self.rotateDirection.Y = 0
+	}
+}
+
 // RotateDir returns a normalized Vector from Rotating
 func (self *Transform) RotateDir() math3d.Vector {
 	return self.rotateDirection.Normalize()

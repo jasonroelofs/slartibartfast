@@ -198,6 +198,26 @@ func Test_Rotating_SetsRotateDirection(t *testing.T) {
 	assert.Equal(t, math3d.Vector{0, 0, 0}, transform.rotateDirection)
 }
 
+func Test_TurningLeft_SetsRotatingMinusY(t *testing.T) {
+	transform := NewTransform()
+
+	transform.TurningLeft(true)
+	assert.Equal(t, math3d.Vector{0, -1, 0}, transform.rotateDirection)
+
+	transform.TurningLeft(false)
+	assert.Equal(t, math3d.Vector{0, 0, 0}, transform.rotateDirection)
+}
+
+func Test_TurningRight_SetsRotatingPositiveY(t *testing.T) {
+	transform := NewTransform()
+
+	transform.TurningRight(true)
+	assert.Equal(t, math3d.Vector{0, 1, 0}, transform.rotateDirection)
+
+	transform.TurningRight(false)
+	assert.Equal(t, math3d.Vector{0, 0, 0}, transform.rotateDirection)
+}
+
 func Test_RotatingDir_ReturnsNormalizedDirection(t *testing.T) {
 	transform := NewTransform()
 
