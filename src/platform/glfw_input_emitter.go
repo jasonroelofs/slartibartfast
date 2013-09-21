@@ -8,6 +8,8 @@ import (
 // GLFWInputEmitter implements input emission using GLFW's input handling
 type GLFWInputEmitter struct {
 	// Implements input.InputEmitter
+
+	hiddenCursor bool
 }
 
 func (self *GLFWInputEmitter) KeyCallback(callback func(input.KeyCode, input.KeyState)) {
@@ -25,10 +27,35 @@ func (self *GLFWInputEmitter) MouseButtonCallback(callback func(input.KeyCode, i
 func (self *GLFWInputEmitter) MousePositionCallback(callback func(int, int)) {
 	// GLFW puts 0,0 at the top left of the window. Need to transform this
 	// origin to be the center of the screen.
-	windowX, windowY := glfw.WindowSize()
+
 	glfw.SetMousePosCallback(func(x, y int) {
-		callback(x - (windowX / 2), (windowY / 2) - y)
+		if self.hiddenCursor {
+			self.resetCursor()
+
+			callback(x, y)
+		} else {
+			windowX, windowY := glfw.WindowSize()
+			xPos := x - (windowX / 2)
+			yPos := (windowY / 2) - y
+
+			callback(xPos, yPos)
+		}
 	})
+}
+
+func (self *GLFWInputEmitter) ShowCursor() {
+	self.hiddenCursor = false
+	glfw.Enable(glfw.MouseCursor)
+}
+
+func (self *GLFWInputEmitter) HideCursor() {
+	self.hiddenCursor = true
+	glfw.Disable(glfw.MouseCursor)
+	self.resetCursor()
+}
+
+func (self *GLFWInputEmitter) resetCursor() {
+	glfw.SetMousePos(0, 0)
 }
 
 func (self *GLFWInputEmitter) MouseWheelCallback(callback func(int)) {
