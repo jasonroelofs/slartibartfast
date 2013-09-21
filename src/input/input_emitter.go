@@ -27,9 +27,6 @@ type InputEmitter interface {
 	// HideCursor flags the system to hide the mouse cursor
 	HideCursor()
 
-	// ResetCursor tells the system to reset the cursor back to its origin point
-	ResetCursor()
-
 	// IsKeyPressed returns true or false depending on if the given Key is currently depressed
 	IsKeyPressed(KeyCode) bool
 }

@@ -13,9 +13,6 @@ type TestEmitter struct {
 	keyCallback      func(KeyCode, KeyState)
 	mousePosCallback func(int, int)
 
-	MouseX int
-	MouseY int
-
 	HidingCursor bool
 
 	keyStates map[KeyCode]KeyState
@@ -44,15 +41,7 @@ func (self *TestEmitter) HideCursor() {
 	self.HidingCursor = true
 }
 
-func (self *TestEmitter) ResetCursor() {
-	self.MouseX = 0
-	self.MouseY = 0
-}
-
 func (self *TestEmitter) moveMouse(x, y int) {
-	self.MouseX = x
-	self.MouseY = y
-
 	self.mousePosCallback(x, y)
 }
 
@@ -260,11 +249,6 @@ func Test_HideCursor_HidesCursorAndFlagsMouseToResetToCenterAfterMove(t *testing
 	mapper.HideCursor()
 
 	assert.True(t, emitter.HidingCursor)
-
-	emitter.moveMouse(10, 20)
-
-	assert.Equal(t, 0, emitter.MouseX)
-	assert.Equal(t, 0, emitter.MouseY)
 }
 
 func Test_ShowCursor_ShowsCursorAndStopsResettingCursorAfterMove(t *testing.T) {
@@ -273,11 +257,6 @@ func Test_ShowCursor_ShowsCursorAndStopsResettingCursorAfterMove(t *testing.T) {
 	mapper.ShowCursor()
 
 	assert.False(t, emitter.HidingCursor)
-
-	emitter.moveMouse(10, 20)
-
-	assert.Equal(t, 10, emitter.MouseX)
-	assert.Equal(t, 20, emitter.MouseY)
 }
 
 func Test_RecentEvents_ClearsListForNextCall(t *testing.T) {

@@ -44,8 +44,6 @@ type InputDispatcher struct {
 
 	// Set of events that need to be polled
 	pollingEvents eventTypeSet
-
-	hidingCursor bool
 }
 
 func NewInputDispatcher(config *configs.Config, emitter InputEmitter) *InputDispatcher {
@@ -102,14 +100,12 @@ func (self *InputDispatcher) OnKey(key KeyCode, callback func(events.Event)) {
 // ShowCursor flags the cursor to be shown.
 func (self *InputDispatcher) ShowCursor() {
 	self.emitter.ShowCursor()
-	self.hidingCursor = false
 }
 
 // HideCursor flags the cursor to be hidden and makes sure that the cursor's actual
 // location stays constrained to the center of the screen.
 func (self *InputDispatcher) HideCursor() {
 	self.emitter.HideCursor()
-	self.hidingCursor = true
 }
 
 // RecentEvents returns the list of events queued up since the last time
@@ -219,10 +215,6 @@ func (self *InputDispatcher) mouseMoveCallback(x, y int) {
 	}
 
 	log.Println("Mouse Moved", event)
-
-	if self.hidingCursor {
-		self.emitter.ResetCursor()
-	}
 
 	self.storedEvents = append(self.storedEvents, event)
 }
