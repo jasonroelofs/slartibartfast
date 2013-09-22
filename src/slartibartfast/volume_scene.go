@@ -31,6 +31,8 @@ func NewVolumeScene(game *Game) *VolumeScene {
 }
 
 func (self *VolumeScene) Setup() {
+	self.game.InputDispatcher.HideCursor()
+
 	skybox := factories.SkyBox("stevecube", self.game.Camera)
 	self.game.RegisterEntity(skybox)
 
@@ -39,8 +41,7 @@ func (self *VolumeScene) Setup() {
 	})
 
 	self.game.Camera.SetSpeed(math3d.Vector{5, 5, 5})
-
-	self.game.InputDispatcher.HideCursor()
+	self.game.Camera.LookAt(math3d.Vector{0, 0, -5})
 
 	self.game.InputDispatcher.OnKey(input.KeyJ, func(e events.Event) {
 		if e.Pressed {
