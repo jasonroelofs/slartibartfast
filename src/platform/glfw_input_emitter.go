@@ -25,15 +25,15 @@ func (self *GLFWInputEmitter) MouseButtonCallback(callback func(input.KeyCode, i
 }
 
 func (self *GLFWInputEmitter) MousePositionCallback(callback func(int, int)) {
-	// GLFW puts 0,0 at the top left of the window. Need to transform this
-	// origin to be the center of the screen.
-
 	glfw.SetMousePosCallback(func(x, y int) {
 		if self.hiddenCursor {
-			self.resetCursor()
-
+			// Don't care about actual diff from center, we just want the distance travelled
+			// for this singular event. We always reset back to origin. Use for FPS-type controls
 			callback(x, y)
+			self.resetCursor()
 		} else {
+			// GLFW puts 0,0 at the top left of the window. Need to transform this
+			// origin to be the center of the screen.
 			windowX, windowY := glfw.WindowSize()
 			xPos := x - (windowX / 2)
 			yPos := (windowY / 2) - y
