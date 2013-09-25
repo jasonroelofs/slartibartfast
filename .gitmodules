@@ -10,9 +10,6 @@
 [submodule "src/github.com/stretchrcom/testify"]
 	path = src/github.com/stretchrcom/testify
 	url = git://github.com/stretchrcom/testify.git
-[submodule "glfw3"]
-	path = glfw3
-	url = git://github.com/go-gl/glfw3.git
 [submodule "src/github.com/go-gl/glfw3"]
 	path = src/github.com/go-gl/glfw3
 	url = git://github.com/go-gl/glfw3.git
