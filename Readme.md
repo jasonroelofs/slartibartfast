@@ -12,18 +12,18 @@ http://jasonroelofs.com/2013/07/01/third-times-a-charm/
     $ git submodule update
     $ source ./environment
 
-
     ## on OSX with homebrew
-    # install FreeImage
+    # Install FreeImage
     $ brew install FreeImage
 
-    # install GLFW
-    $ brew install GLFW
+    # Install GLFW3
+    $ brew tap homebrew/versions
+    $ brew install glfw3
 
-    # install   glew
-    $ brew install  glew
+    # Install glew
+    $ brew install glew
 
-    # Run the tests
+    # Build and run the tests
     $ rake
 
     # Run the app
