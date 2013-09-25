@@ -5,12 +5,12 @@ package input
 // the code base.
 
 import (
-	"github.com/go-gl/glfw"
+	glfw "github.com/go-gl/glfw3"
 )
 
 // Mouse buttons
 const (
-	Mouse1 = glfw.Mouse1 + iota
+	Mouse1 = glfw.MouseButton1 + iota
 	Mouse2
 	Mouse3
 	Mouse4
@@ -18,8 +18,8 @@ const (
 	Mouse6
 	Mouse7
 	Mouse8
-	MouseLast   = Mouse8
-	MouseLeft   = Mouse1
-	MouseRight  = Mouse2
-	MouseMiddle = Mouse3
+	MouseLast   = glfw.MouseButtonLast
+	MouseLeft   = glfw.MouseButtonLeft
+	MouseRight  = glfw.MouseButtonRight
+	MouseMiddle = glfw.MouseButtonMiddle
 )

@@ -4,14 +4,20 @@ import (
 	"configs"
 	"errors"
 	"github.com/go-gl/gl"
-	"github.com/go-gl/glfw"
+	glfw "github.com/go-gl/glfw3"
+	"input"
+	"log"
 )
 
 type OpenGLWindow struct {
 	// Implements core.Window
+	// Implements input.InputEmitter
+
 	config windowConfig
+	window *glfw.Window
 
 	timeLastCall float64
+	hiddenCursor bool
 }
 
 type windowConfig struct {
@@ -37,59 +43,69 @@ func NewOpenGLWindow(config *configs.Config) *OpenGLWindow {
 
 func (self *OpenGLWindow) Open() {
 	var err error
-	err = glfw.Init()
-	if err != nil {
-		panic(err)
+	if !glfw.Init() {
+		panic(errors.New("Unable to initialize GLFW"))
 	}
 
-	windowFlags := glfw.Windowed
+	glfw.SetErrorCallback(func(code glfw.ErrorCode, desc string) {
+		log.Printf("[GLFW Error] (%d) %s", code, desc)
+	})
+
+	var monitor *glfw.Monitor
 	if self.config.Fullscreen {
-		windowFlags = glfw.Fullscreen
+		monitor, err = glfw.GetPrimaryMonitor()
+
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	// Force OpenGL 3.2
-	glfw.OpenWindowHint(glfw.OpenGLVersionMajor, 3)
-	glfw.OpenWindowHint(glfw.OpenGLVersionMinor, 2)
-	glfw.OpenWindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
+	glfw.WindowHint(glfw.ContextVersionMajor, 3)
+	glfw.WindowHint(glfw.ContextVersionMinor, 2)
+	glfw.WindowHint(glfw.OpenglProfile, glfw.OpenglCoreProfile)
+	glfw.WindowHint(glfw.OpenglForwardCompatible, glfw.True)
+
+	// Default buffer sizes
+	glfw.WindowHint(glfw.DepthBits, 32)
+	glfw.WindowHint(glfw.StencilBits, 0)
 
 	// Toggle VSync. Turning VSync off aparently doesn't work via glfw through
 	// some ATI cards and drivers
 	if self.config.VSync {
-		glfw.SetSwapInterval(1)
+		glfw.SwapInterval(1)
 	} else {
-		glfw.SetSwapInterval(0)
+		glfw.SwapInterval(0)
 	}
 
-	err = glfw.OpenWindow(
+	self.window, err = glfw.CreateWindow(
 		int(self.config.Width), int(self.config.Height),
-		// r, g, b, a
-		0, 0, 0, 0,
-		// depth, stencil
-		32, 0,
-		windowFlags)
+		"Project Slartibartfast",
+		monitor,
+		nil)
 
 	if err != nil {
-		panic(errors.New("Unable to open window!"))
+		panic(err)
 	}
+
+	self.window.MakeContextCurrent()
 
 	if glewError := gl.Init(); glewError != 0 {
 		panic(errors.New("Unable to initialize OpenGL"))
 	}
-
-	glfw.SetWindowTitle("Project Slartibartfast")
 }
 
 func (self *OpenGLWindow) AspectRatio() float32 {
-	width, height := glfw.WindowSize()
+	width, height := self.window.GetSize()
 	return float32(width) / float32(height)
 }
 
 func (self *OpenGLWindow) TimeSinceLast() float32 {
 	if self.timeLastCall == 0 {
-		self.timeLastCall = glfw.Time()
+		self.timeLastCall = glfw.GetTime()
 	}
 
-	now := glfw.Time()
+	now := glfw.GetTime()
 	diff := now - self.timeLastCall
 	self.timeLastCall = now
 
@@ -97,14 +113,81 @@ func (self *OpenGLWindow) TimeSinceLast() float32 {
 }
 
 func (self *OpenGLWindow) IsOpen() bool {
-	return glfw.WindowParam(glfw.Opened) == gl.TRUE
+	return !self.window.ShouldClose()
 }
 
 func (self *OpenGLWindow) SwapBuffers() {
-	glfw.SwapBuffers()
+	self.window.SwapBuffers()
+	glfw.PollEvents()
 }
 
 func (self *OpenGLWindow) Close() {
+	self.window.Destroy()
 	glfw.Terminate()
 }
 
+// KeyCallback :: input.InputEmitter
+func (self *OpenGLWindow) KeyCallback(callback func(input.KeyCode, input.KeyState)) {
+	self.window.SetKeyCallback(func(w *glfw.Window, key glfw.Key, scancode int, state glfw.Action, mods glfw.ModifierKey) {
+		callback(input.KeyCode(key), input.KeyState(state))
+	})
+}
+
+// MouseButtonCallback :: input.InputEmitter
+func (self *OpenGLWindow) MouseButtonCallback(callback func(input.KeyCode, input.KeyState)) {
+	self.window.SetMouseButtonCallback(func(w *glfw.Window, button glfw.MouseButton, state glfw.Action, mod glfw.ModifierKey) {
+		callback(input.KeyCode(button), input.KeyState(state))
+	})
+}
+
+// MousePositionCallback :: input.InputEmitter
+func (self *OpenGLWindow) MousePositionCallback(callback func(int, int)) {
+	self.window.SetCursorPositionCallback(func(w *glfw.Window, xIn, yIn float64) {
+		x := int(xIn)
+		y := int(yIn)
+
+		if self.hiddenCursor {
+			// Don't care about actual diff from center, we just want the distance travelled
+			// for this singular event. We always reset back to origin. Use for FPS-type controls
+			callback(x, y)
+			self.resetCursor()
+		} else {
+			// GLFW puts 0,0 at the top left of the window. Need to transform this
+			// origin to be the center of the screen.
+			windowX, windowY := self.window.GetSize()
+			xPos := x - (windowX / 2)
+			yPos := (windowY / 2) - y
+
+			callback(xPos, yPos)
+		}
+	})
+}
+
+// ShowCursor :: input.InputEmitter
+func (self *OpenGLWindow) ShowCursor() {
+	self.hiddenCursor = false
+	self.window.SetInputMode(glfw.Cursor, glfw.True)
+}
+
+// HideCursor :: input.InputEmitter
+func (self *OpenGLWindow) HideCursor() {
+	self.hiddenCursor = true
+	self.window.SetInputMode(glfw.Cursor, glfw.False)
+	self.resetCursor()
+}
+
+func (self *OpenGLWindow) resetCursor() {
+	self.window.SetCursorPosition(0, 0)
+}
+
+// MouseWheelCallback :: input.InputEmitter
+func (self *OpenGLWindow) MouseWheelCallback(callback func(int)) {
+	self.window.SetScrollCallback(func(w *glfw.Window, xoff, yoff float64) {
+		callback(int(xoff))
+	})
+}
+
+// IsKeyPressed :: input.InputEmitter
+func (self *OpenGLWindow) IsKeyPressed(key input.KeyCode) bool {
+	return self.window.GetKey(glfw.Key(key)) == glfw.Press
+}

@@ -49,7 +49,7 @@ func (self *Game) Run() {
 	self.renderer = new(platform.OpenGLRenderer)
 	self.InputDispatcher = input.NewInputDispatcher(
 		self.config,
-		new(platform.GLFWInputEmitter),
+		self.window,
 	)
 
 	self.initializeBehaviors()
@@ -57,10 +57,10 @@ func (self *Game) Run() {
 	self.loadAllMeshes()
 	self.initializeScene()
 
-	self.run()
+	self.mainLoop()
 }
 
-func (self *Game) run() {
+func (self *Game) mainLoop() {
 	running := true
 	self.InputDispatcher.On(events.Quit, func(e events.Event) {
 		running = false
@@ -174,8 +174,8 @@ func (self *Game) initializeScene() {
 
 	//	self.currentScene = NewSpinningCubes(self)
 	// self.currentScene = NewTexturedCube(self)
-	self.currentScene = NewVolumeScene(self)
-	//	self.currentScene = NewTopDownTestScene(self)
+//	self.currentScene = NewVolumeScene(self)
+	self.currentScene = NewTopDownTestScene(self)
 
 	self.currentScene.Setup()
 }

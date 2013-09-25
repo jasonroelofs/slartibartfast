@@ -1,5 +1,9 @@
 package core
 
+import(
+	"input"
+)
+
 type Window interface {
 	Open()
 	IsOpen() bool
@@ -12,4 +16,7 @@ type Window interface {
 	// TimeSinceLast returns the amount of time that has past in seconds
 	// since the last time this method was called.
 	TimeSinceLast() float32
+
+	// All windows are also input emitters
+	input.InputEmitter
 }
