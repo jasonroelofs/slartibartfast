@@ -166,13 +166,13 @@ func (self *OpenGLWindow) MousePositionCallback(callback func(int, int)) {
 // ShowCursor :: input.InputEmitter
 func (self *OpenGLWindow) ShowCursor() {
 	self.hiddenCursor = false
-	self.window.SetInputMode(glfw.Cursor, glfw.True)
+	self.window.SetInputMode(glfw.Cursor, glfw.CursorNormal)
 }
 
 // HideCursor :: input.InputEmitter
 func (self *OpenGLWindow) HideCursor() {
 	self.hiddenCursor = true
-	self.window.SetInputMode(glfw.Cursor, glfw.False)
+	self.window.SetInputMode(glfw.Cursor, glfw.CursorDisabled)
 	self.resetCursor()
 }
 
