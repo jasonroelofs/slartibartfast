@@ -1,6 +1,6 @@
-#version 150
+#version 330
 
-in vec3 vertexPosition;  // Attr 0
+in vec3 vertexPosition;
 out vec3 cubeUVCoords;
 
 uniform mat4 modelViewProjection;

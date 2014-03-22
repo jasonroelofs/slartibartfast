@@ -1,7 +1,7 @@
-#version 150
+#version 330
 
-in vec3 vertexPosition;  // Attr 0
-in vec3 inColor;         // Attr 1
+layout(location = 0) in vec3 vertexPosition;
+layout(location = 1) in vec3 inColor;
 out vec3 vertColor;
 
 uniform mat4 modelViewProjection;
