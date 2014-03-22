@@ -166,13 +166,14 @@ func (self *OpenGLRenderer) BeginRender() {
 }
 
 type RenderState struct {
-	Projection, View math3d.Matrix
+	Projection, View, ViewProjection math3d.Matrix
 }
 
 func (self *OpenGLRenderer) Render(renderQueue *render.RenderQueue) {
 	renderState := RenderState{
-		Projection: renderQueue.ProjectionMatrix,
-		View:       renderQueue.ViewMatrix,
+		Projection:     renderQueue.ProjectionMatrix,
+		View:           renderQueue.ViewMatrix,
+		ViewProjection: renderQueue.ProjectionMatrix.Times(renderQueue.ViewMatrix),
 	}
 
 	for _, renderOp := range renderQueue.RenderOperations() {
@@ -198,7 +199,7 @@ func (self *OpenGLRenderer) renderOne(operation render.RenderOperation, renderSt
 	material.Shader.Program.Use()
 	material.Shader.Program.SetUniformMatrix(
 		"modelViewProjection",
-		renderState.Projection.Times(renderState.View).Times(transform),
+		renderState.ViewProjection.Times(transform),
 	)
 
 	if material.Texture != nil {
