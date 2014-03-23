@@ -8,6 +8,7 @@ import (
 
 // InputMapping for FPS controls
 var FPSMapping components.InputEventMap
+var FPSInput *components.Input
 
 func init() {
 	FPSMapping = components.InputEventMap{
@@ -18,6 +19,14 @@ func init() {
 		events.TurnLeft:     turnLeft,
 		events.TurnRight:    turnRight,
 		events.MouseMove:    mouseMoved,
+	}
+
+	FPSInput = &components.Input{
+		Mapping: FPSMapping,
+		Polling: []events.EventType{
+			events.MoveForward, events.MoveBackward, events.MoveLeft, events.MoveRight,
+			events.TurnLeft, events.TurnRight,
+		},
 	}
 }
 

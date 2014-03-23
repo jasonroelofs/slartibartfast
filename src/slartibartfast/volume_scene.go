@@ -36,9 +36,7 @@ func (self *VolumeScene) Setup() {
 	skybox := factories.SkyBox("stevecube", self.game.Camera)
 	self.game.RegisterEntity(skybox)
 
-	self.game.Camera.AddComponent(&components.Input{
-		Mapping: FPSMapping,
-	})
+	self.game.Camera.AddComponent(FPSInput)
 
 	self.game.Camera.SetSpeed(math3d.Vector{5, 5, 5})
 	self.game.Camera.LookAt(math3d.Vector{0, 0, -5})
