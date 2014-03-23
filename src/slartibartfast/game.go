@@ -174,7 +174,7 @@ func (self *Game) initializeScene() {
 
 	//	self.currentScene = NewSpinningCubes(self)
 	// self.currentScene = NewTexturedCube(self)
-//	self.currentScene = NewVolumeScene(self)
+	// self.currentScene = NewVolumeScene(self)
 	self.currentScene = NewTopDownTestScene(self)
 
 	self.currentScene.Setup()
