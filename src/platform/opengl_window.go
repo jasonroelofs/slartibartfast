@@ -189,5 +189,12 @@ func (self *OpenGLWindow) MouseWheelCallback(callback func(int)) {
 
 // IsKeyPressed :: input.InputEmitter
 func (self *OpenGLWindow) IsKeyPressed(key input.KeyCode) bool {
-	return self.window.GetKey(glfw.Key(key)) == glfw.Press
+	keyState := self.window.GetKey(glfw.Key(key))
+	return keyState == glfw.Press || keyState == glfw.Repeat
+}
+
+// IsKeyRepeated :: input.InputEmitter
+func (self *OpenGLWindow) IsKeyRepeated(key input.KeyCode) bool {
+	keyState := self.window.GetKey(glfw.Key(key))
+	return keyState == glfw.Repeat
 }

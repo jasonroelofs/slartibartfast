@@ -29,4 +29,7 @@ type InputEmitter interface {
 
 	// IsKeyPressed returns true or false depending on if the given Key is currently depressed
 	IsKeyPressed(KeyCode) bool
+
+	// IsKeyRepeated returns true or false depending on if the given Key is currently marked as repeating
+	IsKeyRepeated(KeyCode) bool
 }

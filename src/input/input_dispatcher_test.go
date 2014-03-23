@@ -49,7 +49,11 @@ func (self *TestEmitter) MouseWheelCallback(cb func(int)) {
 }
 
 func (self *TestEmitter) IsKeyPressed(key KeyCode) bool {
-	return self.keyStates[key] == KeyPressed
+	return self.keyStates[key] == KeyPressed || self.keyStates[key] == KeyRepeated
+}
+
+func (self *TestEmitter) IsKeyRepeated(key KeyCode) bool {
+	return self.keyStates[key] == KeyRepeated
 }
 
 func (self *TestEmitter) setKeyState(key KeyCode, state KeyState) {
@@ -186,6 +190,22 @@ func Test_On_CanMapMultipleKeysToOneEvent(t *testing.T) {
 	assert.Equal(t, 2, quitCallCount)
 }
 
+func Test_On_MapsRepeatAndPressedAsKeyPressed(t *testing.T) {
+	mapper, emitter := GetInputDispatcher()
+	mapper.mapKeyToEvent(KeyQ, events.Quit)
+
+	quitCallCount := 0
+
+	mapper.On(events.Quit, func(events.Event) {
+		quitCallCount += 1
+	})
+
+	emitter.fireKeyCallback(KeyQ, KeyPressed)
+	emitter.fireKeyCallback(KeyQ, KeyRepeated)
+
+	assert.Equal(t, 2, quitCallCount)
+}
+
 func Test_On_CanMapMultipleEventsToOneKey(t *testing.T) {
 	mapper, emitter := GetInputDispatcher()
 	mapper.mapKeyToEvent(KeyJ, events.MoveForward)
@@ -224,6 +244,23 @@ func Test_RecentEvents_ReturnsLastSetOfReceivedKeyEvents(t *testing.T) {
 
 	assert.Equal(t, events.MoveForward, recentEvents[1].EventType)
 	assert.False(t, recentEvents[1].Pressed)
+}
+
+func Test_RecentEvents_FlagsRepeatedKeysAsPressedAndRepeated(t *testing.T) {
+	mapper, emitter := GetInputDispatcher()
+	mapper.mapKeyToEvent(KeyQ, events.Quit)
+	mapper.mapKeyToEvent(KeyD, events.MoveForward)
+
+	emitter.fireKeyCallback(KeyQ, KeyPressed)
+	emitter.fireKeyCallback(KeyQ, KeyRepeated)
+
+	recentEvents := mapper.RecentEvents()
+
+	assert.Equal(t, 2, len(recentEvents))
+	assert.True(t, recentEvents[0].Pressed)
+
+	assert.True(t, recentEvents[1].Pressed)
+	assert.True(t, recentEvents[1].Repeated)
 }
 
 func Test_RecentEvents_ReturnsLastSetOfReceivedMouseEvents(t *testing.T) {
@@ -278,21 +315,29 @@ func Test_PollEvents_AddsToListOfEventsToPollToRecentEvents(t *testing.T) {
 	mapper, emitter := GetInputDispatcher()
 	mapper.mapKeyToEvent(KeyQ, events.Quit)
 	mapper.mapKeyToEvent(KeyD, events.MoveForward)
+	mapper.mapKeyToEvent(KeyE, events.MoveBackward)
 
 	eventList := []events.EventType{
 		events.Quit,
 		events.MoveForward,
+		events.MoveBackward,
 	}
 	mapper.PollEvents(eventList)
 
 	emitter.setKeyState(KeyQ, KeyPressed)
 	emitter.setKeyState(KeyD, KeyPressed)
+	emitter.setKeyState(KeyE, KeyRepeated)
 
 	nextEvents := mapper.RecentEvents()
 
-	assert.Equal(t, 2, len(nextEvents))
+	assert.Equal(t, 3, len(nextEvents))
 	assert.Equal(t, events.Quit, nextEvents[0].EventType)
 	assert.Equal(t, events.MoveForward, nextEvents[1].EventType)
+
+	// Repeat key handling
+	assert.Equal(t, events.MoveBackward, nextEvents[2].EventType)
+	assert.True(t, nextEvents[2].Pressed)
+	assert.True(t, nextEvents[2].Repeated)
 }
 
 func Test_UnpollEvents_RemovesKnownPollEventsFromPolling(t *testing.T) {

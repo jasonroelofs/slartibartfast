@@ -6,4 +6,5 @@ type KeyState int
 const (
 	KeyReleased = KeyState(0)
 	KeyPressed  = KeyState(1)
+	KeyRepeated = KeyState(2)
 )

@@ -156,6 +156,7 @@ func (self *InputDispatcher) findPolledEvents() (polledEvents []events.Event) {
 				polledEvents = append(polledEvents, events.Event{
 					EventType: eventType,
 					Pressed:   true,
+					Repeated:  self.emitter.IsKeyRepeated(eventKey),
 				})
 			}
 
@@ -173,26 +174,27 @@ func (self *InputDispatcher) mapKeyToEvent(key KeyCode, eventType events.EventTy
 
 func (self *InputDispatcher) keyCallback(key KeyCode, state KeyState) {
 	log.Println("Key pressed! ", key, state, string(key))
+	event := events.Event{
+		Pressed:  state == KeyPressed || state == KeyRepeated,
+		Repeated: state == KeyRepeated,
+	}
 
-	self.processKeyCallback(key, state)
-	self.processEventCallbacks(key, state)
+	self.processKeyCallback(key, event)
+	self.processEventCallbacks(key, event)
 }
 
-func (self *InputDispatcher) processKeyCallback(key KeyCode, state KeyState) {
+func (self *InputDispatcher) processKeyCallback(key KeyCode, event events.Event) {
 	if callbacksFromKey, ok := self.keyCallbacks[key]; ok {
 		for _, callback := range callbacksFromKey {
-			callback(events.Event{Pressed: state == 1})
+			callback(event)
 		}
 	}
 }
 
-func (self *InputDispatcher) processEventCallbacks(key KeyCode, state KeyState) {
+func (self *InputDispatcher) processEventCallbacks(key KeyCode, event events.Event) {
 	if eventsFromKey, ok := self.keyToEventMappings[key]; ok {
 		for _, eventFromKey := range eventsFromKey {
-			event := events.Event{
-				Pressed:   state == 1,
-				EventType: eventFromKey,
-			}
+			event.EventType = eventFromKey
 
 			self.storedEvents = append(self.storedEvents, event)
 			self.fireLocalCallback(event)

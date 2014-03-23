@@ -4,7 +4,12 @@ type EventType int
 
 type Event struct {
 	EventType EventType
-	Pressed   bool
+
+	// Keeping a key held down will eventually trigger a "Repeated"
+	// message instead of just "Pressed". When this happens, all Events
+	// will be marked as both Pressed and Repeated
+	Pressed  bool
+	Repeated bool
 
 	// Mouse Position differential from Center of Screen
 	MouseXDiff int
