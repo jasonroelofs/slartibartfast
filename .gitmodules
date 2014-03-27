@@ -1,6 +1,3 @@
-[submodule "src/github.com/go-gl/glfw"]
-	path = src/github.com/go-gl/glfw
-	url = git://github.com/go-gl/glfw.git
 [submodule "src/github.com/go-gl/glu"]
 	path = src/github.com/go-gl/glu
 	url = git://github.com/go-gl/glu.git
