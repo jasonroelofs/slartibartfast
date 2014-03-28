@@ -12,6 +12,8 @@ type KeyCode int
 
 // Keyboard characters
 var (
+	KeyNone = KeyCode(-1)
+
 	KeyA = defineKey('A', "A")
 	KeyB = defineKey('B', "B")
 	KeyC = defineKey('C', "C")
@@ -139,7 +141,12 @@ var ()
 
 // Returns a KeyCode for the given key name.
 func KeyFromName(keyName string) KeyCode {
-	return keyNameToCode[keyName]
+	code, ok := keyNameToCode[keyName]
+	if ok {
+		return code
+	} else {
+		return KeyNone
+	}
 }
 
 var (

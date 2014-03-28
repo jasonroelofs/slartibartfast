@@ -3,6 +3,7 @@ package main
 import (
 	"components"
 	"events"
+	"log"
 	"math3d"
 )
 
@@ -17,7 +18,7 @@ func init() {
 		events.MoveLeft:     fixedYMoveLeft,
 		events.MoveRight:    fixedYMoveRight,
 		events.MouseMove:    fixedYMouseMoved,
-//		events.Fire:         fire,
+		events.Primary:      fire,
 	}
 
 	FixedYInput = &components.Input{
@@ -51,5 +52,9 @@ func fixedYMouseMoved(entity components.ComponentHolder, event events.Event) {
 
 	transform.CurrentYaw = math3d.RadToDeg(
 		math3d.Atan2(float32(event.MouseYDiff), float32(event.MouseXDiff)),
-	) * -1 + 90
+	)*-1 + 90
+}
+
+func fire(entity components.ComponentHolder, event events.Event) {
+	log.Println("Fire zee missiles!")
 }

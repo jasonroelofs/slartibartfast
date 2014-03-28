@@ -6,7 +6,7 @@
     "vsync": true
   },
 
-  "keybindings": {
+  "input": {
     "Quit":         ["Q", "Esc"],
     "MoveForward":  ["E"],
     "MoveBackward": ["D"],
@@ -21,6 +21,8 @@
     "PanRight":     ["F"],
 
     "ZoomIn":       ["I"],
-    "ZoomOut":      ["O"]
+    "ZoomOut":      ["O"],
+
+    "Primary":      ["Mouse1"]
   }
 }

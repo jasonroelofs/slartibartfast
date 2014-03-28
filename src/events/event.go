@@ -32,6 +32,7 @@ var (
 	PanRight     = defineEvent("PanRight")
 	ZoomIn       = defineEvent("ZoomIn")
 	ZoomOut      = defineEvent("ZoomOut")
+	Primary      = defineEvent("Primary")
 
 	// This map will keep track of the reverse Name -> EventType for
 	// easy lookup when building mappings from the settings file

@@ -14,6 +14,10 @@ type keyCallbackMap map[KeyCode]eventCallbackList
 
 type keyEventMap map[KeyCode][]events.EventType
 type eventKeyMap map[events.EventType][]KeyCode
+
+type mouseButtonEventMap map[MouseButtonCode][]events.EventType
+type eventMouseButtonMap map[events.EventType][]MouseButtonCode
+
 type eventTypeSet map[events.EventType]bool
 
 // InputDispatcher hooks into an InputEmitter and dispatches keyboard, mouse, and joystick events.
@@ -39,6 +43,10 @@ type InputDispatcher struct {
 	keyToEventMappings keyEventMap
 	eventToKeyMappings eventKeyMap
 
+	// Same for Mouse buttons
+	mouseButtonToEventMappings mouseButtonEventMap
+	eventToMouseButtonMappings eventMouseButtonMap
+
 	// List of events received. Gets cleared when requested.
 	storedEvents EventList
 
@@ -48,28 +56,41 @@ type InputDispatcher struct {
 
 func NewInputDispatcher(config *configs.Config, emitter InputEmitter) *InputDispatcher {
 	mapper := InputDispatcher{
-		config:             config,
-		emitter:            emitter,
-		callbacks:          make(eventCallbackMap),
-		keyCallbacks:       make(keyCallbackMap),
-		keyToEventMappings: make(keyEventMap),
-		eventToKeyMappings: make(eventKeyMap),
-		pollingEvents:      make(eventTypeSet),
+		config:                     config,
+		emitter:                    emitter,
+		callbacks:                  make(eventCallbackMap),
+		keyCallbacks:               make(keyCallbackMap),
+		keyToEventMappings:         make(keyEventMap),
+		eventToKeyMappings:         make(eventKeyMap),
+		mouseButtonToEventMappings: make(mouseButtonEventMap),
+		eventToMouseButtonMappings: make(eventMouseButtonMap),
+		pollingEvents:              make(eventTypeSet),
 	}
 
-	mapper.initializeKeyBindings()
+	mapper.initializeBindings()
 	mapper.initializeCallbacks()
 
 	return &mapper
 }
 
-func (self *InputDispatcher) initializeKeyBindings() {
-	keyBindings := make(map[string][]string)
-	self.config.Get("keybindings", &keyBindings)
+func (self *InputDispatcher) initializeBindings() {
+	inputBindings := make(map[string][]string)
+	self.config.Get("input", &inputBindings)
+	var key KeyCode
+	var mouseButton MouseButtonCode
 
-	for eventName, keyList := range keyBindings {
-		for _, keyName := range keyList {
-			self.mapKeyToEvent(KeyFromName(keyName), events.EventFromName(eventName))
+	for eventName, inputList := range inputBindings {
+		for _, inputName := range inputList {
+			key = KeyFromName(inputName)
+			mouseButton = MouseButtonFromName(inputName)
+
+			if key != KeyNone {
+				self.mapKeyToEvent(key, events.EventFromName(eventName))
+			}
+
+			if mouseButton != MouseNone {
+				self.mapMouseButtonToEvent(mouseButton, events.EventFromName(eventName))
+			}
 		}
 	}
 }
@@ -172,6 +193,11 @@ func (self *InputDispatcher) mapKeyToEvent(key KeyCode, eventType events.EventTy
 	self.keyToEventMappings[key] = append(self.keyToEventMappings[key], eventType)
 }
 
+func (self *InputDispatcher) mapMouseButtonToEvent(button MouseButtonCode, eventType events.EventType) {
+	self.eventToMouseButtonMappings[eventType] = append(self.eventToMouseButtonMappings[eventType], button)
+	self.mouseButtonToEventMappings[button] = append(self.mouseButtonToEventMappings[button], eventType)
+}
+
 func (self *InputDispatcher) keyCallback(key KeyCode, state KeyState) {
 	log.Println("Key pressed! ", key, state, string(key))
 	event := events.Event{
@@ -221,8 +247,22 @@ func (self *InputDispatcher) mouseMoveCallback(x, y int) {
 	self.storedEvents = append(self.storedEvents, event)
 }
 
-func (self *InputDispatcher) mouseButtonCallback(button KeyCode, state KeyState) {
-	log.Println("Mouse Button pressed", button, state)
+func (self *InputDispatcher) mouseButtonCallback(mouseButton MouseButtonCode, state KeyState) {
+	log.Println("Mouse Button pressed", mouseButton, state)
+
+	event := events.Event{
+		Pressed:  state == KeyPressed || state == KeyRepeated,
+		Repeated: state == KeyRepeated,
+	}
+
+	if eventsFromMouseButton, ok := self.mouseButtonToEventMappings[mouseButton]; ok {
+		for _, eventFromMouseButton := range eventsFromMouseButton {
+			event.EventType = eventFromMouseButton
+
+			self.storedEvents = append(self.storedEvents, event)
+			self.fireLocalCallback(event)
+		}
+	}
 }
 
 func (self *InputDispatcher) mouseWheelCallback(position int) {

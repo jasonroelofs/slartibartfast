@@ -134,9 +134,9 @@ func (self *OpenGLWindow) KeyCallback(callback func(input.KeyCode, input.KeyStat
 }
 
 // MouseButtonCallback :: input.InputEmitter
-func (self *OpenGLWindow) MouseButtonCallback(callback func(input.KeyCode, input.KeyState)) {
+func (self *OpenGLWindow) MouseButtonCallback(callback func(input.MouseButtonCode, input.KeyState)) {
 	self.window.SetMouseButtonCallback(func(w *glfw.Window, button glfw.MouseButton, state glfw.Action, mod glfw.ModifierKey) {
-		callback(input.KeyCode(button), input.KeyState(state))
+		callback(input.MouseButtonCode(button), input.KeyState(state))
 	})
 }
 

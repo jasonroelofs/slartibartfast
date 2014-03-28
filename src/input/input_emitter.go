@@ -10,7 +10,7 @@ type InputEmitter interface {
 	KeyCallback(func(KeyCode, KeyState))
 
 	// MouseButtonCallback works like KeyCallback but for Mouse buttons
-	MouseButtonCallback(func(KeyCode, KeyState))
+	MouseButtonCallback(func(MouseButtonCode, KeyState))
 
 	// MousePositionCallback sets a callback that fires when the mouse is moved
 	// The callback is passed the X and Y pixel position of the mouse cursor's new position

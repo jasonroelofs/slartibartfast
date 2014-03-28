@@ -1,6 +1,7 @@
 {
-	"keybindings": {
+	"input": {
 		"Quit": ["Q", "Esc", "X"],
-		"ZoomIn": ["Z"]
+		"ZoomIn": ["Z"],
+		"Primary": ["Mouse1"]
 	}
 }

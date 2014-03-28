@@ -33,8 +33,7 @@ func NewTopDownTestScene(game *Game) *TopDownTestScene {
 }
 
 func (self *TopDownTestScene) Setup() {
-	skybox := factories.SkyBox("stevecube", self.game.Camera)
-	self.game.RegisterEntity(skybox)
+	self.game.RegisterEntity(factories.SkyBox("stevecube", self.game.Camera))
 
 	self.levelVolume = &volume.FunctionVolume{
 		func(x, y, z float32) float32 {

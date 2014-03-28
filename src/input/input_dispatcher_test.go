@@ -13,6 +13,8 @@ type TestEmitter struct {
 	keyCallback      func(KeyCode, KeyState)
 	mousePosCallback func(int, int)
 
+	mouseButtonCallback func(MouseButtonCode, KeyState)
+
 	HidingCursor bool
 
 	keyStates map[KeyCode]KeyState
@@ -26,7 +28,12 @@ func (self *TestEmitter) fireKeyCallback(key KeyCode, state KeyState) {
 	self.keyCallback(key, state)
 }
 
-func (self *TestEmitter) MouseButtonCallback(cb func(KeyCode, KeyState)) {
+func (self *TestEmitter) MouseButtonCallback(cb func(MouseButtonCode, KeyState)) {
+	self.mouseButtonCallback = cb
+}
+
+func (self *TestEmitter) fireMouseButtonCallback(button MouseButtonCode, state KeyState) {
+	self.mouseButtonCallback(button, state)
 }
 
 func (self *TestEmitter) MousePositionCallback(cb func(int, int)) {
@@ -92,6 +99,11 @@ func Test_NewInputDispatcher_ReadsKeybindingsFromConfig(t *testing.T) {
 		zoomFired += 1
 	})
 
+	attackFired := 0
+	dispatcher.On(events.Primary, func(events.Event) {
+		attackFired += 1
+	})
+
 	// See the test file keybindings.json
 	// 3 Quit keys
 	emitter.fireKeyCallback(KeyQ, KeyPressed)
@@ -101,8 +113,12 @@ func Test_NewInputDispatcher_ReadsKeybindingsFromConfig(t *testing.T) {
 	// One ZoomIn key
 	emitter.fireKeyCallback(KeyZ, KeyPressed)
 
+	// A mouse button
+	emitter.fireMouseButtonCallback(Mouse1, KeyPressed)
+
 	assert.Equal(t, 3, quitFired)
 	assert.Equal(t, 1, zoomFired)
+	assert.Equal(t, 1, attackFired)
 }
 
 func Test_On_RegistersACallbackForEventFiring(t *testing.T) {
@@ -223,6 +239,29 @@ func Test_On_CanMapMultipleEventsToOneKey(t *testing.T) {
 	})
 
 	emitter.fireKeyCallback(KeyJ, KeyPressed)
+
+	assert.Equal(t, 1, forwardCallCount)
+	assert.Equal(t, 1, backwardCallCount)
+}
+
+func Test_On_CanMapMouseButtonsToEvents(t *testing.T) {
+	mapper, emitter := GetInputDispatcher()
+	mapper.mapMouseButtonToEvent(Mouse1, events.MoveForward)
+	mapper.mapMouseButtonToEvent(Mouse2, events.MoveBackward)
+
+	forwardCallCount := 0
+	backwardCallCount := 0
+
+	mapper.On(events.MoveForward, func(events.Event) {
+		forwardCallCount += 1
+	})
+
+	mapper.On(events.MoveBackward, func(events.Event) {
+		backwardCallCount += 1
+	})
+
+	emitter.fireMouseButtonCallback(Mouse1, KeyPressed)
+	emitter.fireMouseButtonCallback(Mouse2, KeyPressed)
 
 	assert.Equal(t, 1, forwardCallCount)
 	assert.Equal(t, 1, backwardCallCount)
