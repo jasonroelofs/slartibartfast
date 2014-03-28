@@ -3,7 +3,7 @@ package factories
 import (
 	"components"
 	"core"
-	"github.com/stretchrcom/testify/assert"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 

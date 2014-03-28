@@ -23,8 +23,7 @@ LIBRARIES = %w(
   github.com/go-gl/gl
   github.com/go-gl/glu
   github.com/go-gl/glfw3
-  github.com/stretchrcom/testify
-  github.com/stretchrcom/testify/assert
+  github.com/stretchr/testify
 )
 
 EXTERNAL_LIBS = %w(
@@ -67,19 +66,6 @@ namespace :build do
     desc "Build and install package [#{package}]"
     task package do
       shell "go install -v #{package}"
-    end
-  end
-end
-
-task :update => "update:all"
-namespace :update do
-  desc "Update all installed libraries"
-  task :all => LIBRARIES.map {|l| l.split("\/").last }
-
-  LIBRARIES.each do |library|
-    desc "Update the library [#{library}]"
-    task library.split("\/").last do
-      shell "go get -u #{library}"
     end
   end
 end

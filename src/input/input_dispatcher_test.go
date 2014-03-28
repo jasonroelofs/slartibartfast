@@ -3,7 +3,7 @@ package input
 import (
 	"configs"
 	"events"
-	"github.com/stretchrcom/testify/assert"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 

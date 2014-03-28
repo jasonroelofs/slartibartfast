@@ -1,7 +1,7 @@
 package volume
 
 import (
-	"github.com/stretchrcom/testify/assert"
+	"github.com/stretchr/testify/assert"
 	"math3d"
 	"testing"
 )
