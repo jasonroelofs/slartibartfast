@@ -19,6 +19,8 @@ PACKAGES = %w(
   util
 )
 
+# These are git submodules
+# Update with: git submodule update --remote
 LIBRARIES = %w(
   github.com/go-gl/gl
   github.com/go-gl/glu
