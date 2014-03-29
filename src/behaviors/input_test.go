@@ -5,25 +5,24 @@ import (
 	"core"
 	"events"
 	"github.com/stretchr/testify/assert"
-	"input"
 	"testing"
 )
 
 type TestInputQueue struct {
-	Events          input.EventList
-	pollingEvents   input.EventTypeList
-	unpollingEvents input.EventTypeList
+	Events          events.EventList
+	pollingEvents   events.EventTypeList
+	unpollingEvents events.EventTypeList
 }
 
-func (self *TestInputQueue) RecentEvents() input.EventList {
+func (self *TestInputQueue) RecentEvents() events.EventList {
 	return self.Events
 }
 
-func (self *TestInputQueue) PollEvents(events input.EventTypeList) {
+func (self *TestInputQueue) PollEvents(events events.EventTypeList) {
 	self.pollingEvents = events
 }
 
-func (self *TestInputQueue) UnpollEvents(events input.EventTypeList) {
+func (self *TestInputQueue) UnpollEvents(events events.EventTypeList) {
 	self.unpollingEvents = events
 }
 
@@ -46,7 +45,7 @@ func Test_NewInput(t *testing.T) {
 func Test_SetUpEntity_TellsQueueWhatEventsToPollFor(t *testing.T) {
 	_, queue, entityDb := getTestInput()
 
-	pollEvents := input.EventTypeList{events.Quit, events.TurnLeft}
+	pollEvents := events.EventTypeList{events.Quit, events.TurnLeft}
 	entity := core.NewEntity()
 	entity.AddComponent(&components.Input{
 		Polling: pollEvents,
@@ -59,7 +58,7 @@ func Test_SetUpEntity_TellsQueueWhatEventsToPollFor(t *testing.T) {
 func Test_TearDownEntity_TurnsOffPollingForRelatedEvents(t *testing.T) {
 	_, queue, entityDb := getTestInput()
 
-	pollEvents := input.EventTypeList{events.Quit, events.TurnLeft}
+	pollEvents := events.EventTypeList{events.Quit, events.TurnLeft}
 	entity := core.NewEntity()
 	entity.AddComponent(&components.Input{
 		Polling: pollEvents,

@@ -31,7 +31,7 @@ type InputDispatcher struct {
 	callbacks eventCallbackMap
 
 	// List of events received. Gets cleared when requested.
-	recentEvents EventList
+	recentEvents events.EventList
 
 	// Set of events that need to be polled
 	pollingEvents eventTypeSet
@@ -91,9 +91,9 @@ func (self *InputDispatcher) fireEventCallbacks(event events.Event) {
 // this method was called. This method returns a copy of the events list
 // then clears out it's internal list for the next frame.
 // :: InputQueue
-func (self *InputDispatcher) RecentEvents() EventList {
+func (self *InputDispatcher) RecentEvents() events.EventList {
 	eventsList := self.recentEvents
-	var eventsToPoll EventTypeList
+	var eventsToPoll events.EventTypeList
 
 	for eventType, _ := range self.pollingEvents {
 		eventsToPoll = append(eventsToPoll, eventType)
@@ -106,7 +106,7 @@ func (self *InputDispatcher) RecentEvents() EventList {
 		)
 	}
 
-	self.recentEvents = EventList{}
+	self.recentEvents = events.EventList{}
 
 	return eventsList
 }
@@ -114,7 +114,7 @@ func (self *InputDispatcher) RecentEvents() EventList {
 // PollEvents adds the given events to the list of events this dispatcher
 // should be polling for every frame
 // :: InputQueue
-func (self *InputDispatcher) PollEvents(eventsAdding EventTypeList) {
+func (self *InputDispatcher) PollEvents(eventsAdding events.EventTypeList) {
 	for _, eventType := range eventsAdding {
 		self.pollingEvents[eventType] = true
 	}
@@ -123,7 +123,7 @@ func (self *InputDispatcher) PollEvents(eventsAdding EventTypeList) {
 // UnpollEvents removes the given events to the list of events this dispatcher
 // should be polling for every frame
 // :: InputQueue
-func (self *InputDispatcher) UnpollEvents(eventsRemoving EventTypeList) {
+func (self *InputDispatcher) UnpollEvents(eventsRemoving events.EventTypeList) {
 	for _, toRemove := range eventsRemoving {
 		delete(self.pollingEvents, toRemove)
 	}

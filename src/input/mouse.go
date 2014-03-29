@@ -52,8 +52,8 @@ func (self *Mouse) OnEvent(callback func(events.Event)) {
 }
 
 // No-op for Mouse right now
-func (self *Mouse) PollEvents(eventsToPoll EventTypeList) EventList {
-	return EventList{}
+func (self *Mouse) PollEvents(eventsToPoll events.EventTypeList) events.EventList {
+	return events.EventList{}
 }
 
 

@@ -75,7 +75,7 @@ func (self *TestEmitter) setKeyState(key KeyCode, state KeyState) {
 // Bogus InputQueue object
 
 type TestInputListener struct {
-	ReceivedEvents EventList
+	ReceivedEvents events.EventList
 }
 
 func NewListener() *TestInputListener {

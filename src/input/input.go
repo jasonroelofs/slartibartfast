@@ -18,5 +18,5 @@ type Input interface {
 	// PollEvents takes a list of EventTypes to poll for and should return
 	// a list of Events according to the current state of all inputs mapped
 	// to the given EventTypes
-	PollEvents(EventTypeList) EventList
+	PollEvents(events.EventTypeList) events.EventList
 }

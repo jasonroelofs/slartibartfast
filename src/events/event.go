@@ -1,7 +1,9 @@
 package events
 
-type EventType int
-
+// Event is an informational structure, meant to be immutable, that contains
+// all important information about a single input Event. Each Event has an EventType,
+// possibly the state of the button/key which triggered this Event, and possibly
+// the current position of the Mouse Cursor (for mouse movement events).
 type Event struct {
 	EventType EventType
 
@@ -15,6 +17,11 @@ type Event struct {
 	MouseXDiff int
 	MouseYDiff int
 }
+
+type EventType int
+
+type EventList []Event
+type EventTypeList []EventType
 
 var (
 	NilEvent     = defineEvent("")

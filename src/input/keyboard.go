@@ -58,8 +58,8 @@ func (self *Keyboard) OnEvent(callback func(events.Event)) {
 // PollEvents looks at the current state of the keyboard, finding any keys who
 // are mapped to the given list of events and if an Event should be built according
 // to the state of the keys.
-func (self *Keyboard) PollEvents(eventsToPoll EventTypeList) EventList {
-	var polledEvents EventList
+func (self *Keyboard) PollEvents(eventsToPoll events.EventTypeList) events.EventList {
+	var polledEvents events.EventList
 	var eventType events.EventType
 	var eventKeys []KeyCode
 	var eventKey KeyCode
