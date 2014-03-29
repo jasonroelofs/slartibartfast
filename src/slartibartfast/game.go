@@ -18,9 +18,12 @@ type Game struct {
 	config   *configs.Config
 	entityDB *core.EntityDB
 
-	renderer        render.Renderer
-	window          core.Window
-	Camera          *core.Camera
+	renderer render.Renderer
+	window   core.Window
+	Camera   *core.Camera
+
+	Keyboard *input.Keyboard
+	Mouse           *input.Mouse
 	InputDispatcher *input.InputDispatcher
 
 	inputBehavior     *behaviors.Input
@@ -47,9 +50,13 @@ func (self *Game) Run() {
 
 	self.entityDB = core.NewEntityDB()
 	self.renderer = new(platform.OpenGLRenderer)
+	self.Keyboard = input.NewKeyboard(self.window)
+	self.Mouse = input.NewMouse(self.window)
+
 	self.InputDispatcher = input.NewInputDispatcher(
 		self.config,
-		self.window,
+		self.Keyboard,
+		self.Mouse,
 	)
 
 	self.initializeBehaviors()

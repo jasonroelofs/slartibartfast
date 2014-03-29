@@ -84,7 +84,7 @@ func (self *TopDownTestScene) Setup() {
 
 	self.game.RegisterEntity(self.playerCube)
 
-	self.game.InputDispatcher.OnKey(input.KeySpace, func(event events.Event) { self.SwapInput(event) })
+	self.game.Keyboard.OnKey(input.KeySpace, func(event events.Event) { self.SwapInput(event) })
 
 	// Start by controlling the player unit. Game defaults to controlling the camera
 	self.SwapInput(events.Event{Pressed: true})
