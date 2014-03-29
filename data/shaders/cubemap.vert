@@ -1,4 +1,4 @@
-#version 330
+#version 410
 
 in vec3 vertexPosition;
 out vec3 cubeUVCoords;
