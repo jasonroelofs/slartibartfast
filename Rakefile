@@ -17,6 +17,7 @@ PACKAGES = %w(
   factories
   volume
   util
+  game
 )
 
 # These are git submodules
