@@ -12,6 +12,10 @@ type OpenGLRenderer struct {
 	// Implements the render.Renderer interface
 }
 
+func NewOpenGLRenderer() render.Renderer {
+	return new(OpenGLRenderer)
+}
+
 func (self *OpenGLRenderer) LoadMesh(mesh *render.Mesh) {
 	if len(mesh.VertexList) == 0 {
 		log.Println("WARNING Stopping load of mesh [", mesh.Name, "] with no verticies")
