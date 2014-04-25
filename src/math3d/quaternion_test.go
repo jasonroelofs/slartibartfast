@@ -81,3 +81,22 @@ func Test_Quaternion_Normalize(t *testing.T) {
 	assert.True(t, quat.Length() > 1.0)
 	assert.True(t, quat.Normalize().Length() <= 1.0)
 }
+
+func Test_Quaternion_GetRoll(t *testing.T) {
+	quat := QuatFromAngleAxis(90, Vector{0, 0, 1})
+
+	assert.Equal(t, 90, quat.GetRoll())
+}
+
+func Test_Quaternion_GetPitch(t *testing.T) {
+	quat := QuatFromAngleAxis(90, Vector{1, 0, 0})
+
+	assert.Equal(t, 90, quat.GetPitch())
+}
+
+func Test_Quaternion_GetYaw(t *testing.T) {
+	quat := QuatFromAngleAxis(90, Vector{0, 1, 0})
+
+	assert.True(t, (90 - quat.GetYaw()) < 0.1,
+		"Yaw wasn't close enough to 90 %v", quat.GetYaw())
+}

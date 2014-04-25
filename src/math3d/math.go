@@ -50,8 +50,16 @@ func Cos(x float32) float32 {
 	return float32(math.Cos(float64(x)))
 }
 
+func Acos(x float32) float32 {
+	return float32(math.Acos(float64(x)))
+}
+
 func Sin(x float32) float32 {
 	return float32(math.Sin(float64(x)))
+}
+
+func Asin(x float32) float32 {
+	return float32(math.Asin(float64(x)))
 }
 
 func Tan(x float32) float32 {

@@ -78,6 +78,36 @@ func QuatFromRotationMatrix(rotation Matrix) (quat Quaternion) {
 	return
 }
 
+// GetRoll returns Roll of the current Quaternion in Degrees.
+// Pulled from Ogre::Quaternion::getRoll
+func (self Quaternion) GetRoll() float32 {
+	return RadToDeg(
+		Atan2(
+			2*(self.X*self.Y + self.W*self.Z),
+			self.W*self.W + self.X*self.X - self.Y*self.Y - self.Z*self.Z,
+		),
+	)
+}
+
+// GetPitch returns the Pitch of the current Quaternion in Degrees.
+// Pulled from Ogre::Quaternion::getPitch
+func (self Quaternion) GetPitch() float32 {
+	return RadToDeg(
+		Atan2(
+			2*(self.Y*self.Z + self.W*self.X),
+			self.W*self.W - self.X*self.X - self.Y*self.Y + self.Z*self.Z,
+		),
+	)
+}
+
+// GetYaw returns the Yaw of the current Quaternion in Degrees.
+// Pulled from Ogre::Quaternion::getYaw
+func (self Quaternion) GetYaw() float32 {
+	return RadToDeg(
+		Asin(-2 * (self.X*self.Z - self.W*self.Y)),
+	)
+}
+
 // Times returns a new Quaternion that is the product of this Quaternion and other
 func (self Quaternion) Times(other Quaternion) Quaternion {
 	return Quaternion{
