@@ -26,6 +26,8 @@ type Game struct {
 
 	// Behaviors
 	graphicalBehavior *behaviors.Graphical
+	inputBehavior     *behaviors.Input
+	transformBehavior *behaviors.Transform
 
 	// The Game
 	player       *Player
@@ -58,6 +60,8 @@ func (self *Game) initializeEngine() {
 	self.inputDispatcher = input.NewInputDispatcher(self.config, keyboard, mouse)
 
 	self.graphicalBehavior = behaviors.NewGraphical(self.renderer, self.entityDB)
+	self.inputBehavior = behaviors.NewInput(self.inputDispatcher, self.entityDB)
+	self.transformBehavior = behaviors.NewTransform(self.entityDB)
 
 	self.loadBaseResources()
 }
@@ -73,7 +77,7 @@ func (self *Game) setupGame() {
 	self.camera = core.NewCamera()
 	self.camera.Perspective(60.0, self.window.AspectRatio(), 0.1, 100.0)
 	self.camera.SetPosition(math3d.Vector{0, 10, 0})
-	self.camera.LookAt(math3d.Vector{0, -10, 0})
+	self.camera.LookAt(math3d.Vector{0, 0, -0.1})
 	self.entityDB.RegisterEntity(self.camera.Entity)
 
 	self.player = NewPlayer()
@@ -96,6 +100,9 @@ func (self *Game) mainLoop() {
 }
 
 func (self *Game) Tick(deltaT float32) {
+	self.inputBehavior.Update(deltaT)
+	self.transformBehavior.Update(deltaT)
+
 	self.graphicalBehavior.Update(self.camera, deltaT)
 }
 
