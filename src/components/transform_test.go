@@ -34,6 +34,9 @@ func Test_LookAt_ChangesRotationToLookAtPoint(t *testing.T) {
 	transform.LookAt(math3d.Vector{0, 0, 10})
 
 	assert.Equal(t, math3d.Quaternion{0, 0, 1, 0}, transform.Rotation)
+	assert.Equal(t, 180, transform.CurrentRoll)
+	assert.Equal(t, 0, transform.CurrentYaw * -1) // 0 != -0 /shrug
+	assert.Equal(t, 180, transform.CurrentPitch)
 }
 
 func Test_LookAt_DoesNothingIfLookAtIsPosition(t *testing.T) {

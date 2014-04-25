@@ -77,6 +77,10 @@ func (self *Transform) LookAt(lookAtPoint math3d.Vector) {
 
 	rotMatrix := math3d.LookAt(self.Position, lookAtPoint, self.FixedUpDirection)
 	self.Rotation = math3d.QuatFromRotationMatrix(rotMatrix)
+
+	self.CurrentRoll = self.Rotation.GetRoll()
+	self.CurrentPitch = self.Rotation.GetPitch()
+	self.CurrentYaw = self.Rotation.GetYaw()
 }
 
 // TransformMatrix calculates and returns the full transformation matrix
